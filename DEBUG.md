@@ -16,6 +16,19 @@ pipenv check
 
 This command checks for security vulnerabilities and verifies dependencies in your `pipenv` environment. To get a more detailed list of the installed packages, you can create a `requirements.txt` file and view its contents.
 
+### Resolving pipenv stuffu
+To find python path: 
+
+```bash
+py --list-paths
+```
+
+To activate virtual env
+```bash
+pipenv --python <path/to/python>
+```
+
+
 ### Creating a requirements.txt File
 1. Create a temporary requirements.txt file in your environment using:\
 ```bash

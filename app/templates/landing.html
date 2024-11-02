@@ -3,14 +3,112 @@
 {% import "components/macros.html" as components %}
 
 {% block content %}
-  <!-- Header -->  
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+
   {{ components.render_header() }}
 
-  <!-- Main Content (Empty as per your request) -->
-  <main>
+  <!-- Landing pageee -->
+  <main class="landing-page">
+    <img src="{{ url_for('static', filename='images/landingpage.jpg') }}" alt="UNIGEAR" class="background-image">
+    
+    <div class="overlay">
+        <h1 class="main-title">UNIGEAR</h1>
+        <p class="main-description">
+            Wear your college legacy with pride! From hoodies and caps to bags and memorabilia, 
+            find everything you need to represent your alma mater. 
+            Shop exclusive, high-quality college merchandise that lets you carry your school spirit wherever you go.
+        </p>
+        <div class="button-container">
+            <a href="#get-started" class="btn btn-primary">Get Started</a>
+            <a href="#explore" class="btn btn-secondary">Explore</a>
+        </div>
+    </div>
+</main>
 
-  </main>
+
+  <!-- Pre order stepsss -->
+  <section id="step-process" class="step-process">
+    <div class="container">
+      <h1 class="title">HOW IT WORKS</h1>
+      <p class="subtitle">Follow these simple steps to pre-order your exclusive merch</p>
+  
+      <div class="steps-container">
+        <div class="step step-1">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Login</h3>
+            <p>Start by logging into your UNIGEAR account to access personalized options and secure checkout.</p>
+          </div>
+          <div class="step-icon"><i class="fas fa-sign-in-alt"></i></div>
+        </div>
+  
+        <div class="step step-2">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Choose </h3>
+            <p>Explore available merchandise to find items that represent your college spirit.</p>
+          </div>
+          <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+        </div>
+  
+        <div class="step step-3">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Order</h3>
+            <p>Select your preferred size, color, and quantity, and fill in your shipping and payment details.</p>
+          </div>
+          <div class="step-icon"><i class="fas fa-pencil-alt"></i></div>
+        </div>
+  
+        <div class="step step-4">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Wait</h3>
+            <p>After placing your order, check your email for confirmation. Wait for a complete batch.</p>
+          </div>
+          <div class="step-icon"><i class="fas fa-clock"></i></div>
+        </div>
+  
+        <div class="step step-5">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <h3>Wear</h3>
+            <p> wear the merch proudly to showcase your school spirit and  your college memories.</p>
+          </div>
+          <div class="step-icon"><i class="fas fa-tshirt"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+  
+  <!-- promo -->
+  <section id="promo" class="promo">
+    <div class="promo-content">
+        <div class="promo-text">
+            <h2 class="promo-title">Find all college merch in one Website</h2>
+            <p class="promo-subtitle">
+                Find all your favorite college merch in one convenient website! Whether you're looking for apparel, accessories, or souvenirs, 
+                we’ve got everything from top universities in one place. Easily browse, compare, and shop 
+                for official college merchandise to show off your school pride.
+            </p>
+        </div>
+        <div class="promo-image">
+            <img src="{{ url_for('static', filename='images/promo.jpg') }}" alt="promo" class="promo-pic">
+        </div>
+    </div>
+</section>
+
+
 
   <!-- Footer -->
   {{ components.render_footer() }}
 {% endblock %}
+
+
+

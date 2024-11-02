@@ -1,0 +1,333 @@
+/*------------------------ Main Layout -----------------------*/
+.landing-page {
+    position: relative;
+    text-align: center;
+}
+
+.main-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 225px;
+    font-weight: 1;
+    color: #f9f9f9d2;
+    margin: 0%; 
+    margin-bottom: -50px;
+   
+}
+
+.main-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    margin: 0;
+    max-width: 700px;
+    color: #f9f9f9d2;
+    line-height: 1; 
+    padding-bottom: 20px;
+}
+
+
+
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 100px;
+    transform: translateY(-50%);
+    text-align: left;
+    z-index: 2;
+    
+}
+
+
+
+/* -------------------Background Image---------------------- */
+.background-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.landing-page::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 254, 254, 0) 0%, rgba(0, 0, 0, 1) 96%);
+    z-index: 1;
+}
+
+
+
+
+/* --------------------Button Styling ----------------*/
+.button-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: left;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.2rem;
+    font-weight: bold ;
+    text-decoration: none;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #6c757d;
+    border-radius: 10px;
+}
+
+.btn-secondary {
+    background-color: #29AB51;
+    border-radius: 10px;
+}
+
+/*------------------------ Additional Content Sections -------------------------*/
+.content-section {
+    padding: 80px 20px;
+    text-align: center;
+    background-color: #f4f4f4; 
+}
+
+.content-section:nth-child(even) {
+    background-color: #e9ecef;
+}
+
+.content-section h2 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.content-section p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 20px auto;
+    color: #555;
+}
+
+/*------------------------ Pre Order Process -------------------------*/
+.step-process {
+    background: black;
+    color: #333;
+    padding: 80px 40px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative; 
+    overflow: hidden; 
+}
+
+.step-process .title {
+    font-size: 120px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: -25px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: fadeIn 1s ease; 
+}
+
+.step-process .subtitle {
+    font-size: 20px;
+    color: rgba(236, 236, 236, 0.8);
+    margin-bottom: 60px;
+    font-family: 'Inter', sans-serif;
+    animation: fadeIn 1.5s ease; 
+}
+
+.steps-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 40px;
+    justify-items: center;
+    padding: 0 20px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid #e0e0e0;
+    padding: 30px;
+    background: #ffffff;
+    width: 100%;
+    max-width: 220px;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 20px; 
+    position: relative;
+    overflow: hidden; 
+    opacity: 0.9; 
+    filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.1));
+    animation: fadeIn 1.5s ease; 
+}
+
+.step:hover {
+    transform: translateY(-15px) scale(1.02); 
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #02720d; 
+    opacity: 1; 
+}
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #04A414, #00C853);
+    transition: width 0.3s ease;
+    width: 0;
+}
+
+.step:hover::before {
+    width: 100%;
+}
+
+.step-icon {
+    font-size: 48px;
+    color: #000000; 
+    margin-top: 20px;
+    margin-bottom: 20px;
+    transition: color 0.3s ease, transform 0.3s ease; 
+}
+
+.step:hover .step-icon {
+    color: #039536; 
+    transform: scale(1.2); 
+}
+
+.step-number {
+    font-size: 60px;
+    font-weight: bold;
+    color: #04A414; 
+    margin: 10px ;
+    font-family: 'Bebas Neue', sans-serif;
+    transition: color 0.3s ease; 
+}
+
+.step-content {
+    flex: 1;
+    text-align: center;
+}
+
+.step-content h3 {
+    font-size: 30px; 
+    font-family:  'Inter', sans-serif;
+    color: black;
+    margin-bottom: -5px ;
+    font-weight: bolder;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.step-content p {
+    font-size: 14px;
+    color: rgba(34, 34, 34, 0.8);
+    margin-top: 5px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+}
+
+.steps-container {
+    grid-auto-rows: 1fr;
+}
+
+.step:nth-child(5) {
+    align-self: stretch;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+  /*------------------------ Promo -------------------------*/
+  .promo {
+    background-color: #000000; 
+    color: #ffffff;
+    padding: 150px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 800px;
+}
+
+.promo-content {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.promo-text {
+    flex: 1;
+    text-align: right;
+    padding-right: 30px;
+    color: #d1d1d1;
+}
+
+.promo-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-shadow: 
+        0 0 5px rgba(4, 164, 20, 0.7),
+        0 0 15px rgba(4, 164, 20, 0.5),
+        0 0 30px rgba(4, 164, 20, 0.3); 
+}
+
+.promo-subtitle {
+    font-size: 18px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    color: #b0b0b0;
+    margin-bottom: 30px;
+    text-shadow: 
+        0 0 3px rgba(255, 255, 255, 0.3),
+        0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.promo-image {
+    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.promo-pic {
+    width: 100%;
+    max-width: 700px;
+    height: 600px;
+    border-radius: 15px;
+    box-shadow: 
+        0 0 10px rgba(4, 164, 20, 0.5), 
+        0 0 20px rgba(4, 164, 20, 0.4),
+        0 0 30px rgba(4, 164, 20, 0.3); 
+}
+
+.promo-image::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(4, 164, 20, 0.1) 0%, rgba(0, 0, 0, 0.9) 100%);
+    border-radius: 15px;
+    opacity: 0.8;
+}
+
