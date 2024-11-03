@@ -1,3 +1,11 @@
+*,
+*::before,
+*::after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 /*------------------------ Main Layout -----------------------*/
 .landing-page {
     position: relative;
@@ -84,28 +92,6 @@
     border-radius: 10px;
 }
 
-/*------------------------ Additional Content Sections -------------------------*/
-.content-section {
-    padding: 80px 20px;
-    text-align: center;
-    background-color: #f4f4f4; 
-}
-
-.content-section:nth-child(even) {
-    background-color: #e9ecef;
-}
-
-.content-section h2 {
-    font-size: 2.5rem;
-    color: #333;
-}
-
-.content-section p {
-    font-size: 1.2rem;
-    max-width: 800px;
-    margin: 20px auto;
-    color: #555;
-}
 
 /*------------------------ Pre Order Process -------------------------*/
 .step-process {
@@ -113,7 +99,6 @@
     color: #333;
     padding: 80px 40px;
     text-align: center;
-    border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     position: relative; 
     overflow: hidden; 
@@ -156,20 +141,16 @@
     width: 100%;
     max-width: 220px;
     transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
     border-radius: 20px; 
     position: relative;
-    overflow: hidden; 
-    opacity: 0.9; 
-    filter: drop-shadow(0 4px 30px rgba(0, 0, 0, 0.1));
+    overflow: hidden;  
     animation: fadeIn 1.5s ease; 
 }
 
 .step:hover {
     transform: translateY(-15px) scale(1.02); 
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    border-color: #02720d; 
-    opacity: 1; 
+    border-color: #02720d;  
 }
 
 .step::before {

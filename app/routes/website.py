@@ -4,7 +4,7 @@ website_bp = Blueprint('website', __name__)
 
 @website_bp.route('/')
 def landing():
-  return "<h1>Hello, World!</h1>"
+  return render_template('landing.html')
 
 
 @website_bp.route('/explore')
