@@ -1,0 +1,99 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+  <script>
+    function onSuccess(response) {
+      const user = response.credential; // The credential will contain the JWT
+      const google = parseJwt(user); // A function to parse the JWT and extract the user info
+
+      console.log('Logged in as: ' + google.name);
+      console.log('ID: ' + google.sub);
+      console.log('Image URL: ' + google.picture);
+      console.log('Email: ' + google.email);
+
+      // Check if the email ends with '@g.msuiit.edu.ph'
+      if (!google.email.endsWith('@g.msuiit.edu.ph')) {
+        alert('Login failed: This account is not allowed. Please use your assigned @g.msuiit.edu.ph institutional email.');
+        signOut(); // Call your sign-out function here
+        return; // Exit the function
+      }
+
+      // Update the DOM elements with user information
+      document.getElementById('user-image').src = google.picture; // Set image source
+      document.getElementById('user-name').innerText = google.name; // Set name
+      document.getElementById('user-email').innerText = google.email; // Set email
+    }
+
+    function parseJwt(token) {
+      // Split the token to extract the payload (the second part of the JWT)
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Base64 URL decode
+      return JSON.parse(window.atob(base64)); // Decode the base64 and parse it as JSON
+    }
+
+    function signOut() {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
+        // Optionally clear user info in the UI
+        document.getElementById('user-image').src = '';
+        document.getElementById('user-name').innerText = '';
+        document.getElementById('user-email').innerText = '';
+      });
+    }
+
+    function onFailure(error) {
+      console.error('Error during sign-in:', error);
+      alert('Login failed: ' + (error.error || 'Unknown error occurred. Please try again.'));
+
+      // You can also add logic here to inform users about specific issues
+      if (error.error === 'popup_closed_by_user') {
+        alert('The sign-in popup was closed before completing the sign-in process. Please try again.');
+      } else if (error.error === 'access_denied') {
+        alert('Access denied. Please check your permissions.');
+      } else {
+        alert('An unexpected error occurred. Please try again later.');
+      }
+    }
+  </script>
+{% endblock %}
+
+{% block content %}
+  <main style="
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  ">
+
+    <div class="sign-in__google">
+      <div id="g_id_onload"
+        data-client_id="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="onSuccess"
+        data-hd="g.msuiit.edu.ph"
+        data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="filled_blue"
+        data-text="signin_with"
+        data-size="large"
+        data-logo_alignment="left">
+      </div>
+      <a href="#" onclick="signOut();">Sign out</a>
+    </div>
+
+    <!-- Display user information here -->
+    <img id="user-image" src="" alt="User Profile Picture" style="border-radius: 50%; width: 100px; height: 100px; margin-top: 20px;">
+    <h1 id="user-name"></h1>
+    <p id="user-email"></p>
+
+  </main>
+{% endblock %}
