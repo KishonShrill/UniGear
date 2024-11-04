@@ -76,10 +76,12 @@ Before you begin, ensure you have met the following requirements:
     ⚠️ Use this command below if it doesn't work ⚠️
     ```bash
     flask --app run.py run --debug
+    
+    flask run --host=localhost --port=5000 --debug
     ```
 
 6. **Access the application**:
-   Open your browser and go to `http://127.0.0.1:5000`.
+   Open your browser and go to `http://localhost:5000`.
 
 ## ⚠️ Usage
 
