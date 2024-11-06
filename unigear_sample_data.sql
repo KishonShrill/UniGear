@@ -101,26 +101,92 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 -- Below is the sample data
 -- Below is the sample data
 INSERT INTO college (college_name) VALUES 
-('College of Engineering'), 
-('College of Arts and Sciences'), 
-('College of Business Administration'), 
-('College of Education');
+('College of Arts and Social Sciences'),
+('College of Business Administration'),
+('College of Computer Studies'),
+('College of Education'),
+('College of Engineering'),
+('College of Nursing'),
+('College of Science and Mathematics');
 
-INSERT INTO organization (org_id, org_name, college_id, org_email) VALUES 
-('KASAMA', 'Kataastaasang Sanggunian ng mga Mag-aaral', 1, "kasama@g.msuiit.edu.ph"), 
-('AS', 'Art Society', 2, NULL), 
-('BO', 'Business Organization', 3, NULL), 
-('FE', 'Future Educators', 4, NULL);
+-- CSM Organizations
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('CSM Chemistry Society', 'CHEMSOC', 'csm.chemsoc@g.msuiit.edu.ph', 7),
+('CSM Haynayan Society', 'HAYNAYAN', 'csm.haynayan@g.msuiit.edu.ph', 7),
+('CSM Kapisanan ng mga Mag-aaral sa Pisika', 'KMP', 'csm.kmp@g.msuiit.edu.ph', 7),
+('CSM Marine Science Students Society', 'MASSTS', 'csm.massts@g.msuiit.edu.ph', 7),
+('CSM Statistics and Mathematics Society', 'SMAS', 'csm.smas@g.msuiit.edu.ph', 7),
+('CSM Biological Sciences Graduate Society', 'BSGS', 'csm.bsgs@g.msuiit.edu.ph', 7);
+
+-- CED Organizations
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('CED Association of Students Educators in Science and Math', 'ASSESMA', 'ced.assssma@g.msuiit.edu.ph', 4),
+('CED Physical Education Student Organization', 'DPESO', 'ced.dpeso@g.msuiit.edu.ph', 4),
+('CED SIDLAK', 'SIDLAK', 'ced.sidlak@g.msuiit.edu.ph', 4),
+('CED Society of Language Educators', 'SLED', 'ced.sled@g.msuiit.edu.ph', 4),
+('CED Student Tech and Entrep of the Philippines', 'STEP', 'ced.step@g.msuiit.edu.ph', 4);
+
+-- COET Organizations
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('COET Junior Philippine Institute of Civil Engineers', 'JPICE', 'coet.jpice@g.msuiit.edu.ph', 5),
+('COET Association of Civil Engineering Students', 'ACES', 'coet.aces@g.msuiit.edu.ph', 5),
+('COET Ceramics Engineering Society', 'CERES', 'coet.ceres@g.msuiit.edu.ph', 5),
+('COET Electrical Engineering Technology Society', 'ELETS', 'coet.elets@g.msuiit.edu.ph', 5),
+('COET Guild of Mining Engineering Students', 'GEMS', 'coet.gmes@g.msuiit.edu.ph', 5),
+('COET Institute of Computer Engineering of the Phil SE', 'ICEPSE', 'coet.icepse@g.msuiit.edu.ph', 5),
+('COET Institute of Integrated Electrical Engineering Students', 'IIEES', 'coet.iiees@g.msuiit.edu.ph', 5),
+('COET Junior Institute of Elec and comm Engineering of the Phil', 'JIECEP', 'coet.jiecep@g.msuiit.edu.ph', 5),
+('COET Junior Phillipines Institute of Chemical Engineers', 'JPICHE', 'coet.jpiche@g.msuiit.edu.ph', 5),
+('COET Junior Phillipine Society of Mechanical Engineers', 'JPSME', 'coet.jpsm@g.msuiit.edu.ph', 5),
+('COET Junior Society of Metallurgical Engineers of the Phil', 'JSMEP', 'coet.jsmep@g.msuiit.edu.ph', 5),
+('COET Department of Chemical Engineering Technology', 'AGHIMUAN', 'aghimuan society', 5),
+('COET Junior Society Of Environmental Engineers of the Philippines', 'JSEEP', 'coet.jseep@g.msuiit.edu.ph', 5),
+('COET Materials Engineering Technology Society', 'MaSETSo', 'masetso.mmt@gmail.com', 5),
+('COET Junior Industrial Automation @ Mechatronics Society', 'JIAMS', 'societyofjiams@gmail.com', 5);
+
+-- CASS Organizations
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('Katastaasang Sanggunian ng mga Mag-aaral', 'KASAMA', 'kasama@g.msuiit.edu.ph', 1),
+('CASS Historical society', 'HISTORYSOC', 'cass.histsoc@g.msuiit.edu.ph', 1),
+('CASS Junior Philosophers Guild', 'JPG', 'cass.jpg@g.msuiit.edu.ph', 1),
+('CASS Kabataang Pilipinong Aakay sa Bayan', 'KAPILAS BAYAN', 'cass.kapilasbayan@g.msuiit.edu.ph', 1),
+('CASS Political Science Society', 'PSS', 'cass.pss.@g.msuiit.edu.ph', 1),
+('CASS Psychology Society', 'PSHCH-SOC', 'cass.psychsoc@g.msuiit.edu.ph', 1),
+('CASS Sociology Society', 'SOCIO', 'cass.sociosoc@g.msuiit.edu.ph', 1),
+('CASS Literature, Language, and Culture Society', 'LILACS', 'cass.abeo@g.msuiit.edu.ph', 1);
+
+-- CEBA Organizations
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('CEBA Junior Economics Society', 'JES', 'cbaa.jes@g.msuiit.edu.ph', 2),
+('CEBA Junior Entrepreneurship and Marketing Society', 'JEMS', 'cbaa.jems@g.msuiit.edu.ph', 2),
+('CEBA Society of Hospitality and Tourism Management', 'SHTM', 'cbaa.shtm@g.msuiit.edu.ph', 2),
+('CEBA Junior Philippine Institute of Accountants', 'JPIA', 'cbaa.jpia@g.msuiit.edu.ph', 2);
+
+-- CCS Organizations
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('CCS Computer Application Officers', 'COM-APPS', 'ccs.cao@g.msuiit.edu.ph', 3),
+('CCS Computer Science Society', 'COM-SOC', 'ccs.comsoc@g.msuiit.edu.ph', 3),
+('CCS Junior Information Technology Society', 'JITS', 'ccs.jits@g.msuiit.edu.ph', 3);
+
+-- Executive Councils
+INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VALUES
+('CASS Executive Council', 'CASS-EC', 'cass.ec@g.msuiit.edu.ph', 1),
+('CEBA Executive Council', 'CEBA-EC', 'cbaa.ec@g.msuiit.edu.ph', 2),
+('CCS Executive Council', 'CCS-EC', 'ccs.ec@g.msuiit.edu.ph', 3),
+('CED Executive Council', 'CED-EC', 'ced.ec@g.msuiit.edu.ph', 4),
+('COET Executive Council', 'COET-EC', 'coet.ec@g.msuiit.edu.ph', 5),
+('CON Executive Council', 'CON-EC', 'con.ec@g.msuiit.edu.ph', 6),
+('CSM Executive Council', 'CSM-EC', 'csm.ec@g.msuiit.edu.ph', 7);
 
 INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role, org_id) VALUES 
-('Alice Thompson', 'alice.thompson@example.com', 'securepassword1', '9876543210', '456 Forest St, Iligan City', 'user', 'KASAMA'), 
-('Brian Lee', 'brian.lee@example.com', 'securepassword2', '8765432109', '789 Hill St, Iligan City', 'user', 'AS'), 
-('Catherine Kim', 'catherine.kim@example.com', 'securepassword3', '7654321098', '321 River St, Iligan City', 'seller', 'KASAMA'), 
-('David Yang', 'david.yang@example.com', 'securepassword4', '6543210987', '654 Lake St, Iligan City', 'user', 'BO'), 
-('Ella Chen', 'ella.chen@example.com', 'securepassword5', '5432109876', '987 Ocean St, Iligan City', 'seller', 'AS'), 
-('Frank Martinez', 'frank.martinez@example.com', 'securepassword6', '4321098765', '135 Mountain St, Iligan City', 'user', 'KASAMA'), 
-('Grace Wong', 'grace.wong@example.com', 'securepassword7', '3210987654', '246 Valley St, Iligan City', 'user', 'FE'), 
-('Henry Johnson', 'henry.johnson@example.com', 'securepassword8', '2109876543', '357 Meadow St, Iligan City', 'seller', 'BO');
+('Alice Thompson', 'alice.thompson@example.com', 'securepassword1', '9876543210', '456 Forest St, Iligan City', 'user', 'CASS-EC'), 
+('Brian Lee', 'brian.lee@example.com', 'securepassword2', '8765432109', '789 Hill St, Iligan City', 'user', 'CEBA-EC'), 
+('Catherine Kim', 'catherine.kim@example.com', 'securepassword3', '7654321098', '321 River St, Iligan City', 'seller', 'CCS-EC'), 
+('David Yang', 'david.yang@example.com', 'securepassword4', '6543210987', '654 Lake St, Iligan City', 'user', 'CED-EC'), 
+('Ella Chen', 'ella.chen@example.com', 'securepassword5', '5432109876', '987 Ocean St, Iligan City', 'seller', 'COET-EC'), 
+('Frank Martinez', 'frank.martinez@example.com', 'securepassword6', '4321098765', '135 Mountain St, Iligan City', 'user', 'CON-EC'), 
+('Grace Wong', 'grace.wong@example.com', 'securepassword7', '3210987654', '246 Valley St, Iligan City', 'user', 'CON-EC'), 
+('Henry Johnson', 'henry.johnson@example.com', 'securepassword8', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CSM-EC');
 
 INSERT INTO sizes (size_name) VALUES 
 ('XS'),
