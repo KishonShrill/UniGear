@@ -1,6 +1,8 @@
 // script.js
 const buttons = document.querySelectorAll('.size-btn');
 const selectedSizesInput = document.getElementById('selectedSizes');
+const selectedImagesInput = document.getElementById('picture_urls');
+const usedImagesInput = document.getElementById("pictureUpload");
 
 buttons.forEach(button => {
   button.addEventListener('click', () => {
@@ -21,6 +23,27 @@ function updateSelectedSizes() {
   selectedSizesInput.value = selectedSizes.join(',');
 }
 
+
+let slideIndex = 1;
+let slidesData = [];
+const dataTransfer = new DataTransfer();
+
+// Function to copy files from one input to another
+function updateSelectedImages(sourceInput, targetInput) {
+  // Get files from the source input
+  const files = sourceInput.files;
+
+  // Append each file to the DataTransfer object
+  for (let i = 0; i < files.length; i++) {
+    dataTransfer.items.add(files[i]);
+  }
+
+  console.log(dataTransfer)
+
+  // Assign the new FileList to the target input
+  targetInput.files = dataTransfer.files;
+}
+
 // Image Gallery Functions
 document.getElementById("pictureUpload").addEventListener("change", function() {
   const files = this.files;
@@ -34,7 +57,6 @@ document.getElementById("pictureUpload").addEventListener("change", function() {
 
   // Check if all selected files have valid image extensions
   const validExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const fileName = file.name.toLowerCase();
@@ -55,27 +77,34 @@ document.getElementById("pictureUpload").addEventListener("change", function() {
     return;
   }
 
+  // Check if the combined total of picked and uploaded is bigger than 3
+  if (files.length + slidesData.length > 3) {
+    alert("You must only have 3 uploaded images.");
+    this.value = '';  // Clear the file input to prevent further selection
+    return;
+  }
+
   for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const fileName = file.name;  // Get the raw filename
+
     const reader = new FileReader();
     reader.onload = function(e) {
       const imageSrc = e.target.result;
-      slidesData.push({ src: imageSrc });
+      slidesData.push({ src: imageSrc, filename: fileName });
       renderSlides();
     };
     reader.readAsDataURL(files[i]);
   }
   // Change the top of the upload button after images are uploaded
-  document.querySelector(".new-product__image-wrapper").style.alignItems = "end";
-  document.querySelector(".new-product__image-wrapper").style.justifyItems = "start";
-  document.querySelector(".upload-button").style.transform = "scale(0.4)";
-  document.querySelector(".pictureUpload__description").style.display = "none";
-  document.querySelector(".delete-image-button").style.display = "grid";
+  document.querySelector(".product__image-wrapper").style.alignItems = "end";
+  document.querySelector(".product__image-wrapper").style.justifyItems = "start";
+  document.querySelector("#upload-button").style.transform = "scale(0.4)";
+  document.querySelector("#upload-button__description").style.display = "none";
+  document.querySelector("#delete-image-button").style.display = "grid";
 
-  this.value = '';  // Clear input field after adding images
+  updateSelectedImages(usedImagesInput, selectedImagesInput);
 });
-
-let slideIndex = 1;
-let slidesData = [];
 
 // Function to render slides and thumbnails
 function renderSlides() {
@@ -147,12 +176,48 @@ function showSlides(n) {
   if (dots[slideIndex - 1]) dots[slideIndex - 1].className += " active";
 }
 
+function removeFileFromDataTransfer(dataTransfer, filenameToRemove) {
+  // Loop through the DataTransfer items
+  for (let i = 0; i < dataTransfer.items.length; i++) {
+    const file = dataTransfer.items[i].getAsFile();
+
+    // Check if the filename matches the one to remove
+    if (file.name === filenameToRemove) {
+      // Remove the file from the DataTransfer object
+      dataTransfer.items.remove(i);
+      break; // Exit the loop after removing the file
+    }
+  }
+}
+
 // Delete the current slide
 function deleteCurrentSlide() {
   if (slidesData.length > 0) {
-    slidesData.splice(slideIndex - 1, 1);  // Remove the current slide
-    if (slideIndex > slidesData.length) slideIndex = slidesData.length;  // Adjust index
+    // Get the filename of the current slide
+    const currentFilename = slidesData[slideIndex - 1].filename;
+    
+    // Remove the current slide from slidesData
+    slidesData.splice(slideIndex - 1, 1);  // Remove the current image data
+    
+    // Adjust the slideIndex if necessary
+    if (slideIndex > slidesData.length) {
+      slideIndex = slidesData.length;  // If we're at the end, go back to the last slide
+    }
+
+    removeFileFromDataTransfer(dataTransfer, currentFilename);
+
+    // Re-render the slides
     renderSlides();
+
+    // If there are no slides left
+    if (slidesData.length === 0) {
+      // Reset the upload button style
+      document.querySelector(".product__image-wrapper").style.alignItems = "center";
+      document.querySelector(".product__image-wrapper").style.justifyItems = "center";
+      document.querySelector("#upload-button").style.transform = "scale(1)";
+      document.querySelector("#upload-button__description").style.display = "block";
+      document.querySelector("#delete-image-button").style.display = "none";
+    }
   } else {
     alert("No more images to delete.");
   }

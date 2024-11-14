@@ -4,7 +4,9 @@
 
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/product_page.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_page-crud.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -12,38 +14,27 @@
   {{ components.render_header() }}
 
   <!-- Content -->
-  <main class="new-product">
-    <section class="new-product__image-wrapper">
-      <!-- <img id="previewImage" src="#" onerror="this.style.display='none'"> -->
+  <main class="product">
+    <section class="product__image-wrapper">
 
-      <div class="new-product__image-gallery">
-        <div class="previewImage" id="slides-container">
+      <div class="product__image-gallery">
+        <div class="product__image-preview" id="slides-container">
           <!-- Dynamic slides will be inserted here -->
         </div>
           
         <a class="prev" onclick="plusSlides(-1)">❮</a>
         <a class="next" onclick="plusSlides(1)">❯</a>
-      
-        <!-- <div class="delete-image-button" onclick="deleteCurrentSlide()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
-            <path d="M19.5 5.5L18.8803 15.5251C18.7219 18.0864 18.6428 19.3671 18.0008 20.2879C17.6833 20.7431 17.2747 21.1273 16.8007 21.416C15.8421 22 14.559 22 11.9927 22C9.42312 22 8.1383 22 7.17905 21.4149C6.7048 21.1257 6.296 20.7408 5.97868 20.2848C5.33688 19.3626 5.25945 18.0801 5.10461 15.5152L4.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M3 5.5H21M16.0557 5.5L15.3731 4.09173C14.9196 3.15626 14.6928 2.68852 14.3017 2.39681C14.215 2.3321 14.1231 2.27454 14.027 2.2247C13.5939 2 13.0741 2 12.0345 2C10.9688 2 10.436 2 9.99568 2.23412C9.8981 2.28601 9.80498 2.3459 9.71729 2.41317C9.32164 2.7167 9.10063 3.20155 8.65861 4.17126L8.05292 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M9.5 16.5L9.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M14.5 16.5L14.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
-        </div> -->
       </div>
 
-      <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*">
-      <div class="upload-button" onclick="document.getElementById('pictureUpload').click();">
+      <div id="upload-button" onclick="document.getElementById('pictureUpload').click();">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
           <path d="M4 12.0004L4 14.5446C4 17.7896 4 19.4121 4.88607 20.5111C5.06508 20.7331 5.26731 20.9354 5.48933 21.1144C6.58831 22.0004 8.21082 22.0004 11.4558 22.0004C12.1614 22.0004 12.5141 22.0004 12.8372 21.8864C12.9044 21.8627 12.9702 21.8354 13.0345 21.8047C13.3436 21.6569 13.593 21.4074 14.0919 20.9085L18.8284 16.172C19.4065 15.5939 19.6955 15.3049 19.8478 14.9374C20 14.5698 20 14.1611 20 13.3436V10.0004C20 6.22919 20 4.34358 18.8284 3.172C17.7693 2.11284 16.1265 2.01122 13.0345 2.00146M13 21.5004V21.0004C13 18.172 13 16.7578 13.8787 15.8791C14.7574 15.0004 16.1716 15.0004 19 15.0004H19.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           <path d="M4 8.23028V5.46105C4 3.54929 5.567 1.99951 7.5 1.99951C9.433 1.99951 11 3.54929 11 5.46105V9.26874C11 10.2246 10.2165 10.9995 9.25 10.9995C8.2835 10.9995 7.5 10.2246 7.5 9.26874V5.46105" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span class="pictureUpload__description">Upload from computer</span>
+        <span id="upload-button__description">Upload from computer</span>
       </div>
 
-      <div class="delete-image-button" onclick="deleteCurrentSlide()">
+      <div id="delete-image-button" onclick="deleteCurrentSlide()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#ffffff" fill="none">
           <path d="M19.5 5.5L18.8803 15.5251C18.7219 18.0864 18.6428 19.3671 18.0008 20.2879C17.6833 20.7431 17.2747 21.1273 16.8007 21.416C15.8421 22 14.559 22 11.9927 22C9.42312 22 8.1383 22 7.17905 21.4149C6.7048 21.1257 6.296 20.7408 5.97868 20.2848C5.33688 19.3626 5.25945 18.0801 5.10461 15.5152L4.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           <path d="M3 5.5H21M16.0557 5.5L15.3731 4.09173C14.9196 3.15626 14.6928 2.68852 14.3017 2.39681C14.215 2.3321 14.1231 2.27454 14.027 2.2247C13.5939 2 13.0741 2 12.0345 2C10.9688 2 10.436 2 9.99568 2.23412C9.8981 2.28601 9.80498 2.3459 9.71729 2.41317C9.32164 2.7167 9.10063 3.20155 8.65861 4.17126L8.05292 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -52,14 +43,19 @@
         </svg>
       </div>
 
-      <div class="new-product__image-thumbnails" id="thumbnails">
+      <div class="product__image-thumbnails" id="thumbnails">
         <!-- Thumbnails will be dynamically added here -->
+      </div>
+
+      <div class="product__quantity-viewer">
+        <h1>0</h1>
+        <p>preorder count</p>
       </div>
     </section>
 
-    <form class="new-product__content" id="form" method="POST" action="">
+    <form class="product__content-wrapper" id="product-form" method="POST" action="{{ url_for('website.product_new_submit') }}" enctype="multipart/form-data">
       {{ form.csrf_token }}
-      <a class="new-product__content-back" href=""><b>Back to Shop Home</b></a>
+      <a class="product__content-back" href=""><b>Back to Shop Home</b></a>
 
       <div class="input-box">
         <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="">
@@ -70,7 +66,7 @@
         <label for="price" hidden>Please input a price for the product...</label>
       </div>
       
-      <div class="new-product__content-details-box">
+      <div class="product__content-details-box">
         <p selected>description</p>
         <p>details</p>
         <p>specs</p>
@@ -82,28 +78,35 @@
         <label for="description" hidden>Please add a product description...</label>
       </div>
       <div class="input-box">
-        <input id="hook" name="hook" placeholder="[optional] Add product hook" required="" type="text" value="">
+        <input id="hook" name="hook" placeholder="[optional] Add product hook" type="text" value="">
       </div>
-      <div class="new-product__content-specs-box">
+      <div class="product__content-specs-box">
         <div>
-          <p>TYPE</p>
+          <p>PRODUCT TYPE</p>
           <div class="input-box">
             <select id="type" name="type" required="">
-              <option value="" selected>Add a type...</option>
+              <option value="" selected>Choose a type...</option>
+              <option value="tshirt">T-Shirt</option>
+              <option value="idstrap">ID Strap</option>
+              <option value="pins">Pin</option>
+              <option value="jersey">Jersey</option>
+              <option value="totebag">Tote bag</option>
+              <option value="hoodie">Hoodie</option>
+              <option value="jacket">Jacket</option>
             </select>
-            <label for="type" hidden>Type needed: please add a type...</label>
+            <label for="type" hidden>Type needed: please choose a type...</label>
           </div>
         </div>
 
         <div>
           <p>SIZE</p>
-          <div class="size-selector">
-            <button type="button" class="size-btn" data-size="XS">XS</button>
-            <button type="button" class="size-btn" data-size="S">S</button>
-            <button type="button" class="size-btn" data-size="M">M</button>
-            <button type="button" class="size-btn" data-size="L">L</button>
-            <button type="button" class="size-btn" data-size="XL">XL</button>
-            <button type="button" class="size-btn" data-size="2XL">2XL</button>
+          <div class="product__size-selector">
+            <button type="button" class="size-btn" data-size="1">XS</button>
+            <button type="button" class="size-btn" data-size="2">S</button>
+            <button type="button" class="size-btn" data-size="3">M</button>
+            <button type="button" class="size-btn" data-size="4">L</button>
+            <button type="button" class="size-btn" data-size="5">XL</button>
+            <button type="button" class="size-btn" data-size="6">2XL</button>
 
             <!-- Hidden input to store selected sizes -->
             <input type="hidden" name="selectedSizes" id="selectedSizes">
@@ -111,19 +114,40 @@
         </div>
 
         <div>
-          <p>QUANTITY</p>
+          <p>ORDER TYPE</p>
           <div class="input-box">
-            <input id="quantity" name="quantity" placeholder="###" required="" type="text" value="" inputmode="numeric" pattern="[0-9]+">
-            <label for="quantity" hidden>How many products will you sell?</label>
+            <select name="preorder" id="preorder" required>
+              <option value="" selected>Choose a type...</option>
+              <option value="0">Goal Based</option>
+              <option value="1">Time Based</option>
+            </select>
+            <label for="preorder" hidden>How many products will you sell?</label>
           </div>
         </div>
+        <!-- Remove for Product Details -->
+        <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*">
+        <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*">
+        <!-- Remove for Product Details -->
       </div>
       {{ form.create_product }}
     </form>
   </main>
 
+  
   <!-- Footer -->
+  {{ components.render_alerts() }}
   {{ components.render_footer() }}
+  <script>
+    // REMOVE NING SCRIPT SA PRODUCT DETAILS
+    document.querySelectorAll("textarea").forEach(function(textarea) {
+      textarea.style.height = textarea.scrollHeight + "px";
 
+      textarea.addEventListener("input", function() {
+        this.style.height = "auto";
+        this.style.height = this.scrollHeight + "px";
+      });
+    });
+    // REMOVE NING SCRIPT SA PRODUCT DETAILS
+  </script>
   <script src="{{ url_for('static', filename='js/product_page.js') }}"></script>
 {% endblock %}
