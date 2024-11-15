@@ -1,0 +1,43 @@
+{% extends "master_blueprint/base.html" %}
+{% import "components/macros.html" as components %}
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
+
+    {{ components.render_header() }}
+
+    <main class="explorer-page">
+        <!-- Background Image with Overlay and Title -->
+        <section class="background-section">
+            <img src="{{ url_for('static', filename='images/explorer.jpg') }}" class="background-image">
+            <div class="overlay">
+                <div class="main-title">UNIGEAR</div>
+            </div>
+        </section>
+        
+
+        <!-- College Sections -->
+        {% for college, products in merchandise_data.items() %}
+            <div class="college-section {{ college|replace(' ', '') }}" style="background-color: {{ college_colors.get(college, '#ffffff') }};">
+                <!-- Title and "See More" Link -->
+                <div class="college-container">
+                    <div class="college-title">{{ college }}</div>
+                    <a href="#" class="see-more-link">See More</a>
+                </div>
+
+                <!-- Merchandise Row -->
+                <div class="merchandise-row">
+                    {% if products %}
+                        {% for product in products[:5] %}
+                            <a href="#">
+                                <img src="{{ product['picture_url'] }}" alt="Product {{ product['product_id'] }}">
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-merchandise">No merchandise available</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+    </main>
+{% endblock %}
