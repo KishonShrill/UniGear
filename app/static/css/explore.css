@@ -1,0 +1,130 @@
+/* General Page Styling */
+.explorer-page {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.background-section {
+    position: relative;
+    width: 100%;
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.main-title {
+    font-size: 130px;
+    font-family: 'Emblema One', sans-serif;
+    color: #ffffff;
+    margin: 0;
+    z-index: 2;
+}
+
+/* College Sections Styling */
+.college-section {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px;
+    color: #ffffff;
+    min-height: 300px; 
+    width: 100%; 
+}
+
+.CASS { background: #324831; }
+.CCS { background: #598181; }
+.CBA { background: #9A9A71; }
+.CHS { background: #8B9EAF; }
+.CED { background: #414459; }
+.COE { background: #593838; }
+.CSM { background: #934F50; }
+
+.college-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.college-title {
+    font-size: 36px;
+    font-family: 'Bebas Neue', sans-serif;
+    color: #ffffff;
+    margin-left: 20px;
+    display: inline-block;
+}
+
+.see-more-link {
+    font-size: 18px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 20px;
+    align-self: flex-end; 
+    display: inline-block;
+}
+
+.see-more-link::before {
+    content: "→ ";
+}
+
+.see-more-link:hover {
+    text-decoration: underline;
+}
+
+/* Merchandise Row Styling */
+.merchandise-row {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.merchandise-row a {
+    width: 18%; /* Fits 5 items side by side */
+    min-width: 150px;
+    display: block;
+    text-align: center;
+}
+
+.merchandise-row img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+    transition: transform 0.3s;
+}
+
+.merchandise-row img:hover {
+    transform: scale(1.05);
+}
+
+.no-merchandise {
+    text-align: center;
+    font-size: 20px;
+    color: #ffffff;
+    margin-top: 20px;
+}
