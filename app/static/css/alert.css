@@ -1,0 +1,58 @@
+
+/* Alert Styles */
+/* Alert Styles */
+/* Alert Styles */
+.alert-container {
+  right: 1rem;
+  top: 1rem;
+  overflow: hidden; /* Hide anything that overflows during animation */
+}
+.alert {
+  margin-bottom: 15px;
+  padding: 20px;
+  color: white;
+  box-shadow:
+    3.1px 3px 3.6px rgba(0, 0, 0, 0.098),
+    8.6px 8.3px 10px rgba(0, 0, 0, 0.14),
+    20.8px 19.9px 24.1px rgba(0, 0, 0, 0.182),
+    69px 66px 80px rgba(0, 0, 0, 0.28)
+  ;
+  opacity: 1;
+  background-color: var(--background-color);
+  transition: opacity 0.6s;
+
+  /* Starting position for animation */
+  transform: translateX(100%); 
+  animation: slideIn 0.6s ease-out forwards;
+}
+.alert-danger {--background-color: #f44336;}
+.alert-success {--background-color: #04AA6D;}
+.alert-info {--background-color: #2196F3;}
+.alert-warning {--background-color: #ff9800;}
+
+/* The close button */
+.closebtn {
+  cursor: pointer;
+  margin-left: 15px;
+  transform: translateY(-3px);
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 20px;
+  float: right;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
+}
+/* Keyframe animation to slide the alert from right to its place */
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
