@@ -161,10 +161,14 @@ img.demo.cursor {
   overflow-y: auto;
   scrollbar-gutter: stable;
 }
+.product__content-back-wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
 .product__content-back {
   text-decoration: none;
   color: black;
-  margin-bottom: 2rem;
 }
 .product__content-back:hover {
   color: #29AB51;
