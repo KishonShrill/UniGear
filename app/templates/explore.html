@@ -2,11 +2,12 @@
 {% import "components/macros.html" as components %}
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
 
     {{ components.render_header() }}
 
     <main class="explorer-page">
-        <!-- Background Image with Overlay and Title -->
+        <!-- Background Image wVith Overlay and Title -->
         <section class="background-section">
             <img src="{{ url_for('static', filename='images/explorer.jpg') }}" class="background-image">
             <div class="overlay">
@@ -21,7 +22,7 @@
                 <!-- Title and "See More" Link -->
                 <div class="college-container">
                     <div class="college-title">{{ college }}</div>
-                    <a href="#" class="see-more-link">See More</a>
+                    <a href="#" class="view-more-link">View More </a>
                 </div>
 
                 <!-- Merchandise Row -->
