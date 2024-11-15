@@ -30,9 +30,6 @@
   /* Main container that holds both sections (left and right) */
   .container {
     width: 100vw;
-    height: 100vh;
-    display: flex;
-    position: relative;
   }
 
   /* Background image settings */
@@ -210,6 +207,25 @@
         </div>
       </form>
 
+      <div class="sign-in__google">
+        <div id="g_id_onload"
+          data-client_id="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com"
+          data-context="signin"
+          data-ux_mode="popup"
+          data-callback="handleCredentialResponse"
+          data-hd="g.msuiit.edu.ph"
+          data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+          data-type="standard"
+          data-shape="rectangular"
+          data-theme="filled_blue"
+          data-text="signin_with"
+          data-size="large"
+          data-logo_alignment="left">
+        </div>
+      </div>
+
       <!-- Sign-up link for new users -->
       <div class="signup-link">
         Don’t have an account? <a href="{{ url_for('auth.sign_in') }}">Sign Up</a>
@@ -224,4 +240,11 @@
       </div>
     </div>
   </div>
+
+  <script>
+    function handleCredentialResponse(response) {
+      // Redirect with the credential (token) in the URL
+      window.location.href = "/auth/google_callback?credential=" + response.credential;
+    }
+  </script>
 {% endblock %}
