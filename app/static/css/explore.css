@@ -38,6 +38,7 @@
     color: #ffffff;
     margin: 0;
     z-index: 2;
+    opacity: 0.9;
 }
 
 /* College Sections Styling */
@@ -72,6 +73,7 @@
     color: #ffffff;
     display: inline-block;
     margin: 0;
+    opacity: 0.77;
 }
 
 .view-more-link {
@@ -80,7 +82,7 @@
     font-family: 'Inter', sans-serif;
     text-decoration: none;
     font-weight: bold;
-    text-transform: uppercase;
+    opacity: 0.77;
 }
 
 .view-more-link::after {
@@ -92,11 +94,10 @@
     text-decoration: underline;
 }
 
-
 /* Merchandise Row Styling */
 .merchandise-row {
     display: flex;
-    gap: 15px;
+    gap: 40px;
     justify-content: flex-start;
     margin-top: 5px;
     flex-wrap: wrap;
@@ -105,20 +106,20 @@
 
 .merchandise-row a {
     position: relative; /* Required for overlay */
-    width: 18%; /* Fits 5 items side by side */
-    min-width: 150px;
+    width: 214px; /* Set width for each image */
+    height: 221px; /* Set height for each image */
     display: block;
     text-align: center;
+    overflow: hidden; /* Ensure images do not overflow the container */
 }
 
 .merchandise-row img {
     width: 100%;
-    height: calc(100% + 10px); /* Slightly taller than width */
-    max-height: 210px; /* Adjusted for desired height */
-    object-fit: cover;
+    height: 100%; /* Auto adjust to fit the container */
+    object-fit: cover; /* Maintain the aspect ratio */
     transition: transform 0.3s;
     /* Add a gradient overlay */
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 00), rgba(0, 0, 0, 1)), url(''); /* Lighter gradient at the top */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.8)); /* Lighter gradient at the top */
     background-size: cover;
 }
 
