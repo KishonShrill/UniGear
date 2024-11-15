@@ -2,14 +2,9 @@ import cloudinary
 from flask import Flask
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
-from config import DB_USERNAME, DB_PASSWORD, DB_NAME, DB_HOST, SECRET_KEY, BOOTSTRAP_SERVE_LOCAL
+from config import DB_USERNAME, DB_PASSWORD, DB_NAME, DB_HOST, SECRET_KEY
 from config import CLOUD_NAME, API_KEY, API_SECRET
-
-# Gather Routes
-from app.routes.auth import auth_bp
-from app.routes.website import website_bp
-from app.routes.user import seller_bp
-from app.routes.colleges import colleges_bp
+from datetime import timedelta
 
 mysql = MySQL()
 
@@ -36,6 +31,13 @@ def create_app(test_config=None):
 
     mysql.init_app(app)
     CSRFProtect(app)
+    app.permanent_session_lifetime = timedelta(days=1)  # Session lasts 1 day
+
+    # Gather Routes
+    from app.routes.auth import auth_bp
+    from app.routes.website import website_bp
+    from app.routes.user import seller_bp
+    from app.routes.colleges import colleges_bp
 
     # Register blueprints
     app.register_blueprint(auth_bp)

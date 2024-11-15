@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-
 flask = "*"
 flask-wtf = "*"
 flask-mysql = "*"
@@ -14,6 +13,8 @@ python-dotenv = "*"
 mysqlclient = "*"
 wtforms = "*"
 cloudinary = "*"
+google-auth = "*"
+google-auth-oauthlib = "*"
 
 [dev-packages]
 
