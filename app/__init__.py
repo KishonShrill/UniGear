@@ -39,12 +39,6 @@ def create_app(test_config=None):
     from app.routes.user import seller_bp
     from app.routes.colleges import colleges_bp
 
-    # Gather Routes
-    from app.routes.auth import auth_bp
-    from app.routes.website import website_bp
-    from app.routes.user import seller_bp
-    from app.routes.colleges import colleges_bp
-
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(website_bp)
