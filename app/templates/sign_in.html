@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags for character set and viewport settings -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Title of the page displayed in the browser tab -->
+  <title>UniGear Login</title>
+
+  <!-- External fonts loaded from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> <!-- Poppins font for general text -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> <!-- Bebas Neue for the main heading "UNIGEAR" -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet"> <!-- Inter for the subheading text -->
+
+  <style>
+    /* Reset margins, padding, and box-sizing for consistent layout */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Ensuring the body and html take full viewport height */
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f0f0; /* Light gray background color */
+    }
+
+    /* Main container that holds both sections (left and right) */
+    .container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      position: relative;
+    }
+
+    /* Background image settings */
+    .background-image {
+      position: absolute;
+      inset: 0;
+      background: url() center center/cover no-repeat; /* Background image URL needs to be added */
+      z-index: 1; /* Ensures the background is behind other elements */
+      filter: brightness(0.7); /* Darkens the background image */
+    }
+
+    /* Left section (login form) styling */
+    .left-section {
+      width: 40%;
+      background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white background */
+      padding: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow on the right */
+      z-index: 1; /* Ensures this section stays on top of the background */
+    }
+
+    /* Heading styling for "Welcome back" */
+    .left-section h1 {
+      font-size: 40px;
+      font-weight: 600;
+      margin-bottom: 80px;
+      color: #000; /* Black text color */
+    }
+
+    /* Form styling */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Styling for individual form fields */
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc; /* Light gray border */
+      border-radius: 5px; /* Rounded corners for inputs */
+    }
+
+    /* Styling for the submit button */
+    .form-group input[type="submit"] {
+      background-color: black;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s ease; /* Smooth hover effect */
+    }
+
+    /* Submit button hover effect */
+    .form-group input[type="submit"]:hover {
+      background-color: #333; /* Darker shade on hover */
+    }
+
+    /* Link for signing up if the user does not have an account */
+    .signup-link {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #000; /* Black text color */
+    }
+
+    .signup-link a {
+      color: #3ba74d; /* Green color for sign-up link */
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Hover effect for the sign-up link */
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Right section (branding and message) styling */
+    .right-section {
+      width: 60%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      z-index: 1; /* Ensures it stays above the background */
+    }
+
+    /* Styling for the overlay text in the right section */
+    .right-overlay {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Styling for the main brand name "UNIGEAR" */
+    .right-overlay h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 250px;
+      font-weight: 400;
+      line-height: 200px;
+      letter-spacing: -5px;
+      text-align: left; /* Left alignment for a modern look */
+      text-underline-position: from-font;
+      text-decoration-skip-ink: none;
+      color: white;
+      padding-top: 240px; /* Adjust position for better alignment */
+      margin-bottom: -10px; /* Reduces space below the text */
+    }
+
+    /* Styling for the tagline below the brand name */
+    .right-overlay p {
+      font-family: 'Inter', sans-serif;
+      font-size: 30px;
+      font-weight: 300;
+      line-height: 1; /* Tight line height for better text alignment */
+      text-align: right; /* Aligns text to the right */
+      text-underline-position: from-font;
+      text-decoration-skip-ink: none;
+      color: white;
+      padding-top: 0; /* Removes padding */
+      margin-top: 0; /* Removes margin */
+    }
+
+    /* Mobile responsiveness adjustments */
+    @media (max-width: 768px) {
+      .left-section, .right-section {
+        width: 100%; /* Makes both sections take full width on smaller screens */
+        padding: 20px; /* Adds padding for mobile view */
+      }
+
+      /* Adjust font size for "UNIGEAR" on mobile */
+      .right-overlay h2 {
+        font-size: 120px;
+      }
+
+      /* Adjust font size for the tagline on mobile */
+      .right-overlay p {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Main container holding left and right sections -->
+  <div class="container">
+    <!-- Background image element -->
+    <div class="background-image"></div> <!-- Background Image -->
+    
+    <!-- Left section with login form -->
+    <div class="left-section">
+      <h1>Welcome back</h1> <!-- Heading for login section -->
+      <form>
+        <!-- Email input field -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+
+        <!-- Password input field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <!-- Submit button for login -->
+        <div class="form-group">
+          <input type="submit" value="Log In">
+        </div>
+      </form>
+
+      <!-- Sign-up link for new users -->
+      <div class="signup-link">
+        Don’t have an account? <a href="#">Sign Up</a>
+      </div>
+    </div>
+
+    <!-- Right section with branding and message -->
+    <div class="right-section">
+      <div class="right-overlay">
+        <h2>UNIGEAR</h2> <!-- Brand name "UNIGEAR" -->
+        <p>Wear your college legacy with pride</p> <!-- Tagline text -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>
