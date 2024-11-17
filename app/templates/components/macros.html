@@ -1,4 +1,4 @@
-{% macro render_header() %}
+{% macro render_header(user=None) %}
 <header>
     <div class="logo">
         <h1>UNIGEAR</h1>
@@ -8,8 +8,13 @@
         <button type="submit"><i class="search-icon">🔍</i></button>
     </div>
     <div class="nav-links">
-        <a href="#">Sign Up</a>
-        <a href="{{ url_for('website.product_new') }}">Log In</a>
+        {% if user %}
+            <a href="#">Dashboard</a>
+            <a href="#">Log Out</a>
+        {% else %}
+            <a href="#">Sign Up</a>
+            <a href="#">Log In</a>
+        {% endif %}
     </div>
 </header>
 {% endmacro %}

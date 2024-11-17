@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
 
-    {{ components.render_header() }}
+    {{ components.render_header(user=session['name']) }}
 
     <main class="explorer-page">
         <!-- Background Image with Overlay and Title -->

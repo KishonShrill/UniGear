@@ -9,7 +9,8 @@
 
 
 
-  {{ components.render_header() }}
+  {{ components.render_header(user=session['name']) }}
+  
 
   <!-- Landing pageee -->
   <main class="landing-page">
