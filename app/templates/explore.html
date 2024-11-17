@@ -1,9 +1,16 @@
 {% extends "master_blueprint/base.html" %}
-{% import "components/macros.html" as components %}
-{% block content %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
 
+{% import "components/macros.html" as components %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+{% endblock %}
+
+{% block content %}
+    <!-- Header -->
     {{ components.render_header(user=session['name']) }}
 
     <main class="explorer-page">
@@ -40,5 +47,8 @@
         {% endfor %}
 
     </main>
+
+    <!-- Footer -->
+    {{ components.render_alerts() }}
     {{ components.render_footer() }}
 {% endblock %}
