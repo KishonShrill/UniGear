@@ -1,16 +1,9 @@
-/* General Styles */
-body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 /* Header Section */
 #college-cba-header-container {
     background-color: #9A9A71;
     padding: 20px;
     color: white;
+    border-bottom: 1px solid black;
 }
 
 #college-cba-header {
@@ -36,36 +29,41 @@ body {
     text-decoration: underline;
 }
 
-/* Content Section */
+/* Main Layout */
+main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+}
+
 #college-cba-content {
+    flex: 1; /* Allow content section to grow dynamically */
     display: flex;
     flex-direction: row;
-    margin: 0;
-    padding: 0;
+    background-color: #F9F8FB;
 }
 
-/* Organization Tabs */
+/* Organization Tabs Section */
 #org-tabs-section {
     background-color: #9A9A71;
-    ; /* Background color of the section */
-    width: 250px; /* Fixed width for the section */
-    height: 100vh; /* Full viewport height */
-    display: flex;
-    flex-direction: column; /* Ensure children stack vertically */
-    box-sizing: border-box; /* Include padding and borders in height */
-    border-right: 1px solid black; /* Separator line */
-    border-top: 1px solid black;
+    width: 250px;
+    flex-grow: 0; /* Prevent it from shrinking */
+    flex-shrink: 0; /* Prevent it from shrinking */
+    height: 100vh; /* Ensure it takes the full height of the page */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    box-sizing: border-box;
+    border-right: 1px solid black;
+    position: sticky; /* Keep it fixed at the side */
+    top: 0; /* Stay at the top */
 }
 
-/* Organization Tabs */
 #org-tabs {
     display: flex;
     flex-direction: column;
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 250;
 }
-
 
 #org-tabs ul {
     list-style: none;
@@ -75,39 +73,39 @@ body {
 }
 
 #org-tabs .org-tab {
-    padding: 12px 15px; /* Added padding to give a small space */
+    padding: 12px 15px;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 24px;
     cursor: pointer;
-    background-color: #FFFFFF; /* Default color for unselected tabs */
-    color: #000000; /* Text color */
+    background-color: #E5E5A8;
+    color: #000000;
     border: none;
     text-align: left;
-    margin: 5px; /* Add a small margin between tabs */
-    border-radius: 5px; /* Rounded corners for a softer look */
+    margin: 5px;
+    border-radius: 5px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #org-tabs .org-tab:hover {
-    background-color: #e0e0e0; /* Hover effect */
+    background-color: #e0e0e0;
 }
 
 #org-tabs .org-tab.active {
-    background-color :#E5E5A8; /* Active tab background color */
-    color: #000000; /* Text color for the active tab */
+    background-color: #FFFFFF;
+    color: #000000;
     font-weight: bold;
-    border-left: 4px solid #000000; /* Active tab indication */
+    border-left: 4px solid #000000;
 }
 
-/* Type Tabs */
+/* Type Tabs Section */
 #type-tabs {
     list-style: none;
     display: flex;
+    justify-content: center; /* Center horizontally */
     gap: 20px; /* Adjust space between tabs */
     padding: 0;
-    margin: 0;
-    margin-left: 200px; /* Move the section 300px to the right */
-    margin-bottom: 20px;
+    margin-left: 222px;
+    width: fit-content;
 }
 
 .type-tab {
@@ -119,10 +117,10 @@ body {
     background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 10px;
-    width: 90px;  /* Set the width of each tab */
-    height: 130px;  /* Set the height of each tab */
+    width: 90px; /* Set the width of each tab */
+    height: 130px; /* Set the height of each tab */
     transition: background-color 0.3s ease;
-    margin-top:10px;
+    margin-top: 10px;
     text-align: center;
 }
 
@@ -148,73 +146,60 @@ body {
     color: #000000;
 }
 
-/* Optional: If you want to style the active tab differently */
-#type-tabs .type-tab.active .type-name {
-    font-weight: bold;
-    color: #000000;
-}
-
-/* Product Section */
+/* Products Section */
 #org-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));  /* Ensure product cards are evenly spaced */
-    gap: 20px;  /* Space between product cards */
-    padding: 20px;  /* Padding inside the section */
-    background-color: #f9f9f9;
-    height: calc(100vh - 150px);  /* Take full screen height minus the header and other fixed elements */
-    width: 1000px;  /* Full width of the container */
-    box-sizing: border-box;  /* Ensure padding doesn't push content outside */
-    overflow-y: auto;  /* Add scroll if content overflows vertically */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Dynamic columns */
+    gap: 20px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    margin: auto; /* Center horizontally and vertically */
+    box-sizing: border-box;
+    justify-content: center; /* Align items in the center horizontally */
 }
 
 /* Product Cards */
 .product-card {
-    width: 200px;  /* Ensure cards stretch across their container */
-    height: 300px;  /* Fixed height for each product card */
+    width: 200px; /* Ensure cards stretch across their container */
+    height: 300px; /* Fixed height for each product card */
     background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 2px;
-    text-align: center;  /* Align text to the left */
+    text-align: center; /* Align text to the left */
     padding: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow: hidden;  /* Ensures content doesn't overflow outside the card */
+    overflow: hidden; /* Ensures content doesn't overflow outside the card */
 }
 
-/* Product Image */
 .product-card img {
-    width: 100%;  /* Ensure image takes the full width of the card */
-    height: 150px;  /* Fixed height for the image */
-    object-fit: cover;  /* Ensure image covers the area without distortion */
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
 }
 
-/* Product Name */
 .product-card h3 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;  /* Set product name font size */
+    font-size: 24px;
     color: #000000;
     margin: 0;
 }
 
-/* Product Description */
 .product-card p {
-    font-size: 13px;  /* Set description font size */
+    font-size: 13px;
     color: #555555;
     margin: 0;
 }
 
-/* Product Hover Effect */
 .product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
-
-
 
 /* Loading State */
 #org-products p {
@@ -235,7 +220,7 @@ body {
         height: auto;
     }
 
-    #org-products  {
+    #org-products {
         padding: 10px;
     }
 

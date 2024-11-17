@@ -19,9 +19,11 @@
     <section id="college-cass-content">
         <!-- Organization Tabs -->
         <aside id="org-tabs">
-            <ul id="org-list">
-                <!-- Tabs will populate dynamically via JavaScript -->
-            </ul>
+            <section id="org-tabs-section">
+                <ul id="org-list">
+                    <!-- Tabs will populate dynamically via JavaScript -->
+                </ul>
+            </section>
         </aside>
     
         <!-- Type Tabs (for product type filtering) -->
@@ -60,8 +62,6 @@
             <p>Select an organization to view products.</p>
         </section>
     </section>
-    </div>
-    </div>
 </main>
 
 {{ components.render_footer() }}
@@ -156,5 +156,6 @@
         }
     });
 </script>
+
 
 {% endblock %}
