@@ -102,13 +102,13 @@ class Product(object):
             # Define the SQL query
             query = """
             SELECT 
-                ob.order_id AS Order,
-                u.user_name AS Customer,
-                ob.total_cost AS Total Cost,
-                p.product_name AS Product,
-                s.size_name AS Size,
-                ob.quantity AS Quantity,
-                p.order_type AS Status,
+                ob.order_id,
+                u.user_name,
+                ob.total_cost,
+                p.product_name,
+                s.size_name,
+                ob.quantity,
+                p.order_type,
                 ob.purchase_date
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id
@@ -145,4 +145,3 @@ class Product(object):
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
-
