@@ -11,18 +11,56 @@ class User(object):
         self.user_address = user_address
         self.user_role = user_role
         self.org_id = org_id
-
-    @classmethod
-    def get_by_email(cls, email):
-        """Retrieve a user by their email address."""
+        
+    def save(self):
+        """Save the current user instance to the database."""
         cursor = mysql.connection.cursor()
-        cursor.execute("SELECT * FROM user WHERE user_email = %s", (email,))
+
+        if self.user_id:
+            cursor.execute("""
+                UPDATE user
+                SET user_name = %s, user_email = %s, user_password = %s, user_contact = %s, user_address = %s
+                WHERE user_id = %s
+            """, (self.user_name, self.user_email, self.user_password, self.user_contact, self.user_address, self.user_id))
+        else:
+            cursor.execute("""
+                INSERT INTO user (user_name, user_email, user_password, user_contact, user_address)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (self.user_name, self.user_email, self.user_password, self.user_contact, self.user_address))
+
+        mysql.connection.commit()
+        cursor.close()
+
+    def verify_password(self, password):
+        print(self.user_password)
+        return check_password_hash(self.user_password, password)
+
+
+    @staticmethod
+    def get_by_email(email):
+        """Retrieve a user from the database using their email."""
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            SELECT user_id, user_name, user_email, user_password, user_contact, user_address, user_role, org_id
+            FROM user
+            WHERE user_email = %s
+        """, (email,))  # Note the comma to make it a tuple
         result = cursor.fetchone()
         cursor.close()
 
         if result:
-            return cls(*result)  # Return an instance of the User class
-        return None
+            # Unpack and return a User object
+            return User(
+                user_id=result[0],
+                user_name=result[1],
+                user_email=result[2],
+                user_password=result[3],
+                user_contact=result[4],
+                user_address=result[5],
+                user_role=result[6],
+                org_id=result[7]
+            )
+        return None  # If no match, return None
 
     @classmethod
     def get_by_id(cls, user_id):
@@ -53,7 +91,7 @@ class User(object):
         return cls(user_id=user_id, user_name=google_name, user_email=google_email)
     
     @classmethod
-    def create_from_google(cls, name, email, password, contact, address):
+    def create_from_website(cls, name, email, password, contact, address):
         """Create a new user from Google OAuth data."""
         generated_password = generate_password_hash(password)
         
@@ -69,37 +107,3 @@ class User(object):
         cursor.close()
 
         return cls(user_id=user_id, user_name=name, user_email=email)
-
-    def save(self):
-        """Save the current user instance to the database."""
-        cursor = mysql.connection.cursor()
-
-        if self.user_id:
-            cursor.execute("""
-                UPDATE user
-                SET user_name = %s, user_email = %s, user_password = %s, user_contact = %s, user_address = %s
-                WHERE user_id = %s
-            """, (self.user_name, self.user_email, self.user_password, self.user_contact, self.user_address, self.user_id))
-        else:
-            cursor.execute("""
-                INSERT INTO user (user_name, user_email, user_password, user_contact, user_address)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (self.user_name, self.user_email, self.user_password, self.user_contact, self.user_address))
-
-        mysql.connection.commit()
-        cursor.close()
-
-    def verify_password(self, password):
-        """Verify if the provided password matches the stored hash."""
-        try:
-            cursor = mysql.connection.cursor()
-            cursor.execute("""
-                SELECT *
-                FROM user
-                WHERE user_email = %s
-            """, ())
-            database_password = cursor.fetchone()
-            return check_password_hash(database_password, password)
-        except Exception as e:
-            print(f"Password does not match: {e}")
-            return 0
