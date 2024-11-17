@@ -54,7 +54,7 @@ def explore():
 
     # Define the order of colleges
     college_order = [
-        'College of Arts and Sciences',
+        'College of Arts and Social Sciences',
         'College of Computer Studies',
         'College of Business Administration',
         'College of Health Sciences',
@@ -67,7 +67,7 @@ def explore():
     sorted_merchandise_data = {college: merchandise_data.get(college, []) for college in college_order}
 
     college_colors = {
-        'College of Arts and Sciences': '#324831',
+        'College of Arts and Social Sciences': '#324831',
         'College of Computer Studies': '#598181',
         'College of Business Administration': '#9A9A71',
         'College of Health Sciences': '#8B9EAF',
