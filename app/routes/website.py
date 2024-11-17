@@ -173,11 +173,9 @@ def product_new_submit():
 
 
 # here ko ga startttt
-
 @website_bp.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def merch_details(product_id):
     from app import mysql
-    from flask import request, jsonify, flash, redirect, url_for
 
     cursor = mysql.connection.cursor()
 
@@ -207,14 +205,22 @@ def merch_details(product_id):
     # Fetch product sizes
     cursor.execute("SELECT size_id, product_quantity FROM product_sizes WHERE product_id = %s", (product_id,))
     product_sizes = cursor.fetchall()
-
+    
+    # Fetch total count of product quantities from all sizes
+    cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (product_id,))
+    total_quantity = cursor.fetchone()[0]  # Retrieve the sum of quantities
+    
     cursor.close()
+    
+    form = ProductForm()
 
     return render_template(
         'crud_blueprint/product_details.html',
         product=product,
         images=product_images,
-        sizes=product_sizes
+        sizes=product_sizes,
+        form=form,
+        total_quantity=total_quantity
     )
 
 

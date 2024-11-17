@@ -15,21 +15,36 @@
   <!-- Main Content -->
   <main class="product">
     <section class="product__image-wrapper">
-      {% if images and images|length > 0 %}
-        <div class="product__image-container">
-          <img src="{{ images[0] }}" alt="Product Image" class="product__image-preview">
+
+      <div class="product__image-gallery">
+        <div class="product__image-preview" id="slides-container">
+          {% for image in images %}
+            <div class="mySlides" style="{% if loop.index == 1 %}display: flex;{% else %}display: none;{% endif %}">
+              <div class="numbertext">{{ loop.index }} / {{ images|length }}</div>
+              <img src="{{ image }}" alt="Product Image" class="mySlides__image">
+            </div>
+          {% endfor %}
         </div>
-      {% else %}
-        <p class="no-image-text">No image available for this product.</p>
-      {% endif %}
+
+        <a class="prev" onclick="plusSlides(-1)">❮</a>
+        <a class="next" onclick="plusSlides(1)">❯</a>
+      </div>
+
+      <div class="product__image-thumbnails" id="thumbnails">
+        {% for image in images %}
+          <div class="column">
+            <img src="{{ image }}" 
+                 class="demo cursor {% if loop.first %}active{% endif %}" 
+                 onclick="currentSlide({{ loop.index }})">
+          </div>
+        {% endfor %}
+      </div>
+
       <div class="product__quantity-viewer">
-        <h1>{{ product.preorder_count }}</h1>
+        <h1>{{ total_quantity }}</h1>
         <p>Preorder Count</p>
       </div>
     </section>
-
-
-
 
     <!-- Product Details -->
     <section class="product__content-wrapper">
@@ -38,15 +53,11 @@
         <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
       </div>
 
-
-
       <!-- Product Name and Price -->
       <div class="product__name-price">
         <h2 id="name">{{ product.name }}</h2>
         <h3 id="price">₱{{ product.price }}</h3>
       </div>
-
-
 
       <!-- That line and tabss -->
       <div class="product__content-details-box">
@@ -54,17 +65,13 @@
         <p>Details</p>
         <p>Specs</p>
       </div>
-      <hr />
-
-
+      <hr style="margin-bottom: 2rem;"/>
 
       <!-- Description -->
       <div class="product-detail">
         <p><b></b> {{ product.description if product.description else "No description available." }}</p>
         <p1><b></b> {{ product.hook if product.hook else "N/A" }}</p1>
       </div>
-
-
 
       <!-- Typesss -->
       <div class="product__content-specs-box">
@@ -81,24 +88,24 @@
             <span>{{ "Goal Based" if product.preorder_count == 0 else "Time Based" }}</span>
           </div>
         </div>
-      </div>
 
-
-      <!-- Size -->
-      <div class="product__size-wrapper">
-        <p>SIZE</p>
-        <div class="product__size-selector">
-          <button type="button" class="size-btn" data-size="1">XS</button>
-          <button type="button" class="size-btn" data-size="2">S</button>
-          <button type="button" class="size-btn" data-size="3">M</button>
-          <button type="button" class="size-btn" data-size="4">L</button>
-          <button type="button" class="size-btn" data-size="5">XL</button>
-          <button type="button" class="size-btn" data-size="6">2XL</button>
-      
-          <input type="hidden" name="selectedSizes" id="selectedSizes">
+        <!-- Size -->
+        <div class="product__size-wrapper">
+          <p>SIZE</p>
+          <div class="product__size-selector">
+            <button type="button" class="size-btn" data-size="1">XS</button>
+            <button type="button" class="size-btn" data-size="2">S</button>
+            <button type="button" class="size-btn" data-size="3">M</button>
+            <button type="button" class="size-btn" data-size="4">L</button>
+            <button type="button" class="size-btn" data-size="5">XL</button>
+            <button type="button" class="size-btn" data-size="6">2XL</button>
+        
+            <input type="hidden" name="selectedSizes" id="selectedSizes">
+          </div>
         </div>
       </div>
-      
+
+      <hr />
 
       <!-- Quantity and button-->
       <form action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
@@ -106,8 +113,7 @@
           <label for="quantity">QUANTITY</label>
           <input type="number" id="quantity" name="quantity" min="1" value="1" required>
         </div>
-        <button href="#submit" class="preorder-btn">PRE-ORDER</button>
-
+        <input class="preorder-btn" id="pre_order" name="pre_order" type="submit" value="PRE-ORDER">
       </form>
     </section>
   </main>
@@ -117,20 +123,59 @@
   {{ components.render_footer() }}
 
   <script>
-      document.addEventListener('DOMContentLoaded', function() {
-    const sizeBtns = document.querySelectorAll('.size-btn');
-    const hiddenInput = document.getElementById('selectedSizes');
+    document.addEventListener('DOMContentLoaded', function() {
+      const sizeBtns = document.querySelectorAll('.size-btn');
+      const hiddenInput = document.getElementById('selectedSizes');
 
-    sizeBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        sizeBtns.forEach(button => button.classList.remove('active'));
-        
-        this.classList.add('active');
-        
-        hiddenInput.value = this.getAttribute('data-size');
+      sizeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          sizeBtns.forEach(button => button.classList.remove('active'));
+          
+          this.classList.add('active');
+          
+          hiddenInput.value = this.getAttribute('data-size');
+        });
       });
     });
-  });
+  </script>
+  <script>
+    let slideIndex = 1; // Start with the first slide
+    showSlides(slideIndex);
 
+    // Change the current slide (prev/next)
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    // Set the current slide (when clicking a thumbnail)
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    // Show the current slide
+    function showSlides(n) {
+      const slides = document.getElementsByClassName("mySlides");
+      const dots = document.getElementsByClassName("demo");
+
+      // Handle edge cases: wrap around slides
+      if (n > slides.length) slideIndex = 1; // Go back to the first slide
+      if (n < 1) slideIndex = slides.length; // Go to the last slide
+
+      // Hide all slides
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+
+      // Remove the "active" class from all thumbnails
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+
+      // Display the current slide
+      slides[slideIndex - 1].style.display = "flex";
+
+      // Add the "active" class to the corresponding thumbnail
+      dots[slideIndex - 1].className += " active";
+    }
   </script>
 {% endblock %}
