@@ -5,6 +5,7 @@ from wtforms.validators import InputRequired, Length, DataRequired, Regexp
 
 class ProductForm(FlaskForm):
   create_product = SubmitField()
+  pre_order = SubmitField()
 
 class LinkVerify(FlaskForm):
   ...

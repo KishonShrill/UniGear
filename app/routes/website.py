@@ -1,7 +1,11 @@
 from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for
 from app.models.product import Product
-from app.forms import *
+from app.forms import ProductForm
 import re as regex
+from app import mysql
+from flask import current_app as app
+import pymysql
+
 
 import cloudinary.api
 import cloudinary.uploader
@@ -10,10 +14,12 @@ from werkzeug.utils import secure_filename
 
 website_bp = Blueprint('website', __name__)
 
+# Landing Page Route
 @website_bp.route('/')
 def landing():
     return render_template('landing.html')
 
+# Explore Page Route (for viewing products)
 @website_bp.route('/explore')
 def explore():
     from app import mysql
@@ -69,6 +75,7 @@ def explore():
 
     return render_template('explore.html', merchandise_data=sorted_merchandise_data, college_colors=college_colors)
 
+# Product Creation Form Route
 @website_bp.route('/product/new')
 def product_new():
   form = ProductForm()
@@ -94,6 +101,18 @@ def product_new_submit():
       sizes = selected_sizes.split(',')
       URLS = []
 
+      for picture in picture_urls:
+         print (f"Name: {picture.filename}")
+
+      if len(picture_urls) == 0:
+         flash (f"You must submit one image: {str(e)}","Danger")
+         return redirect(url_for('website.product_new'))
+      
+      for picture in picture_urls:
+         if picture.filename=='':
+            flash(f"Upload at least one image", "Warning")
+            return redirect (url_for ('website.product_new'))
+
       # Put product in the Database and get ID
       product = Product(name, description, hook, product_type, price, preorder_type, 1)
       product.save()
@@ -103,14 +122,6 @@ def product_new_submit():
       for size in sizes:
         product.add_product_sizes(0, size)
 
-      if picture_urls == None:
-        flash(f"You must submit at least one image: {str(e)}", "danger")
-        return redirect(url_for('website.product_new'))
-      
-      for picture in picture_urls:
-        if picture.filename == '' or picture.content_length == 0:
-          flash(f"Upload at least one image.", "warning")
-          return redirect(url_for('website.product_new'))
 
       # Handle file uploads
       for picture in picture_urls:
@@ -130,10 +141,12 @@ def product_new_submit():
           URLS.append(cloudinary_url)
 
           print(f"cloudinary_url: {cloudinary_url}")
-          flash(f"Profile picture uploaded successfully!", "success")
+
         except Exception as e:
           flash(f"An error occurred during file upload: {str(e)}", "danger")
           return redirect(url_for('website.product_new'))
+      flash(f"Profile picture uploaded successfully!", "success")
+
 
       # Create a dictionary to store and return all the data
       product_data = {
@@ -154,3 +167,87 @@ def product_new_submit():
     except Exception as e:
       # If there’s an error, return it as part of the JSON response
       return jsonify(success=False, error=str(e)), 400
+
+
+
+
+
+# here ko ga startttt
+@website_bp.route('/product/<int:product_id>', methods=['GET', 'POST'])
+def merch_details(product_id):
+    from app import mysql
+
+    cursor = mysql.connection.cursor()
+
+    # Fetch product by ID
+    cursor.execute("SELECT * FROM products WHERE product_id = %s", (product_id,))
+    product_row = cursor.fetchone()
+
+    if not product_row:
+        flash("Product not found.", "danger")
+        return redirect(url_for('website.explore'))
+
+    # Convert product row to dictionary
+    product = {
+        'product_id': product_row[0],
+        'name': product_row[1],
+        'price': product_row[5],  
+        'description': product_row[2], 
+        'preorder_count': product_row[0],
+        'type': product_row[4],  
+        'hook': product_row[3],
+    }
+
+    # Fetch product images 
+    cursor.execute("SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,))
+    product_images = [img[0] for img in cursor.fetchall()]
+
+    # Fetch product sizes
+    cursor.execute("SELECT size_id, product_quantity FROM product_sizes WHERE product_id = %s", (product_id,))
+    product_sizes = cursor.fetchall()
+    
+    # Fetch total count of product quantities from all sizes
+    cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (product_id,))
+    total_quantity = cursor.fetchone()[0]  # Retrieve the sum of quantities
+    
+    cursor.close()
+    
+    form = ProductForm()
+
+    return render_template(
+        'crud_blueprint/product_details.html',
+        product=product,
+        images=product_images,
+        sizes=product_sizes,
+        form=form,
+        total_quantity=total_quantity
+    )
+
+
+@website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
+def preorder(product_id):
+    from app import mysql
+    from flask import request, flash, redirect, url_for
+
+    size = request.form.get('size')
+    quantity = int(request.form.get('quantity', 1))
+
+    if not size or quantity <= 0:
+        flash("Invalid size or quantity.", "danger")
+        return redirect(url_for('website.merch_details', product_id=product_id))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(
+        "UPDATE products SET preorder_count = preorder_count + %s WHERE product_id = %s",
+        (quantity, product_id)
+    )
+
+    cursor.execute(
+        "INSERT INTO product_preorders (product_id, size, quantity) VALUES (%s, %s, %s)",
+        (product_id, size, quantity)
+    )
+    mysql.connection.commit()
+    cursor.close()
+
+    flash("Your pre-order was successful!", "success")
+    return redirect(url_for('website.merch_details', product_id=product_id))
