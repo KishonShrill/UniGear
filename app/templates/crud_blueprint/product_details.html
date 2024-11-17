@@ -1,0 +1,136 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+{% endblock %}
+
+{% block content %}
+  <!-- Header -->
+  {{ components.render_header() }}
+
+  <!-- Main Content -->
+  <main class="product">
+    <section class="product__image-wrapper">
+      {% if images and images|length > 0 %}
+        <div class="product__image-container">
+          <img src="{{ images[0] }}" alt="Product Image" class="product__image-preview">
+        </div>
+      {% else %}
+        <p class="no-image-text">No image available for this product.</p>
+      {% endif %}
+      <div class="product__quantity-viewer">
+        <h1>{{ product.preorder_count }}</h1>
+        <p>Preorder Count</p>
+      </div>
+    </section>
+
+
+
+
+    <!-- Product Details -->
+    <section class="product__content-wrapper">
+      <div class="product__content-back-wrapper">
+        <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
+        <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
+      </div>
+
+
+
+      <!-- Product Name and Price -->
+      <div class="product__name-price">
+        <h2 id="name">{{ product.name }}</h2>
+        <h3 id="price">₱{{ product.price }}</h3>
+      </div>
+
+
+
+      <!-- That line and tabss -->
+      <div class="product__content-details-box">
+        <p selected>Description</p>
+        <p>Details</p>
+        <p>Specs</p>
+      </div>
+      <hr />
+
+
+
+      <!-- Description -->
+      <div class="product-detail">
+        <p><b></b> {{ product.description if product.description else "No description available." }}</p>
+        <p1><b></b> {{ product.hook if product.hook else "N/A" }}</p1>
+      </div>
+
+
+
+      <!-- Typesss -->
+      <div class="product__content-specs-box">
+        <div>
+          <p>PRODUCT TYPE</p>
+          <div class="input-box">
+            <span>{{ product.type if product.type else "No type specified." }}</span>
+          </div>
+        </div>
+
+        <div>
+          <p>ORDER TYPE</p>
+          <div class="input-box">
+            <span>{{ "Goal Based" if product.preorder_count == 0 else "Time Based" }}</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Size -->
+      <div class="product__size-wrapper">
+        <p>SIZE</p>
+        <div class="product__size-selector">
+          <button type="button" class="size-btn" data-size="1">XS</button>
+          <button type="button" class="size-btn" data-size="2">S</button>
+          <button type="button" class="size-btn" data-size="3">M</button>
+          <button type="button" class="size-btn" data-size="4">L</button>
+          <button type="button" class="size-btn" data-size="5">XL</button>
+          <button type="button" class="size-btn" data-size="6">2XL</button>
+      
+          <input type="hidden" name="selectedSizes" id="selectedSizes">
+        </div>
+      </div>
+      
+
+      <!-- Quantity and button-->
+      <form action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
+        <div class="product__quantity-input">
+          <label for="quantity">QUANTITY</label>
+          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+        </div>
+        <button href="#submit" class="preorder-btn">PRE-ORDER</button>
+
+      </form>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  {{ components.render_alerts() }}
+  {{ components.render_footer() }}
+
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const sizeBtns = document.querySelectorAll('.size-btn');
+    const hiddenInput = document.getElementById('selectedSizes');
+
+    sizeBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        sizeBtns.forEach(button => button.classList.remove('active'));
+        
+        this.classList.add('active');
+        
+        hiddenInput.value = this.getAttribute('data-size');
+      });
+    });
+  });
+
+  </script>
+{% endblock %}
