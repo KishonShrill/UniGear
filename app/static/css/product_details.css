@@ -1,0 +1,315 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+main.product {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+}
+
+/* IMAGE SIDE */
+/* IMAGE SIDE */
+/* IMAGE SIDE */
+section.product__image-wrapper {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  /* place-items: center; */
+  background: #E8E8E8;
+  overflow: hidden;
+}
+.product__image-gallery {
+width: 100%;
+}
+.product__image-preview {
+  width: 100%;
+  object-fit: cover;
+  background-position: center;
+}
+.product__image-thumbnails {
+  justify-self: center;
+  position: absolute;
+  bottom: 3.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  /* width: 100%; */
+}
+.product__image-thumbnails:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.product__quantity-viewer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 155px;
+  height: 155px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: #74BAFB;
+}
+.product__quantity-viewer h1 {
+  color: inherit;
+  margin-top: 1rem;
+  line-height: 5rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 7rem;
+}
+.product__quantity-viewer p {
+  color: inherit;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.5rem;
+}
+
+/* Hide the images by default */
+.mySlides {display: none;}
+.mySlides__image {
+  width: 100%;
+  height: calc(100vh - 60px - 57px);
+  object-fit: contain;
+}
+
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {cursor: pointer;}
+
+/* Next & previous buttons */
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 40%;
+  width: auto;
+  padding: 16px;
+  margin-top: 40px;
+  /* color: white; */
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* Six columns side by side */
+.column {float: left;}
+
+/* Add a transparency effect for thumbnail images */
+.demo {
+  opacity: 0.6;
+}
+
+img.demo.cursor {
+  width: 5rem;
+  border-radius: 20%;
+  object-fit: cover;
+  box-shadow: 3px 3px 4px 0px rgba(0, 0, 0, 25%);
+  aspect-ratio: 1;
+}
+
+.active,
+.demo:hover {
+  opacity: 1;
+}
+
+
+/* CONTENT SIDE */
+/* CONTENT SIDE */
+/* CONTENT SIDE */
+.product__content-wrapper {
+  height: calc(100vh - 60px - 57px);
+  padding: 80px 80px 0px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.product__content-back-wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.product__content-back {
+  text-decoration: none;
+  color: black;
+}
+.product__content-back:hover {
+  color: #29AB51;
+}
+.product__name-price {
+  margin-bottom: 10px;
+}
+
+
+#name {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 50px;
+  margin: 0;
+}
+#price {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 30px;
+  color: #2796FF;
+}
+
+
+
+.product__size-wrapper {
+  display: flex;       
+  align-items: center;      
+  font-family: "Lato", sans-serif;
+}
+.product__content-details-box {
+  margin-top: 0;
+  display: flex;
+  gap: 30px
+}
+.product__content-details-box > p{
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1rem;
+}
+.product__content-details-box > p[selected]{
+  border-bottom: 2px solid black;
+}
+
+.product-detail p {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-family: "Lato", sans-serif;
+
+}
+
+.product-detail p1 {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: "Lato", sans-serif;
+
+}
+.product__size-selector {
+  display: flex;               
+  gap: 10px;                  
+  flex-wrap: nowrap;            
+  justify-content: flex-start;  
+  margin: 0;               
+  padding: 0;               
+  width: 100%;              
+}
+
+.product__size-selector {
+  display: flex;            
+  gap: 10px;                   
+}
+
+.size-btn {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  border: 2px solid black;
+  border-radius: 50%;
+  color: black;
+  background-color: white;
+  transition: border-color 0.3s;
+}
+
+.size-btn.active {
+  border-color: #29AB51; 
+  background-color: #e8ffe8;
+}
+
+
+
+
+.product__quantity-input {
+  height: 40px;
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: center;
+  font-family: "AR One Sans", sans-serif;
+}
+
+.product__quantity-input label{
+  font-size: 1.2rem;
+}
+
+.product__quantity-input input {
+  width: 100px;
+  padding: 10px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.preorder-btn {
+  cursor: pointer;
+  align-self: flex-start;
+  margin-bottom: 4rem;
+  padding: 0.75rem 1.25rem;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  border: none;
+  border-radius: 2px;
+  background-color: #2796FF;
+}
+
+
+.preorder-btn:hover {
+  background-color: #45a049;
+}
+
+
+.product__content-specs-box {
+  margin-block: 22px;
+  display: flex;              
+  flex-direction: column;     
+  gap: 20px;                 
+}
+
+.product__content-specs-box > div {
+  height: 40px;
+  display: grid;
+  grid-template-columns: 200px 1fr;          
+  align-items: center;        
+}
+
+.product__content-specs-box div > p {
+  font-family: "AR One Sans", sans-serif;
+  font-size: 1.2rem;         
+}
+
+.input-box span {
+  font-size: 16px;             
+}

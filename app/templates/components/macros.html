@@ -9,7 +9,7 @@
     </div>
     <div class="nav-links">
         <a href="#">Sign Up</a>
-        <a href="#">Log In</a>
+        <a href="{{ url_for('website.product_new') }}">Log In</a>
     </div>
 </header>
 {% endmacro %}
@@ -28,4 +28,30 @@
         <a href="#"><i class="social-icon">📷</i></a> <!-- Instagram Icon -->
     </div>
 </footer>
+{% endmacro %}
+
+{% macro render_alerts() %}
+<div class="alert-container absolute">
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        {% if category == "danger" %}
+            <strong>Danger!</strong>
+        {% elif category == "warning" %}
+            <strong>Warning!</strong>
+        {% elif category == "info" %}
+            <strong>Info!</strong>
+        {% elif category == "success" %}
+            <strong>Success!</strong>
+        {% else %}
+            <strong>%NULL%</strong>
+        {% endif %}
+        {{ message }}
+        </div>
+    {% endfor %}   
+    {% endif %}
+{% endwith %}
+</div>
 {% endmacro %}
