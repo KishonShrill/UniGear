@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 main.product {
@@ -7,29 +6,26 @@ main.product {
   height: 100vh;
 }
 
+/* IMAGE SIDE */
+/* IMAGE SIDE */
+/* IMAGE SIDE */
 section.product__image-wrapper {
   position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
+  display: grid;
   justify-items: center;
   align-items: center;
+  /* place-items: center; */
   background: #E8E8E8;
   overflow: hidden;
 }
-
-.product__image-preview {
-  display: block; 
-  width: 50vw;        
-  height: 100vh;      
-  object-fit: fill;    
-}
-
 .product__image-gallery {
-  width: 100%;
-  height: 100%; 
+width: 100%;
 }
-
+.product__image-preview {
+  width: 100%;
+  object-fit: cover;
+  background-position: center;
+}
 .product__image-thumbnails {
   justify-self: center;
   position: absolute;
@@ -37,8 +33,8 @@ section.product__image-wrapper {
   display: flex;
   justify-content: center;
   gap: 1rem;
+  /* width: 100%; */
 }
-
 .product__image-thumbnails:after {
   content: "";
   display: table;
@@ -48,8 +44,8 @@ section.product__image-wrapper {
   position: absolute;
   top: 0;
   right: 0;
-  width: 135px;
-  height: 135px;
+  width: 155px;
+  height: 155px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,14 +66,90 @@ section.product__image-wrapper {
   font-size: 1.5rem;
 }
 
-.product__content-wrapper {
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  overflow-y: auto;
+/* Hide the images by default */
+.mySlides {display: none;}
+.mySlides__image {
+  width: 100%;
+  height: calc(100vh - 60px - 57px);
+  object-fit: contain;
 }
 
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {cursor: pointer;}
+
+/* Next & previous buttons */
+.prev,
+.next {
+  cursor: pointer;
+  position: absolute;
+  top: 40%;
+  width: auto;
+  padding: 16px;
+  margin-top: 40px;
+  /* color: white; */
+  font-weight: bold;
+  font-size: 20px;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover,
+.next:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* Six columns side by side */
+.column {float: left;}
+
+/* Add a transparency effect for thumbnail images */
+.demo {
+  opacity: 0.6;
+}
+
+img.demo.cursor {
+  width: 5rem;
+  border-radius: 20%;
+  object-fit: cover;
+  box-shadow: 3px 3px 4px 0px rgba(0, 0, 0, 25%);
+  aspect-ratio: 1;
+}
+
+.active,
+.demo:hover {
+  opacity: 1;
+}
+
+
+/* CONTENT SIDE */
+/* CONTENT SIDE */
+/* CONTENT SIDE */
+.product__content-wrapper {
+  height: calc(100vh - 60px - 57px);
+  padding: 80px 80px 0px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
 .product__content-back-wrapper {
   display: flex;
   gap: 1rem;
@@ -94,18 +166,25 @@ section.product__image-wrapper {
   margin-bottom: 10px;
 }
 
+
 #name {
   font-family: "Bebas Neue", sans-serif;
   font-size: 50px;
   margin: 0;
 }
-
 #price {
   font-family: "Bebas Neue", sans-serif;
   font-size: 30px;
   color: #2796FF;
 }
 
+
+
+.product__size-wrapper {
+  display: flex;       
+  align-items: center;      
+  font-family: "Lato", sans-serif;
+}
 .product__content-details-box {
   margin-top: 0;
   display: flex;
@@ -133,7 +212,6 @@ section.product__image-wrapper {
   font-family: "Lato", sans-serif;
 
 }
-
 .product__size-selector {
   display: flex;               
   gap: 10px;                  
@@ -142,15 +220,6 @@ section.product__image-wrapper {
   margin: 0;               
   padding: 0;               
   width: 100%;              
-}
-
-.product__size-wrapper {
-  display: flex;       
-  align-items: center;      
-  gap: 40px;                 
-  margin-top: 20px;
-  font-family: "Lato", sans-serif;
-
 }
 
 .product__size-selector {
@@ -183,35 +252,39 @@ section.product__image-wrapper {
 
 
 .product__quantity-input {
-  display: flex;
+  height: 40px;
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
   align-items: center;
-  justify-content: left;
-  font-family: "Lato", sans-serif;
+  font-family: "AR One Sans", sans-serif;
+}
 
+.product__quantity-input label{
+  font-size: 1.2rem;
 }
 
 .product__quantity-input input {
   width: 100px;
-  padding: 5px;
+  padding: 10px;
+  font-size: 13px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-left: 10px;
 }
 
 .preorder-btn {
-  padding: 10px 10px;
-  font-size: 13px;
-  background-color: #2796FF;
-  color: white;
-  border: none;
   cursor: pointer;
-  width: 28%;
-  margin-top: 20px;
-  font-family: "Lato", sans-serif;
-
-
-
+  align-self: flex-start;
+  margin-bottom: 4rem;
+  padding: 0.75rem 1.25rem;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  border: none;
+  border-radius: 2px;
+  background-color: #2796FF;
 }
+
 
 .preorder-btn:hover {
   background-color: #45a049;
@@ -219,26 +292,23 @@ section.product__image-wrapper {
 
 
 .product__content-specs-box {
-  margin-top: 10px;
+  margin-block: 22px;
   display: flex;              
   flex-direction: column;     
   gap: 20px;                 
-  font-family: "Lato", sans-serif;
-
 }
 
 .product__content-specs-box > div {
-  display: flex;            
+  height: 40px;
+  display: grid;
+  grid-template-columns: 200px 1fr;          
   align-items: center;        
 }
 
-.product__content-specs-box p {
-  margin: 0;                 
-  padding-right: 40px;      
-  font-weight: regular;          
+.product__content-specs-box div > p {
+  font-family: "AR One Sans", sans-serif;
+  font-size: 1.2rem;         
 }
-
-
 
 .input-box span {
   font-size: 16px;             

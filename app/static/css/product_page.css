@@ -80,6 +80,7 @@ width: 100%;
 .mySlides__image {
   width: 100%;
   height: calc(100vh - 60px - 57px);
+  object-fit: contain;
 }
 
 /* Add a pointer when hovering over the thumbnail images */
@@ -192,6 +193,7 @@ img.demo.cursor {
   gap: 24px;
 }
 .product__content-specs-box > div {
+  height: 40px;
   display: grid;
   grid-template-columns: 200px 1fr;
   align-items: center;
