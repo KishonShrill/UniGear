@@ -92,34 +92,57 @@ class Product(object):
         cursor.execute(query, (product_id,))
         mysql.connection.commit()
         cursor.close()
-
-
-
-
-    @staticmethod
-    def get_by_id(product_id):
-        """Retrieve a product by its ID."""
-        try:
-            with mysql.connection.cursor(dictionary=True) as cursor:
-                query = "SELECT * FROM products WHERE product_id = %s"
-                cursor.execute(query, (product_id,))
-                product = cursor.fetchone()
-
-            if product is None:
-                current_app.logger.warning(f"Product with ID {product_id} not found.")
-                return None
-            
-            return product
         
+    @staticmethod
+    def getOrders():
+        try:
+            # Create a connection object
+            cursor = mysql.connection.cursor()
+
+            # Define the SQL query
+            query = """
+            SELECT 
+                ob.order_id AS Order,
+                u.user_name AS Customer,
+                ob.total_cost AS Total Cost,
+                p.product_name AS Product,
+                s.size_name AS Size,
+                ob.quantity AS Quantity,
+                p.order_type AS Status,
+                ob.purchase_date
+            FROM ordered_by ob
+            JOIN user u ON ob.user_id = u.user_id
+            JOIN products p ON ob.product_id = p.product_id
+            JOIN sizes s ON ob.size_id = s.size_id;
+            """
+
+            # Execute the query
+            cursor.execute(query)
+
+            # Fetch all results
+            result = cursor.fetchall()
+
+            # Process the results into a list of dictionaries
+            orders = []
+            for row in result:
+                order = {
+                    'Order': row[0],
+                    'Customer': row[1],
+                    'Total Cost': row[2],
+                    'Product': row[3],
+                    'Size': row[4],
+                    'Quantity': row[5],
+                    'Status': row[6],
+                    'Purchase Date': row[7]
+                }
+                orders.append(order)
+
+            # Close the cursor and connection
+            cursor.close()
+
+            return orders  # Return the orders list
+
         except Exception as e:
-            current_app.logger.error(f"Error fetching product by ID {product_id}: {e}")
+            print(f"Error occurred: {e}")
             return None
 
-    @staticmethod
-    def update_preorder_count(product_id, quantity):
-        """Update the pre-order count for a product."""
-        query = "UPDATE products SET preorder_count = preorder_count + %s WHERE product_id = %s"
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (quantity, product_id))
-        mysql.connection.commit()
-        cursor.close()
