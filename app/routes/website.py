@@ -8,7 +8,9 @@ import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
 from werkzeug.utils import secure_filename
 
+
 website_bp = Blueprint('website', __name__)
+
 
 @website_bp.route('/')
 def landing():
@@ -154,3 +156,9 @@ def product_new_submit():
     except Exception as e:
       # If there’s an error, return it as part of the JSON response
       return jsonify(success=False, error=str(e)), 400
+    
+@website_bp.route('/seller/orders')
+def orders():
+  orders = Product.getOrders()
+  print(orders)
+  return render_template('/seller/my_orders.html', orders=orders)
