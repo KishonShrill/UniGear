@@ -1,0 +1,151 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/order_page.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+{% endblock %}
+
+{% block content %}
+  <!-- Header -->
+  {{ components.render_header() }}
+
+  <!-- Content -->
+  <main class="orders">
+    <aside>
+      <div class="aside__tools" href="#">
+        <a class="aside__links">
+          <img src="{{ url_for('static', filename='images/dashboard-square-add-stroke-rounded.svg') }}" alt="Dashboard Logo">
+          <p>Dashboard</p>
+        </a>
+        <a class="aside__links" href="#">
+          <img src="{{ url_for('static', filename='images/sale-tag-01-stroke-rounded.svg') }}" alt="My Products Logo">
+          <p>My Products</p>
+        </a>
+        <a class="aside__links" href="{{ url_for('website.orders') }}" visit>
+          <img src="{{ url_for('static', filename='images/container-truck-02-stroke-rounded.svg') }}" alt="Orders Logo">
+          <p>Orders</p>
+        </a>
+      </div>
+      <div class="aside__account">
+        <a class="aside__links">
+          <img src="{{ url_for('static', filename='images/students-stroke-rounded.svg') }}" alt="College Logo">
+          <p>College: <span id="org-id"></span></p>
+        </a>
+        <hr />
+        <a class="aside__links">
+          <img src="{{ url_for('static', filename='images/user-circle-stroke-rounded.svg') }}" alt="Profile">
+          <div class="aside__account-info">
+            <p class="aside__account-info-title">Account</p>
+            <p class="aside__account-info-email">chriscentlouisjune.pingol@g.msuiit.edu.ph</p>
+          </div>
+        </a>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="content-container content-header">
+        <h1 class="content-title">Orders</h1>
+        <div class="content-buttons">
+          <button class="btn export-btn">Export as CSV <img src="{{ url_for('static', filename='images/link-square-02-stroke-rounded.svg') }}" alt="Export Data"></button>
+          <a class="btn new-product-btn" href="{{ url_for('website.product_new') }}">New Product <img src="{{ url_for('static', filename='images/arrow-right-02-stroke-rounded.svg') }}" alt="Make new product"></a>
+        </div>
+      </div>
+
+      <div class="content-container content-data">
+        <div class="content-searchbar">
+          <img src="{{ url_for('static', filename='images/search-02-stroke-rounded.svg') }}" alt="">
+          <input type="text" placeholder="Search by order#, customer, or product name" value="" />
+        </div>
+
+        <div class="content-database">
+          <table>
+            <thead>
+              <tr>
+                <th><input id="checkAll" type="checkbox"></th>
+                <th>Order#</th>
+                <th>Customer</th>
+                <th>Total costs</th>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Purchase</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>{{ order['Order'] }}</td>
+                <td>{{ order['Customer'] }}</td>
+                <td>{{ order['Total Cost'] }}</td>
+                <td>{{ order['Product'] }}</td>
+                <td>{{ order['Size'] }}</td>
+                <td>{{ order['Quantity'] }}</td>
+                <td>{{ order['Status'] }}</td>
+                <td>{{ order['Purchase Date'] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  {{ components.render_alerts() }}
+  {{ components.render_footer() }}
+
+  <script>
+// JavaScript for row click highlight and checkbox toggle
+const rows = document.querySelectorAll("table tbody tr");
+const checkAll = document.getElementById("checkAll");
+
+rows.forEach(row => {
+  const checkbox = row.querySelector("input[type='checkbox']"); 
+
+  row.addEventListener("click", (e) => {
+    if (e.target !== checkbox && !e.target.closest("input[type='checkbox']")) {
+      rows.forEach(r => {
+        r.classList.remove("highlight"); 
+        r.querySelector("input[type='checkbox']").checked = false; 
+      });
+
+      // Highlight the clicked row and check its checkbox
+      row.classList.add("highlight");
+      checkbox.checked = true;
+
+      checkAll.checked = false;
+    }
+  });
+
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      row.classList.add("highlight");
+    } else {
+      row.classList.remove("highlight");
+    }
+  });
+});
+
+// Check All functionality
+checkAll.addEventListener("change", () => {
+  const isChecked = checkAll.checked;
+
+  rows.forEach(row => {
+    const checkbox = row.querySelector("input[type='checkbox']");
+    checkbox.checked = isChecked; 
+    if (isChecked) {
+      row.classList.add("highlight"); 
+    } else {
+      row.classList.remove("highlight"); 
+    }
+  });
+});
+
+  </script>
+{% endblock %}
