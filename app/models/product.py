@@ -1,5 +1,6 @@
 from app import mysql
 from datetime import datetime
+from flask import current_app
 
 class Product(object):
     def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None):
@@ -22,11 +23,10 @@ class Product(object):
         cursor = mysql.connection.cursor()
         cursor.execute(query, (self.product_name, self.description, self.hook, self.type, self.price, self.order_type, self.seller_id))
         mysql.connection.commit()
+        self.product_id = cursor.lastrowid
         cursor.close()
 
-        # Fetch the product using the updated method
-        product = self.get_by_name(self.product_name)
-        self.product_id = product[0]  # Access the 'product_id' from the tuple
+
 
     def getID(self):
         return self.product_id
@@ -90,5 +90,36 @@ class Product(object):
         query = "DELETE FROM products WHERE product_id = %s"
         cursor = mysql.connection.cursor()
         cursor.execute(query, (product_id,))
+        mysql.connection.commit()
+        cursor.close()
+
+
+
+
+    @staticmethod
+    def get_by_id(product_id):
+        """Retrieve a product by its ID."""
+        try:
+            with mysql.connection.cursor(dictionary=True) as cursor:
+                query = "SELECT * FROM products WHERE product_id = %s"
+                cursor.execute(query, (product_id,))
+                product = cursor.fetchone()
+
+            if product is None:
+                current_app.logger.warning(f"Product with ID {product_id} not found.")
+                return None
+            
+            return product
+        
+        except Exception as e:
+            current_app.logger.error(f"Error fetching product by ID {product_id}: {e}")
+            return None
+
+    @staticmethod
+    def update_preorder_count(product_id, quantity):
+        """Update the pre-order count for a product."""
+        query = "UPDATE products SET preorder_count = preorder_count + %s WHERE product_id = %s"
+        cursor = mysql.connection.cursor()
+        cursor.execute(query, (quantity, product_id))
         mysql.connection.commit()
         cursor.close()
