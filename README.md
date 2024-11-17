@@ -50,6 +50,7 @@ Before you begin, ensure you have met the following requirements:
     ```bash
     pipenv install --dev
     ```
+    If this does not work, try to search the solution in [DEBUG.md](./DEBUG.md)
 
 4. **Configure the database**:
    - Create a MySQL database named `college_marketplace`.
