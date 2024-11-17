@@ -6,6 +6,7 @@
   right: 1rem;
   top: 1rem;
   overflow: hidden; /* Hide anything that overflows during animation */
+  z-index: 999;
 }
 .alert {
   margin-bottom: 15px;

@@ -8,4 +8,4 @@ class ProductForm(FlaskForm):
   pre_order = SubmitField()
 
 class LinkVerify(FlaskForm):
-  ...
+  log_in = SubmitField()

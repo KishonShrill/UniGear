@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, session, abort, request
+from flask import Blueprint, render_template, redirect, url_for, flash, session, abort, request
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from app.models.user import User
+from app.models.user import *
+from app.forms import *
 import os
 
 
@@ -19,39 +20,66 @@ def login_is_required(function):
 
 @auth_bp.route('/sign-in')
 def sign_in():
-  return render_template('sign_in.html')
+  form = LinkVerify()
+  return render_template('sign_in.html', form=form)
 
 @auth_bp.route('/sign-up')
 def sign_up():
   ...
 
-@auth_bp.route('/auth/callback')
+@auth_bp.route('/auth/callback', methods=['POST'])
 def callback():
-  # Simulate getting data from Google OAuth
-  id = 'some-google-id'
-  name = 'John Doe'
-  email = 'john.doe@gmail.com'
-  contact = '09123456789'  # Prompt user to provide this data
-  address = '123 Main St'  # Prompt user to provide this data
+  form = LinkVerify()
+  if request.method == 'POST':
+    # Simulate getting data from Google OAuth
+    getEmail = request.form.get("email")
+    getPassword = request.form.get("password")
+    
+    print(f"Email: {getEmail}")
+    # Check if user exists or create new one
+    user = User.get_by_email(getEmail)
+    print(f"User: {user}")
+    
+    # Check if password is the same with database
+    isLogin = user.verify_password(getPassword)
+    if not isLogin:
+      flash(f"Password does not match", "warning")
+      return render_template('sign_in.html', form=form)
+    
+    # Store user info in the session
+    session['id'] = user.user_id
+    session['name'] = user.user_name
+    session['email'] = user.user_email
+    
+    flash(f"Welcome {user.user_name}", "success")
+    return redirect(url_for('website.explore'))
   
-  # Check if user exists or create new one
-  user = User.get_by_email(email)
-  
-  if not user:
-    user = User.create_from_google(id, name, email, contact, address)
-  ...
+  if request.method == 'GET':
+    return redirect(url_for('website.landing'))
 
 @auth_bp.route('/auth/google_callback')
 def google_callback():
-  # Get authorization code from the request
-  token = request.args.get("credential")
-  if token:
+  form = LinkVerify()
+  if request.method == 'POST':
+    # Get authorization code from the request
+    token = request.args.get("credential")
+    
+    if not token:
+      flash(f"Token is not being recieved properly.", "warning")
+      print("No credential received in the callback.")
+      return redirect(url_for('auth.sign_in', form=form))
+    
     try:
       # Verify the token
-      idinfo = id_token.verify_oauth2_token(token, requests.Request(), "888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com")
+      idinfo = id_token.verify_oauth2_token(
+        token, 
+        requests.Request(), 
+        audience="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
+        clock_skew_in_seconds=5,  # Adjust the skew tolerance
+        )
       
       # Store user info in the session
-      session['google_id'] = idinfo.get('sub')  # Unique Google user ID
+      session['id'] = idinfo.get('sub')  # Unique Google user ID
       session['name'] = idinfo.get('name')
       session['email'] = idinfo.get('email')
       session['picture'] = idinfo.get('picture')
@@ -62,17 +90,25 @@ def google_callback():
       if not user:
         user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
 
-      return redirect(url_for('auth.protected_area'))
-    except ValueError:
+      flash(f"Welcome {idinfo.get('name')}", "success")
+      return redirect(url_for('website.explore'))
+    except ValueError as ve:
+      print(f"Token verification failed: {ve}")
       return "Invalid token", 400  # Token verification failed
-  return redirect(url_for('auth.sign_in'))
-
+    except Exception as e:
+      print(f"Unexpected error: {e}")
+      return "An error occurred during authentication. Please try again.", 500
+    
+  if request.method == 'GET':
+    return redirect(url_for('website.landing'))
+  
 
 @auth_bp.route('/logout')
 def logout():
   # Clear session to log out
   session.clear()
-  return redirect(url_for('auth.sign_in'))
+  flash(f"User has logged out...", "success")
+  return redirect(url_for('website.explore'))
   
 
 @auth_bp.route('/protected_area')
