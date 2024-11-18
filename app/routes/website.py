@@ -48,17 +48,20 @@ def explore():
         'College of Science and Mathematics': 'csm'
     }
 
-    merchandise_data = {}
+    # Initialize merchandise data with all colleges
+    merchandise_data = {
+        college: {'college_code': code, 'products': []}
+        for college, code in college_code_mapping.items()
+    }
+
+    # Populate merchandise data with query results
     for row in result:
         college = row[1]
-        college_code = college_code_mapping.get(college, '')  # Get the code for the college
-        if college not in merchandise_data:
-            merchandise_data[college] = {'college_code': college_code, 'products': []}
-
-        merchandise_data[college]['products'].append({
-            'product_id': row[0],
-            'picture_url': row[2] if row[2] else '/static/images/placeholder.jpg'
-        })
+        if college in merchandise_data:
+            merchandise_data[college]['products'].append({
+                'product_id': row[0],
+                'picture_url': row[2] if row[2] else '/static/images/placeholder.jpg'
+            })
 
     # Define the order of colleges
     college_order = [
@@ -85,6 +88,7 @@ def explore():
     }
 
     return render_template('explore.html', merchandise_data=sorted_merchandise_data, college_colors=college_colors)
+
 
 # Product Creation Form Route
 @website_bp.route('/product/new')

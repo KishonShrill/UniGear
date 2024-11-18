@@ -18,25 +18,25 @@
 
         <!-- College Sections -->
         {% for college, data in merchandise_data.items() %}
-            <div class="college-section {{ college|replace(' ', '') }}" style="background-color: {{ college_colors.get(college, '#ffffff') }};">
-                <!-- Title and "See More" Link -->
-                <div class="college-container">
-                    <div class="college-title">{{ college }}</div>
-                    <a href="/college-{{ data['college_code'] }}" class="view-more-link">View More</a>
-                </div>
-                <!-- Merchandise Row -->
-                <div class="merchandise-row">
-                    {% if data['products'] %}
-                        {% for product in data['products'][:5] %}
-                            <a href="#">
-                                <img src="{{ product['picture_url'] }}" alt="Product {{ product['product_id'] }}">
-                            </a>
-                        {% endfor %}
-                    {% else %}
-                        <p class="no-merchandise">No merchandise available</p>
-                    {% endif %}
-                </div>
+        <div class="college-section {{ college|replace(' ', '') }}" style="background-color: {{ college_colors.get(college, '#ffffff') }};">
+            <!-- Title and "See More" Link -->
+            <div class="college-container">
+                <div class="college-title">{{ college }}</div>
+                <a href="/college-{{ data['college_code'] }}" class="view-more-link">View More</a>
             </div>
+            <!-- Merchandise Row -->
+            <div class="merchandise-row">
+                {% if data['products'] %}
+                    {% for product in data['products'][:5] %}
+                        <a href="{{ url_for('website.merch_details', product_id=product['product_id']) }}">
+                            <img src="{{ product['picture_url'] }}" alt="Product {{ product['product_id'] }}">
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-merchandise">No merchandise available</p>
+                {% endif %}
+            </div>
+        </div>
         {% endfor %}
 
     </main>

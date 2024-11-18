@@ -138,9 +138,9 @@
                     products.forEach(product => {
                         const productCard = document.createElement("a");
                         productCard.classList.add("product-card");
-                        productCard.href = `#/product?product_id=${product.id}`; // Link to product detail page
+                        productCard.href = `/product/${product.id}`; // Use product.id for the link
 
-                        const imgSrc = product.picture || "static/images/placeholder.jpg"; // Fallback image
+                        const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
                         productCard.innerHTML = `
                             <img src="${imgSrc}" alt="${product.name}">
                             <h3>${product.name}</h3>
@@ -154,6 +154,7 @@
                     productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
                 });
         }
+
     });
 </script>
 
