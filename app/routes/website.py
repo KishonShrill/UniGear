@@ -25,14 +25,24 @@ def explore():
     cursor = mysql.connection.cursor()
 
     query = """
-        SELECT p.product_id AS 'Product', 
-               col.college_name AS 'College', 
-               pic.picture_url AS 'Picture'
+        WITH PictureSelection AS (
+            SELECT 
+                p.product_id,
+                pic.picture_url,
+                ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY pic.picture_url) AS row_num
+            FROM products p
+            LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+        )
+        SELECT 
+            p.product_id AS 'Product', 
+            col.college_name AS 'College', 
+            ps.picture_url AS 'Picture'
         FROM products p
         LEFT JOIN user u ON p.seller_id = u.user_id
         LEFT JOIN organization org ON u.org_id = org.org_id
         LEFT JOIN college col ON org.college_id = col.college_id
-        LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+        LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
+        GROUP BY p.product_id, col.college_name, ps.picture_url;
     """
     cursor.execute(query)
     result = cursor.fetchall()

@@ -20,7 +20,7 @@ def get_organizations(college_code):
             "cba": 2,
             "ccs": 3,
             "ced": 4,
-            "coe": 5,
+            "coe": 5,   
             "chs": 6,
             "csm": 7
         }
@@ -56,15 +56,17 @@ def get_cass_organization_products():
     product_type = request.args.get('type')  # Get the product type from the request (if any)
 
     query = """
-    SELECT  p.product_id AS 'Product', 
+        SELECT  
+            p.product_id AS 'Product', 
             p.product_name AS 'Product Name', 
             p.description AS 'Description',
-            pi.picture_url AS 'Picture',
-            p.type AS 'Type'  -- Get the type of product
-    FROM products p
-    LEFT JOIN pictures pi ON p.product_id = pi.picture_id
-    LEFT JOIN user u ON p.seller_id = u.user_id
-    WHERE u.org_id = %s
+            MAX(pi.picture_url) AS 'Picture',  -- Get the first picture URL or any non-null one
+            p.type AS 'Type'
+        FROM products p
+        LEFT JOIN pictures pi ON p.product_id = pi.picture_id
+        LEFT JOIN user u ON p.seller_id = u.user_id
+        WHERE u.org_id = %s
+        GROUP BY p.product_id, p.product_name, p.description, p.type;
     """
     
     # Only add the type condition if it's not 'all'
