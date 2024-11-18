@@ -103,11 +103,11 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 -- Below is the sample data
 INSERT INTO college (college_name) VALUES 
 ('College of Arts and Social Sciences'),
-('College of Business Administration'),
 ('College of Computer Studies'),
-('College of Education'),
+('College of Business Administration'),
+('College of Health Sciences'),
 ('College of Engineering'),
-('College of Nursing'),
+('College of Education'),
 ('College of Science and Mathematics');
 
 -- CSM Organizations
@@ -187,7 +187,7 @@ INSERT INTO user (user_name, user_email, user_password, user_contact, user_addre
 ('Ella Chen', 'ella.chen@example.com', 'securepassword5', '5432109876', '987 Ocean St, Iligan City', 'seller', 'COET-EC'), 
 ('Frank Martinez', 'frank.martinez@example.com', 'securepassword6', '4321098765', '135 Mountain St, Iligan City', 'user', 'CON-EC'), 
 ('Grace Wong', 'grace.wong@example.com', 'securepassword7', '3210987654', '246 Valley St, Iligan City', 'user', 'CON-EC'), 
-('Henry Johnson', 'henry.johnson@example.com', 'securepassword8', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CSM-EC');
+('Unigear Admin', 'unigear@gmail.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CCS-EC');
 
 INSERT INTO sizes (size_name) VALUES 
 ('XS'),
