@@ -88,7 +88,7 @@ class User(object):
         user_id = cursor.lastrowid  # Get the user_id of the newly inserted user
         cursor.close()
 
-        return cls(user_id=user_id, user_name=google_name, user_email=google_email)
+        return cls(user_id=user_id, user_name=google_name, user_email=google_email, user_role="seller")
     
     @classmethod
     def create_from_website(cls, name, email, password, contact, address):

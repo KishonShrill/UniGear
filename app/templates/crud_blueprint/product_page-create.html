@@ -53,7 +53,7 @@
       </div>
     </section>
 
-    <form class="product__content-wrapper" id="product-form" method="POST" action="{{ url_for('website.product_new_submit') }}" enctype="multipart/form-data">
+    <form class="product__content-wrapper" id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">
       {{ form.csrf_token }}
       <div class="product__content-back-wrapper">
         <a class="product__content-back" href="../../"><b>Home</b></a>

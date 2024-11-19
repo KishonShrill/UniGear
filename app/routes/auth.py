@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, session,
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from app.models.user import *
+from app.routes.website import *
 from app.forms import *
 import os
 
@@ -11,11 +12,32 @@ auth_bp = Blueprint('auth', __name__)
 
 def login_is_required(function):
   def wrapper(*args, **kwargs):
-    if "google_id" not in session:
+    if "id" not in session:
       return abort(401)
     return function(*args, **kwargs)
   wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
   return wrapper
+
+def seller_required(function):
+    def wrapper(*args, **kwargs):
+        # Check if the user is logged in
+        if "id" not in session:
+            flash("You must be logged in to access this page.", "warning")
+            return abort(401)
+        
+        # Retrieve the user's role from the session or database
+        user_role = session.get('role')  # Assuming the role is stored in the session
+        print(f"Role: {user_role}")
+        
+        if not user_role or user_role.lower() != "seller":
+            flash("Access denied. Only sellers can access this page.", "danger")
+            return abort(403)  # HTTP 403 Forbidden
+        
+        # If everything checks out, allow access
+        return function(*args, **kwargs)
+    
+    wrapper.__name__ = function.__name__  # Fix Flask's view function name requirement
+    return wrapper
 
 
 @auth_bp.route('/sign-in')
@@ -50,6 +72,7 @@ def callback():
     session['id'] = user.user_id
     session['name'] = user.user_name
     session['email'] = user.user_email
+    session['role'] = user.user_role
     
     flash(f"Welcome {user.user_name}", "success")
     return redirect(url_for('website.explore'))
@@ -60,47 +83,45 @@ def callback():
 @auth_bp.route('/auth/google_callback')
 def google_callback():
   form = LinkVerify()
-  if request.method == 'POST':
-    # Get authorization code from the request
-    token = request.args.get("credential")
+  # Get authorization code from the request
+  token = request.args.get("credential")
+  
+  if not token:
+    flash(f"Token is not being recieved properly.", "warning")
+    print("No credential received in the callback.")
+    return redirect(url_for('auth.sign_in', form=form))
+  
+  try:
+    # Verify the token
+    idinfo = id_token.verify_oauth2_token(
+      token, 
+      requests.Request(), 
+      audience="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
+      clock_skew_in_seconds=5,  # Adjust the skew tolerance
+      )
     
-    if not token:
-      flash(f"Token is not being recieved properly.", "warning")
-      print("No credential received in the callback.")
-      return redirect(url_for('auth.sign_in', form=form))
+    # Store user info in the session
+    session['id'] = idinfo.get('sub')  # Unique Google user ID
+    session['name'] = idinfo.get('name')
+    session['email'] = idinfo.get('email')
+    session['picture'] = idinfo.get('picture')
     
-    try:
-      # Verify the token
-      idinfo = id_token.verify_oauth2_token(
-        token, 
-        requests.Request(), 
-        audience="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
-        clock_skew_in_seconds=5,  # Adjust the skew tolerance
-        )
-      
-      # Store user info in the session
-      session['id'] = idinfo.get('sub')  # Unique Google user ID
-      session['name'] = idinfo.get('name')
-      session['email'] = idinfo.get('email')
-      session['picture'] = idinfo.get('picture')
-      
-      # Check if user exists or create new one
-      user = User.get_by_email(idinfo.get('email'))
-      
-      if not user:
-        user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
+    # Check if user exists or create new one
+    user = User.get_by_email(idinfo.get('email'))
+    
+    if not user:
+      user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
+      print(f"I am a: {user.user_role}")
+      session['role'] = user.user_role
 
-      flash(f"Welcome {idinfo.get('name')}", "success")
-      return redirect(url_for('website.explore'))
-    except ValueError as ve:
-      print(f"Token verification failed: {ve}")
-      return "Invalid token", 400  # Token verification failed
-    except Exception as e:
-      print(f"Unexpected error: {e}")
-      return "An error occurred during authentication. Please try again.", 500
-    
-  if request.method == 'GET':
-    return redirect(url_for('website.landing'))
+    flash(f"Welcome {idinfo.get('name')}", "success")
+    return redirect(url_for('website.explore'))
+  except ValueError as ve:
+    print(f"Token verification failed: {ve}")
+    return "Invalid token", 400  # Token verification failed
+  except Exception as e:
+    print(f"Unexpected error: {e}")
+    return "An error occurred during authentication. Please try again.", 500
   
 
 @auth_bp.route('/logout')
@@ -109,9 +130,3 @@ def logout():
   session.clear()
   flash(f"User has logged out...", "success")
   return redirect(url_for('website.explore'))
-  
-
-@auth_bp.route('/protected_area')
-@login_is_required
-def protected_area():
-  return render_template('protected_auth.html')
