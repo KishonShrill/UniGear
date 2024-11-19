@@ -50,11 +50,12 @@ def get_organizations(college_code):
             cursor.close()
 
 @colleges_bp.route('/api/organizations/products')
-def get_cass_organization_products():
+def get_organization_products():
     from app import mysql
     org_id = request.args.get('org_id')  # Get the org_id from the request
     product_type = request.args.get('type')  # Get the product type from the request (if any)
 
+    # Base query
     query = """
         SELECT  
             p.product_id AS 'Product', 
@@ -66,20 +67,23 @@ def get_cass_organization_products():
         LEFT JOIN pictures pi ON p.product_id = pi.picture_id
         LEFT JOIN user u ON p.seller_id = u.user_id
         WHERE u.org_id = %s
-        GROUP BY p.product_id, p.product_name, p.description, p.type;
     """
-    
-    # Only add the type condition if it's not 'all'
+
+    # Add the type filter if specified and not "all"
+    params = [org_id]
     if product_type and product_type != 'all':
         query += " AND p.type = %s"
-        params = (org_id, product_type)
-    else:
-        params = (org_id,)  # Only the org_id parameter
+        params.append(product_type)
+
+    # Append the GROUP BY clause
+    query += """
+        GROUP BY p.product_id, p.product_name, p.description, p.type;
+    """
 
     try:
         connection = mysql.connection
         cursor = connection.cursor(cursors.DictCursor)
-        cursor.execute(query, params)  # Execute with the correct parameters
+        cursor.execute(query, params)  # Execute with the proper parameters
         products = cursor.fetchall()
         return jsonify([{
             "id": p['Product'], 
@@ -88,8 +92,9 @@ def get_cass_organization_products():
             "picture": p['Picture']
         } for p in products])
     except Exception as e:
-        print(f"Error in get_<college>_organization_products: {e}")
+        print(f"Error in get_organization_products: {e}")
         return jsonify({"error": "Failed to fetch products"}), 500
     finally:
         if cursor:
-            cursor.close() 
+            cursor.close()
+

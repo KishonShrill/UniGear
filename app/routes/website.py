@@ -194,9 +194,6 @@ def product_new_submit():
       return jsonify(success=False, error=str(e)), 400
 
 
-
-
-
 # here ko ga startttt
 @website_bp.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def merch_details(product_id):

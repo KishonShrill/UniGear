@@ -26,40 +26,41 @@
             </section>
         </aside>
     
-        <!-- Type Tabs (for product type filtering) -->
-        <div id="college-ccs-main">
-            <ul id="type-tabs">
-                <li class="type-tab">
-                    <img src="static/images/all.jpg" alt="all Icon" class="type-icon">
-                    <span class="type-name">All</span>
-                </li>
-                <li class="type-tab">
-                    <img src="static/images/t-shirt.jpg" alt="hoodie Icon" class="type-icon">
-                    <span class="type-name">T-Shirt</span>
-                </li>
-                <li class="type-tab">
-                    <img src="static/images/hoodie.jpg" alt="hoodie Icon" class="type-icon">
-                    <span class="type-name">Hoodie</span>
-                </li>
-                <li class="type-tab">
-                    <img src="static/images/footwear.jpg" alt="footwear Icon" class="type-icon">
-                    <span class="type-name">Footwear</span>
-                </li>
-                <li class="type-tab">
-                    <img src="static/images/lanyard.jpg" alt="lanyard Icon" class="type-icon">
-                    <span class="type-name">Lanyard</span>
-                </li>
-                <li class="type-tab">
-                    <img src="static/images/pin.jpg" alt="pin Icon" class="type-icon">
-                    <span class="type-name">Pin</span>
-                </li>
-                <!-- Add more type tabs as needed -->
-            </ul>
-            
+        <section id="content">
+            <div id="college-ccs-main">
+                <ul id="type-tabs">
+                    <li class="type-tab">
+                        <img src="static/images/all.jpg" alt="all Icon" class="type-icon">
+                        <span class="type-name">All</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/t-shirt.jpg" alt="hoodie Icon" class="type-icon">
+                        <span class="type-name">T-Shirt</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/hoodie.jpg" alt="hoodie Icon" class="type-icon">
+                        <span class="type-name">Hoodie</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/footwear.jpg" alt="footwear Icon" class="type-icon">
+                        <span class="type-name">Footwear</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/lanyard.jpg" alt="lanyard Icon" class="type-icon">
+                        <span class="type-name">Lanyard</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/pin.jpg" alt="pin Icon" class="type-icon">
+                        <span class="type-name">Pin</span>
+                    </li>
+                    <!-- Add more type tabs as needed -->
+                </ul>
+                
 
-        <!-- Products Display -->
-        <section id="org-products">
-            <p>Select an organization to view products.</p>
+            <!-- Products Display -->
+            <section id="org-products">
+                <p>Select an organization to view products.</p>
+            </section>
         </section>
     </section>
 </main>
@@ -121,39 +122,39 @@
         });
 
         function loadProductsForOrg(org_id) {
-    selectedOrgId = org_id;
-    productsContainer.innerHTML = "<p>Loading products...</p>";
+            selectedOrgId = org_id;
+            productsContainer.innerHTML = "<p>Loading products...</p>";
 
-    // Fetch products for the selected organization and type
-    fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
-        .then(response => response.json())
-        .then(products => {
-            if (!products || products.length === 0) {
-                productsContainer.innerHTML = "<p>No products available for this organization.</p>";
-                return;
-            }
+            // Fetch products for the selected organization and type
+            fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
+                .then(response => response.json())
+                .then(products => {
+                    if (!products || products.length === 0) {
+                        productsContainer.innerHTML = "<p>No products available for this organization.</p>";
+                        return;
+                    }
 
-            productsContainer.innerHTML = ''; // Clear existing products
+                    productsContainer.innerHTML = ''; // Clear existing products
 
-            products.forEach(product => {
-                const productCard = document.createElement("a");
-                productCard.classList.add("product-card");
-                productCard.href = `/product/${product.id}`; // Use product.id for the link
+                    products.forEach(product => {
+                        const productCard = document.createElement("a");
+                        productCard.classList.add("product-card");
+                        productCard.href = `/product/${product.id}`; // Use product.id for the link
 
-                const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
-                productCard.innerHTML = `
-                    <img src="${imgSrc}" alt="${product.name}">
-                    <h3>${product.name}</h3>
-                    <p>${product.description}</p>
-                `;
-                productsContainer.appendChild(productCard);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching products:", error);
-            productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
-        });
-}
+                        const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
+                        productCard.innerHTML = `
+                            <img src="${imgSrc}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                        `;
+                        productsContainer.appendChild(productCard);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching products:", error);
+                    productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
+                });
+        }
 
     });
 </script>
