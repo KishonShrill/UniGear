@@ -1,0 +1,163 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/coe.css') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<main data-college-id="5">
+    {{ components.render_header() }}
+    <section id="college-coe-header-container">
+        <div id="college-coe-header">
+            <h1>COLLEGE OF ENGINEERING</h1>
+            <a href="explore" class="back-link">&larr; Go back</a>
+        </div>
+    </section>    
+
+    <section id="college-coe-content">
+        <!-- Organization Tabs -->
+        <aside id="org-tabs">
+            <section id="org-tabs-section">
+                <ul id="org-list">
+                    <!-- Tabs will populate dynamically via JavaScript -->
+                </ul>
+            </section>
+        </aside>
+    
+        <section id="content">
+            <div id="college-coe-main">
+                <ul id="type-tabs">
+                    <li class="type-tab">
+                        <img src="static/images/all.jpg" alt="all Icon" class="type-icon">
+                        <span class="type-name">All</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/t-shirt.jpg" alt="hoodie Icon" class="type-icon">
+                        <span class="type-name">T-Shirt</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/hoodie.jpg" alt="hoodie Icon" class="type-icon">
+                        <span class="type-name">Hoodie</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/footwear.jpg" alt="footwear Icon" class="type-icon">
+                        <span class="type-name">Footwear</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/lanyard.jpg" alt="lanyard Icon" class="type-icon">
+                        <span class="type-name">Lanyard</span>
+                    </li>
+                    <li class="type-tab">
+                        <img src="static/images/pin.jpg" alt="pin Icon" class="type-icon">
+                        <span class="type-name">Pin</span>
+                    </li>
+                    <!-- Add more type tabs as needed -->
+                </ul>
+                
+
+            <!-- Products Display -->
+            <section id="org-products">
+                <p>Select an organization to view products.</p>
+            </section>
+        </section>
+    </section>
+</main>
+
+{{ components.render_footer() }}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const productsContainer = document.getElementById("org-products");
+        const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
+        const orgTabsContainer = document.getElementById("org-list");
+
+        let selectedType = 'all'; // Default to "All" type
+        let selectedOrgId = null; // To store the current selected organization ID
+
+        // Fetch organizations and populate organization tabs
+        fetch('/api/coe/organizations')
+            .then(response => response.json())
+            .then(organizations => {
+                organizations.forEach(org => {
+                    const orgTab = document.createElement("li");
+                    orgTab.classList.add("org-tab");
+                    orgTab.setAttribute("data-org-id", org.id);
+                    orgTab.innerText = org.name;
+                    orgTabsContainer.appendChild(orgTab);
+
+                    orgTab.addEventListener("click", function () {
+                        // Update active tab
+                        document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
+                        orgTab.classList.add("active");
+
+                        // Load products for selected organization
+                        loadProductsForOrg(org.id);
+                    });
+                });
+
+                // Automatically load the first organization's products
+                if (organizations.length > 0) {
+                    const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
+                    firstOrgTab.classList.add("active");
+                    loadProductsForOrg(organizations[0].id);
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching organizations:", error);
+                productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
+            });
+
+        // Add event listeners to type tabs
+        typeTabs.forEach(tab => {
+            tab.addEventListener("click", function () {
+                selectedType = tab.querySelector(".type-name").innerText.toLowerCase();
+                typeTabs.forEach(t => t.classList.remove("active")); // Remove active class from all tabs
+                tab.classList.add("active"); // Add active class to clicked tab
+                if (selectedOrgId) {
+                    loadProductsForOrg(selectedOrgId); // Reload products for the current organization
+                }
+            });
+        });
+
+        function loadProductsForOrg(org_id) {
+            selectedOrgId = org_id;
+            productsContainer.innerHTML = "<p>Loading products...</p>";
+
+            // Fetch products for the selected organization and type
+            fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
+                .then(response => response.json())
+                .then(products => {
+                    if (!products || products.length === 0) {
+                        productsContainer.innerHTML = "<p>No products available for this organization.</p>";
+                        return;
+                    }
+
+                    productsContainer.innerHTML = ''; // Clear existing products
+
+                    products.forEach(product => {
+                        const productCard = document.createElement("a");
+                        productCard.classList.add("product-card");
+                        productCard.href = `/product/${product.id}`; // Use product.id for the link
+
+                        const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
+                        productCard.innerHTML = `
+                            <img src="${imgSrc}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                        `;
+                        productsContainer.appendChild(productCard);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching products:", error);
+                    productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
+                });
+        }
+
+    });
+</script>
+
+
+{% endblock %}

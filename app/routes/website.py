@@ -22,39 +22,63 @@ website_bp = Blueprint('website', __name__)
 def landing():
     return render_template('landing.html')
 
-# Explore Page Route (for viewing products)
 @website_bp.route('/explore')
 def explore():
     from app import mysql
     cursor = mysql.connection.cursor()
 
     query = """
-        SELECT p.product_id AS 'Product', 
-               col.college_name AS 'College', 
-               pic.picture_url AS 'Picture'
+        WITH PictureSelection AS (
+            SELECT 
+                p.product_id,
+                pic.picture_url,
+                ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY pic.picture_url) AS row_num
+            FROM products p
+            LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+        )
+        SELECT 
+            p.product_id AS 'Product', 
+            col.college_name AS 'College', 
+            ps.picture_url AS 'Picture'
         FROM products p
         LEFT JOIN user u ON p.seller_id = u.user_id
         LEFT JOIN organization org ON u.org_id = org.org_id
         LEFT JOIN college col ON org.college_id = col.college_id
-        LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+        LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
+        GROUP BY p.product_id, col.college_name, ps.picture_url;
     """
     cursor.execute(query)
     result = cursor.fetchall()
 
-    merchandise_data = {}
+    # College Code mapping
+    college_code_mapping = {
+        'College of Arts and Social Sciences': 'cass',
+        'College of Computer Studies': 'ccs',
+        'College of Business Administration': 'cba',
+        'College of Health Sciences': 'chs',
+        'College of Education': 'ced',
+        'College of Engineering': 'coe',
+        'College of Science and Mathematics': 'csm'
+    }
+
+    # Initialize merchandise data with all colleges
+    merchandise_data = {
+        college: {'college_code': code, 'products': []}
+        for college, code in college_code_mapping.items()
+    }
+
+    # Populate merchandise data with query results
     for row in result:
         college = row[1]
-        if college not in merchandise_data:
-            merchandise_data[college] = []
-
-        merchandise_data[college].append({
-            'product_id': row[0],
-            'picture_url': row[2] if row[2] else '/static/images/placeholder.jpg'
-        })
+        if college in merchandise_data:
+            merchandise_data[college]['products'].append({
+                'product_id': row[0],
+                'picture_url': row[2] if row[2] else '/static/images/placeholder.jpg'
+            })
 
     # Define the order of colleges
     college_order = [
-        'College of Arts and Sciences',
+        'College of Arts and Social Sciences',
         'College of Computer Studies',
         'College of Business Administration',
         'College of Health Sciences',
@@ -64,10 +88,10 @@ def explore():
     ]
 
     # Sort merchandise_data according to the defined order
-    sorted_merchandise_data = {college: merchandise_data.get(college, []) for college in college_order}
+    sorted_merchandise_data = {college: merchandise_data.get(college, {}) for college in college_order}
 
     college_colors = {
-        'College of Arts and Sciences': '#324831',
+        'College of Arts and Social Sciences': '#324831',
         'College of Computer Studies': '#598181',
         'College of Business Administration': '#9A9A71',
         'College of Health Sciences': '#8B9EAF',
@@ -77,6 +101,7 @@ def explore():
     }
 
     return render_template('explore.html', merchandise_data=sorted_merchandise_data, college_colors=college_colors)
+
 
 # Product Creation Form Route
 @website_bp.route('/product/new')
@@ -176,9 +201,6 @@ def orders():
   orders = Product.getOrders()
   print(orders)
   return render_template('/seller/my_orders.html', orders=orders)
-
-
-
 
 
 # here ko ga startttt
