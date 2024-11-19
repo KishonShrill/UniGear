@@ -24,7 +24,7 @@
           <img src="{{ url_for('static', filename='images/sale-tag-01-stroke-rounded.svg') }}" alt="My Products Logo">
           <p>My Products</p>
         </a>
-        <a class="aside__links" href="{{ url_for('website.orders') }}" visit>
+        <a class="aside__links" href="{{ url_for('seller.my_orders') }}" visit>
           <img src="{{ url_for('static', filename='images/container-truck-02-stroke-rounded.svg') }}" alt="Orders Logo">
           <p>Orders</p>
         </a>
@@ -50,7 +50,7 @@
         <h1 class="content-title">Orders</h1>
         <div class="content-buttons">
           <button class="btn export-btn">Export as CSV <img src="{{ url_for('static', filename='images/link-square-02-stroke-rounded.svg') }}" alt="Export Data"></button>
-          <a class="btn new-product-btn" href="{{ url_for('website.product_new') }}">New Product <img src="{{ url_for('static', filename='images/arrow-right-02-stroke-rounded.svg') }}" alt="Make new product"></a>
+          <a class="btn new-product-btn" href="{{ url_for('seller.product_new') }}">New Product <img src="{{ url_for('static', filename='images/arrow-right-02-stroke-rounded.svg') }}" alt="Make new product"></a>
         </div>
       </div>
 

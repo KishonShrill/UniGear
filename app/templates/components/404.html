@@ -1,0 +1,27 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+  <!-- Header -->
+  {{ components.render_header(user=session['name']) }}
+
+  <main style="
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  ">
+    <div class="error-conatiner">
+      <h1 class="error-title">404</h1>
+      <p class="error-message">You seem lost my child. <br><a href="window.history.back()">Go Back</a> to whence you came from...</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  {{ components.render_footer() }}
+{% endblock %}

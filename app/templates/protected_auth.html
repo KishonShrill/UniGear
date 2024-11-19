@@ -1,0 +1,30 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+  <title>Protected Area</title>
+{% endblock %}
+
+{% block content %}
+  <!-- Display user information -->
+  <main style="
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  ">
+
+    {% if session['google_id'] %}
+      <img src="{{ session['picture'] }}" alt="User Profile Picture" style="border-radius: 50%; width: 100px; height: 100px; margin-top: 20px;">
+      <h1>{{ session['name'] }}</h1>
+      <p>{{ session['email'] }}</p>
+      <a href="{{ url_for('auth.logout') }}"><button>Logout</button></a>
+    {% else %}
+      <p>You are not logged in. Please <a href="{{ url_for('auth.sign_in') }}">sign in</a>.</p>
+    {% endif %}
+
+  </main>
+{% endblock %}
