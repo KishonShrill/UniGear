@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, url_for, request
 from app.forms import ProductForm
 
 
@@ -144,27 +144,40 @@ def merch_details(product_id):
 @website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
 def preorder(product_id):
     from app import mysql
-    from flask import request, flash, redirect, url_for
 
-    size = request.form.get('size')
-    quantity = int(request.form.get('quantity', 1))
+    size = request.form.get('selectedSizes')
+    quantity = request.form.get("quantity")
 
-    if not size or quantity <= 0:
-        flash("Invalid size or quantity.", "danger")
+    # Input and Picture validation
+    try:
+      quantityCheck = int(quantity)
+      
+      if not size:
+        flash("Please pick a size before pre-ordering.", "warning")
         return redirect(url_for('website.merch_details', product_id=product_id))
+      if not 1 <= quantityCheck <= 20 :
+        flash("Quantity should only be between 0 and 20.", "warning")
+        return redirect(url_for('website.merch_details', product_id=product_id))
+    except ValueError:
+      flash("Quantity should only numbers", "danger")
+      return redirect(url_for('website.merch_details', product_id=product_id))
 
-    cursor = mysql.connection.cursor()
-    cursor.execute(
-        "UPDATE products SET preorder_count = preorder_count + %s WHERE product_id = %s",
-        (quantity, product_id)
-    )
-
-    cursor.execute(
-        "INSERT INTO product_preorders (product_id, size, quantity) VALUES (%s, %s, %s)",
-        (product_id, size, quantity)
-    )
-    mysql.connection.commit()
-    cursor.close()
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute(
+            """
+              UPDATE product_sizes
+              SET product_quantity = product_quantity + %s 
+              WHERE product_id = %s and size_id = %s
+            """,
+            (quantity, product_id, size)
+        )
+        mysql.connection.commit()
+        cursor.close()
+    except Exception as e:
+      print(f"Error occurred: {e}")
+      flash("Something went wrong while pre-ordering the product. Please order again later...", "danger")
+      return redirect(url_for('website.merch_details', product_id=product_id))
 
     flash("Your pre-order was successful!", "success")
-    return redirect(url_for('website.merch_details', product_id=product_id))
+    return redirect(url_for('website.explore'))
