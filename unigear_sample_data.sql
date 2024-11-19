@@ -198,10 +198,10 @@ INSERT INTO sizes (size_name) VALUES
 ('2XL');
 
 INSERT INTO products (product_name, description, hook, type, price, seller_id, order_type) VALUES 
-('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 'Clothing', 15.99, 1, 1),
-('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 'Clothing', 29.99, 2, 0),
-('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'Footwear', 49.99, 3, 1),
-('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'Clothing', 39.99, 4, 0);
+('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 't-shirt', 15.99, 1, 1),
+('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 't-shirt', 29.99, 2, 0),
+('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'footwear', 49.99, 3, 1),
+('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'pin', 39.99, 4, 0);
 
 INSERT INTO product_sizes (product_id, product_quantity, size_id) VALUES 
 (1, 50, 1),  -- Basic T-Shirt, 50 quantity in Size S
