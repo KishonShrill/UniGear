@@ -2,9 +2,6 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect,
 from app.models.product import Product
 from app.forms import ProductForm
 import re as regex
-from app import mysql
-from flask import current_app as app
-import pymysql
 
 
 import cloudinary.api
@@ -100,21 +97,32 @@ def product_new_submit():
   
       print(f"Picture URLs: {picture_urls}")
       print(f"Number of files selected: {len(picture_urls)}")  # Debug the number of files selected
+      for picture in picture_urls:
+        print (f"Name: {picture.filename}")
 
+      # Input and Picture validation
+      try:
+        priceCheck = float(price)
+        
+        if not 0 <= priceCheck <= 1000:
+          flash("Your price is either too cheap or too expensive.", "warning")
+          return redirect(url_for('website.product_new'))
+        if len(picture_urls) == 0:
+          flash (f"You must submit one image: {str(e)}","Danger")
+          return redirect(url_for('website.product_new'))
+        for picture in picture_urls:
+          if picture.filename=='':
+            flash(f"Upload at least one image", "Warning")
+            return redirect(url_for ('website.product_new'))
+      except ValueError:
+        flash("Price should only consist of numbers.", "warning")
+        return redirect(url_for('website.product_new'))
+      
+      
+      # TODO: Remove this 
       sizes = selected_sizes.split(',')
       URLS = []
-
-      for picture in picture_urls:
-         print (f"Name: {picture.filename}")
-
-      if len(picture_urls) == 0:
-         flash (f"You must submit one image: {str(e)}","Danger")
-         return redirect(url_for('website.product_new'))
       
-      for picture in picture_urls:
-         if picture.filename=='':
-            flash(f"Upload at least one image", "Warning")
-            return redirect (url_for ('website.product_new'))
 
       # Put product in the Database and get ID
       product = Product(name, description, hook, product_type, price, preorder_type, 1)
@@ -124,7 +132,6 @@ def product_new_submit():
       # Add the size to the product
       for size in sizes:
         product.add_product_sizes(0, size)
-
 
       # Handle file uploads
       for picture in picture_urls:
@@ -148,10 +155,8 @@ def product_new_submit():
         except Exception as e:
           flash(f"An error occurred during file upload: {str(e)}", "danger")
           return redirect(url_for('website.product_new'))
-      flash(f"Profile picture uploaded successfully!", "success")
 
-
-      # Create a dictionary to store and return all the data
+      # Create a dictionary to store and return all the data for debug
       product_data = {
         "id": product_id,
         "name": name,
@@ -166,7 +171,9 @@ def product_new_submit():
       }
 
       # TODO: Change return to redirect to dashboard page
-      return jsonify(success=True, data=product_data), 200
+      print(jsonify(data=product_data))
+      flash(f"Your product has been successfully submitted!", "success")
+      return redirect(url_for('website.explore'))
     except Exception as e:
       # If there’s an error, return it as part of the JSON response
       return jsonify(success=False, error=str(e)), 400
@@ -236,27 +243,40 @@ def merch_details(product_id):
 @website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
 def preorder(product_id):
     from app import mysql
-    from flask import request, flash, redirect, url_for
 
-    size = request.form.get('size')
-    quantity = int(request.form.get('quantity', 1))
+    size = request.form.get('selectedSizes')
+    quantity = request.form.get("quantity")
 
-    if not size or quantity <= 0:
-        flash("Invalid size or quantity.", "danger")
+    # Input and Picture validation
+    try:
+      quantityCheck = int(quantity)
+      
+      if not size:
+        flash("Please pick a size before pre-ordering.", "warning")
         return redirect(url_for('website.merch_details', product_id=product_id))
+      if not 1 <= quantityCheck <= 20 :
+        flash("Quantity should only be between 0 and 20.", "warning")
+        return redirect(url_for('website.merch_details', product_id=product_id))
+    except ValueError:
+      flash("Quantity should only numbers", "danger")
+      return redirect(url_for('website.merch_details', product_id=product_id))
 
-    cursor = mysql.connection.cursor()
-    cursor.execute(
-        "UPDATE products SET preorder_count = preorder_count + %s WHERE product_id = %s",
-        (quantity, product_id)
-    )
-
-    cursor.execute(
-        "INSERT INTO product_preorders (product_id, size, quantity) VALUES (%s, %s, %s)",
-        (product_id, size, quantity)
-    )
-    mysql.connection.commit()
-    cursor.close()
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute(
+            """
+              UPDATE product_sizes
+              SET product_quantity = product_quantity + %s 
+              WHERE product_id = %s and size_id = %s
+            """,
+            (quantity, product_id, size)
+        )
+        mysql.connection.commit()
+        cursor.close()
+    except Exception as e:
+      print(f"Error occurred: {e}")
+      flash("Something went wrong while pre-ordering the product. Please order again later...", "danger")
+      return redirect(url_for('website.merch_details', product_id=product_id))
 
     flash("Your pre-order was successful!", "success")
-    return redirect(url_for('website.merch_details', product_id=product_id))
+    return redirect(url_for('website.explore'))

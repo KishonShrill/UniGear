@@ -100,7 +100,7 @@
             <button type="button" class="size-btn" data-size="5">XL</button>
             <button type="button" class="size-btn" data-size="6">2XL</button>
         
-            <input type="hidden" name="selectedSizes" id="selectedSizes">
+            <input type="hidden" name="selectedSizes" id="selectedSizes" form="pre_order-form">
           </div>
         </div>
       </div>
@@ -108,10 +108,11 @@
       <hr />
 
       <!-- Quantity and button-->
-      <form action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
+      <form id="pre_order-form" action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
+        {{ form.csrf_token }}
         <div class="product__quantity-input">
           <label for="quantity">QUANTITY</label>
-          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+          <input type="number" id="quantity" name="quantity" min="1" value="2" required>
         </div>
         <input class="preorder-btn" id="pre_order" name="pre_order" type="submit" value="PRE-ORDER">
       </form>
