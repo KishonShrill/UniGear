@@ -99,11 +99,11 @@ class User(object):
         cursor = mysql.connection.cursor()
         cursor.execute("""
             INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role)
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """, (name, email, generated_password, contact, address, "user"))
 
         mysql.connection.commit()
         user_id = cursor.lastrowid  # Get the user_id of the newly inserted user
         cursor.close()
 
-        return cls(user_id=user_id, user_name=name, user_email=email)
+        return cls(user_id=user_id, user_name=name, user_email=email, user_role="user")

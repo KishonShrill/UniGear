@@ -10,7 +10,7 @@
 
 {% block content %}
   <!-- Header -->
-  {{ components.render_header() }}
+  {{ components.render_header(user=session['name']) }}
 
   <!-- Main Content -->
   <main class="product">

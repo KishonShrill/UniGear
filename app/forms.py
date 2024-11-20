@@ -8,11 +8,11 @@ class ProductForm(FlaskForm):
   pre_order = SubmitField()
 
 class LinkVerify(FlaskForm):
-  ...
+  log_in = SubmitField()
   
 # Create a form class using Flask-WTF
 class SignUpForm(FlaskForm):
-    username = StringField('Username')
-    email = StringField('Email')
-    password = PasswordField('Password')
-    repassword = PasswordField('Re-enter Password')
+  username = StringField('Username', validators=[InputRequired()])
+  email = StringField('Email', validators=[InputRequired()])
+  password = PasswordField('Password', validators=[InputRequired()])
+  repassword = PasswordField('Re-enter Password', validators=[InputRequired()])

@@ -1,9 +1,17 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request
+from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort
 from app.forms import ProductForm
 
 
 website_bp = Blueprint('website', __name__)
 
+
+def login_is_required(function):
+  def wrapper(*args, **kwargs):
+    if "id" not in session:
+      return abort(401)
+    return function(*args, **kwargs)
+  wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
+  return wrapper
 
 # Landing Page Route
 @website_bp.route('/')
@@ -142,6 +150,7 @@ def merch_details(product_id):
     )
 
 @website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
+@login_is_required
 def preorder(product_id):
     from app import mysql
 
