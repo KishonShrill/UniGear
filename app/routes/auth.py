@@ -145,7 +145,7 @@ def google_callback():
       token, 
       requests.Request(), 
       audience="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
-      clock_skew_in_seconds=5,  # Adjust the skew tolerance
+      clock_skew_in_seconds=1000,  # Adjust the skew tolerance
       )
     
     # Store user info in the session
@@ -156,11 +156,15 @@ def google_callback():
     
     # Check if user exists or create new one
     user = User.get_by_email(idinfo.get('email'))
+    print(f"User: {user}")
+    session['role'] = user.user_role
     
     if not user:
       user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
       print(f"I am a: {user.user_role}")
       session['role'] = user.user_role
+    
+    print(f"I am a: {user.user_role}")
 
     flash(f"Welcome {idinfo.get('name')}", "success")
     return redirect(url_for('website.explore'))
