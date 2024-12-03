@@ -25,6 +25,9 @@ def create_app(test_config=None):
     @app.errorhandler(404)
     def not_found(e):
         return render_template("./components/404.html")
+    @app.errorhandler(401)
+    def not_logged_in(e):
+        return render_template("./components/401.html")
 
     cloudinary.config(
         cloud_name=CLOUD_NAME,

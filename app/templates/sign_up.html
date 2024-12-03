@@ -1,219 +1,220 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <!-- Meta tags for character set and viewport settings -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Title of the page displayed in the browser tab -->
-  <title>UniGear Registration</title>
+{% extends "master_blueprint/base.html" %}
 
-  <!-- External fonts loaded from Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> <!-- Poppins font for general text -->
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> <!-- Bebas Neue for the main heading "UNIGEAR" -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet"> <!-- Inter for the subheading text -->
+{% import "components/macros.html" as components %}
 
-  <style>
-    /* Reset margins, padding, and box-sizing for consistent layout */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
+{% block head %}
+<title>UniGear Registration</title>
 
-    body, html {
-      height: 100%;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #f0f0f0;
-    }
+<!-- External fonts loaded from Google Fonts -->
 
-    .container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      position: relative;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> <!-- Poppins font for general text -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> <!-- Bebas Neue for the main heading "UNIGEAR" -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet"> <!-- Inter for the subheading text -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
 
-    .background-image {
-      position: absolute;
-      inset: 0;
-      background: url("{{ url_for('static', filename='images/Landingpage.jpg') }}") center center/cover no-repeat;
-      z-index: 1;
-      filter: brightness(0.7);
-    }
+<style>
+  /* Reset margins, padding, and box-sizing for consistent layout */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
 
-    .left-section {
-      width: 40%;
-      background-color: rgba(255, 255, 255, 0.85);
-      padding: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-      z-index: 1;
-    }
+  body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+  }
 
-    .left-section h1 {
-      font-size: 40px;
-      font-weight: 600;
-      margin-bottom: 40px;
-      color: #000;
-    }
+  .container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    position: relative;
+  }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+  .background-image {
+    position: absolute;
+    inset: 0;
+    background: url("{{ url_for('static', filename='images/Landingpage.jpg') }}") center center/cover no-repeat;
+    z-index: 1;
+    filter: brightness(0.7);
+  }
 
-    .form-group input {
+  .left-section {
+    width: 40%;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+  }
+
+  .left-section h1 {
+    font-size: 40px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: #000;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .form-group input[type="submit"] {
+    background-color: black;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .form-group input[type="submit"]:hover {
+    background-color: #333;
+  }
+
+  .signup-link {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #000;
+    width: 100%;
+    text-align: center;
+  }
+
+  .signup-link a {
+    color: #3ba74d;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .signup-link a:hover {
+    text-decoration: underline;
+  }
+
+  .right-section {
+    width: 60%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .right-overlay {
+    position: relative;
+    z-index: 1;
+  }
+
+  .right-overlay h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 250px;
+    font-weight: 400;
+    line-height: 200px;
+    letter-spacing: -5px;
+    text-align: left;
+    color: white;
+    padding-top: 240px;
+    margin-bottom: -10px;
+  }
+
+  .right-overlay p {
+    font-family: 'Inter', sans-serif;
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 1;
+    text-align: right;
+    color: white;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  @media (max-width: 768px) {
+    .left-section, .right-section {
       width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .form-group input[type="submit"] {
-      background-color: black;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: background-color 0.3s ease;
-    }
-
-    .form-group input[type="submit"]:hover {
-      background-color: #333;
-    }
-
-    .signup-link {
-      margin-top: 20px;
-      font-size: 14px;
-      color: #000;
-      width: 100%;
-      text-align: center;
-    }
-
-    .signup-link a {
-      color: #3ba74d;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .signup-link a:hover {
-      text-decoration: underline;
-    }
-
-    .right-section {
-      width: 60%;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-align: center;
-      z-index: 1;
-    }
-
-    .right-overlay {
-      position: relative;
-      z-index: 1;
+      padding: 20px;
     }
 
     .right-overlay h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 250px;
-      font-weight: 400;
-      line-height: 200px;
-      letter-spacing: -5px;
-      text-align: left;
-      color: white;
-      padding-top: 240px;
-      margin-bottom: -10px;
+      font-size: 120px;
     }
 
     .right-overlay p {
-      font-family: 'Inter', sans-serif;
-      font-size: 30px;
-      font-weight: 300;
-      line-height: 1;
-      text-align: right;
-      color: white;
-      padding-top: 0;
-      margin-top: 0;
+      font-size: 18px;
     }
+  }
+</style>
+{% endblock %}
 
-    @media (max-width: 768px) {
-      .left-section, .right-section {
-        width: 100%;
-        padding: 20px;
-      }
-
-      .right-overlay h2 {
-        font-size: 120px;
-      }
-
-      .right-overlay p {
-        font-size: 18px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="background-image"></div>
+{% block content %}
+<div class="container">
+  <div class="background-image"></div>
+  
+  <div class="left-section">
+    <h1 style="white-space: nowrap;">Create your account</h1> 
+    <form method="POST" action="{{ url_for('auth.sign_up2') }}">
+      <!-- Render CSRF token -->
+      {{ form.csrf_token }}
+      
+      <div class="form-group">
+        <label for="username">Username</label>
+        <!-- Render the username field from the form object -->
+        {{ form.username(class="form-control", placeholder="Enter your username") }}
+      </div>
     
-    <div class="left-section">
-      <h1 style="white-space: nowrap;">Create your account</h1> 
-      <form method="POST" action="{{ url_for('auth.sign_up2') }}">
-        <!-- Render CSRF token -->
-        {{ form.csrf_token }}
-        
-        <div class="form-group">
-          <label for="username">Username</label>
-          <!-- Render the username field from the form object -->
-          {{ form.username(class="form-control", placeholder="Enter your username") }}
-        </div>
-      
-        <div class="form-group">
-          <label for="email">Email</label>
-          <!-- Render the email field from the form object -->
-          {{ form.email(class="form-control", placeholder="Enter your email") }}
-        </div>
-      
-        <div class="form-group">
-          <label for="password">Password</label>
-          <!-- Render the password field from the form object -->
-          {{ form.password(class="form-control", placeholder="Enter your password") }}
-        </div>
-      
-        <div class="form-group">
-          <label for="repassword">Re-enter Password</label>
-          <!-- Render the repassword field from the form object -->
-          {{ form.repassword(class="form-control", placeholder="Re-enter your password") }}
-        </div>
-      
-        <div class="form-group">
-          <input type="submit" value="Continue">
-        </div>
-      </form>
-      
-      <div class="signup-link">
-        Already have an account? <a href="{{ url_for('auth.sign_in') }}">Log In</a>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <!-- Render the email field from the form object -->
+        {{ form.email(class="form-control", placeholder="Enter your email") }}
       </div>
-    </div>
-
-    <div class="right-section">
-      <div class="right-overlay">
-        <h2>UNIGEAR</h2>
-        <p>Wear your college legacy with pride</p>
+    
+      <div class="form-group">
+        <label for="password">Password</label>
+        <!-- Render the password field from the form object -->
+        {{ form.password(class="form-control", placeholder="Enter your password") }}
       </div>
+    
+      <div class="form-group">
+        <label for="repassword">Re-enter Password</label>
+        <!-- Render the repassword field from the form object -->
+        {{ form.repassword(class="form-control", placeholder="Re-enter your password") }}
+      </div>
+    
+      <div class="form-group">
+        <input type="submit" value="Continue">
+      </div>
+    </form>
+    
+    <div class="signup-link">
+      Already have an account? <a href="{{ url_for('auth.sign_in') }}">Log In</a>
     </div>
   </div>
-</body>
-</html>
+
+  <div class="right-section">
+    <div class="right-overlay">
+      <h2>UNIGEAR</h2>
+      <p>Wear your college legacy with pride</p>
+    </div>
+  </div>
+</div>
+{{ components.render_alerts() }}
+{% endblock %}

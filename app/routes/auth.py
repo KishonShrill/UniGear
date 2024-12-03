@@ -46,9 +46,56 @@ def sign_in():
   return render_template('sign_in.html', form=form)
 
 # The route to render the sign-up page
-@auth_bp.route('/sign-up', methods=['GET', 'POST'])
+@auth_bp.route('/sign-up')
 def sign_up():
-  ...
+  form = SignUpForm()
+  return render_template('sign_up.html', form=form)  # Pass the form to the template
+
+@auth_bp.route('/sign-up2', methods=['GET', 'POST'])
+def sign_up2():
+  form = SignUpForm()
+  if request.method == 'POST':
+    # Check if password confirmation match
+    if form.password.data != form.repassword.data:
+      flash("Password confirmation don't match", "warning")
+      return redirect(url_for('auth.sign_up'))
+    
+    # Handle form submission
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    
+    return render_template('sign_up2.html', username=username, email=email, password=password, form=form)
+  if request.method == 'GET':
+    return redirect(url_for('auth.sign_up'))
+  
+@auth_bp.route('/sign-up/submit', methods=['GET', 'POST'])
+def submit_sign_up():
+  if request.method == 'POST':
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    city = request.form.get('city')
+    barangay = request.form.get('barangay')
+    street = request.form.get('address')
+    contact = request.form.get('contact')
+    
+    # Combine the address
+    address = f"{street}, {barangay}, {city}"
+    
+    # Check if user exists or create new one
+    user = User.get_by_email(email)
+    
+    if not user:
+      print(f"Debug: {username}, {email}, {password}, {contact}, {address}")
+      user = User.create_from_website(username, email, password, contact, address)
+      
+    flash(f"Account created successfully...", "success")
+    return redirect(url_for('auth.sign_in'))
+  
+  if request.method == "GET":
+    abort(404)
+  
 
 @auth_bp.route('/auth/callback', methods=['POST'])
 def callback():
@@ -98,7 +145,7 @@ def google_callback():
       token, 
       requests.Request(), 
       audience="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
-      clock_skew_in_seconds=5,  # Adjust the skew tolerance
+      clock_skew_in_seconds=1000,  # Adjust the skew tolerance
       )
     
     # Store user info in the session
@@ -109,11 +156,15 @@ def google_callback():
     
     # Check if user exists or create new one
     user = User.get_by_email(idinfo.get('email'))
+    print(f"User: {user}")
+    session['role'] = user.user_role
     
     if not user:
       user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
       print(f"I am a: {user.user_role}")
       session['role'] = user.user_role
+    
+    print(f"I am a: {user.user_role}")
 
     flash(f"Welcome {idinfo.get('name')}", "success")
     return redirect(url_for('website.explore'))

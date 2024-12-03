@@ -1,13 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
   <title>UniGear Registration</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
 
   <style>
     * {
@@ -158,14 +160,17 @@
       }
     }
   </style>
-</head>
-<body>
+{% endblock %}
+{% block content %}
   <div class="container">
     <div class="background-image"></div>
     
     <div class="left-section">
       <h1 style="white-space: nowrap;">Create your account</h1> 
-      <form id="register-form" method="POST" action="{{ url_for('auth.sign_up') }}">
+      <form id="register-form" method="POST" action="{{ url_for('auth.submit_sign_up') }}">
+        <!-- Render CSRF token -->
+        {{ form.csrf_token }}
+        
         <div class="form-group">
           <label for="city">City</label>
           <input type="text" id="city" name="city" placeholder="Enter your city" required>
@@ -186,6 +191,10 @@
           <input type="tel" id="contact" name="contact" placeholder="Enter your contact number" required>
         </div>
 
+        <input type="hidden" name="username" value="{{ form.username.data }}">
+        <input type="hidden" name="email" value="{{ form.email.data }}">
+        <input type="hidden" name="password" value="{{ form.password.data }}">
+        
         <div class="form-group">
           <input name="submit" type="submit" value="Sign Up">
         </div>
@@ -203,5 +212,5 @@
       </div>
     </div>
   </div>
-</body>
-</html>
+  {{ components.render_alerts() }}
+{% endblock %}
