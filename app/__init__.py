@@ -45,11 +45,13 @@ def create_app(test_config=None):
     from app.routes.website import website_bp
     from app.routes.colleges import colleges_bp
     from app.routes.seller import seller_bp
+    from app.routes.user import user_bp
 
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(website_bp)
     app.register_blueprint(colleges_bp)
     app.register_blueprint(seller_bp)
+    app.register_blueprint(user_bp)
 
     return app
