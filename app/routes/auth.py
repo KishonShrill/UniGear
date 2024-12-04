@@ -156,15 +156,10 @@ def google_callback():
     
     # Check if user exists or create new one
     user = User.get_by_email(idinfo.get('email'))
-    print(f"User: {user}")
     session['role'] = user.user_role
     
-    if not user:
-      user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
-      print(f"I am a: {user.user_role}")
-      session['role'] = user.user_role
-    
-    print(f"I am a: {user.user_role}")
+    # print(f"User: {user}")  # TODO: For debugging purposes only
+    # print(f"I am a: {user.user_role}") # TODO: For debugging purposes only
 
     flash(f"Welcome {idinfo.get('name')}", "success")
     return redirect(url_for('website.explore'))
