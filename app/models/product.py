@@ -3,8 +3,8 @@ from datetime import datetime
 from flask import current_app
 
 class Product(object):
-    def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None):
-        self.product_id = None
+    def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None, product_id=None):
+        self.product_id = product_id
         self.product_name = product_name
         self.description = description
         self.hook = hook
@@ -63,6 +63,32 @@ class Product(object):
         product = cursor.fetchone()
         cursor.close()
         return product
+    
+    @staticmethod
+    def get_by_id(product_id):
+        """Retrieve a product by its name."""
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            SELECT product_id, product_name, description, hook, type, price, order_type, seller_id
+            FROM products
+            WHERE product_id = %s
+        """, (product_id,))  # Note the comma to make it a tuple
+        result = cursor.fetchone()
+        cursor.close()
+        
+        if result:
+            # Unpack and return a User object
+            return Product(
+                product_id = result[0],
+                product_name = result[1],
+                description = result[2],
+                hook = result[3],
+                type = result[4],
+                price = result[5],
+                order_type = result[6],
+                seller_id = result[7]
+            )
+        return None  # If no match, return None
 
     @staticmethod
     def update(product_id, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
@@ -109,7 +135,8 @@ class Product(object):
                 s.size_name,
                 ob.quantity,
                 p.order_type,
-                ob.purchase_date
+                p.order_status,
+                ob.order_date
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
@@ -133,7 +160,62 @@ class Product(object):
                     'Size': row[4],
                     'Quantity': row[5],
                     'Status': row[6],
-                    'Purchase Date': row[7]
+                    'Order Date': row[7]
+                }
+                orders.append(order)
+
+            # Close the cursor and connection
+            cursor.close()
+
+            return orders  # Return the orders list
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            return None
+        
+        
+    @staticmethod
+    def getOrdersWithEmail(email):
+        try:
+            # Create a connection object
+            cursor = mysql.connection.cursor()
+
+            # Define the SQL query
+            query = """
+            SELECT 
+                ob.order_id,
+                p.product_name,
+                s.size_name,
+                ob.quantity,
+                ob.total_cost,
+                p.order_type,
+                ob.order_status,
+                ob.order_date
+            FROM ordered_by ob
+            JOIN user u ON ob.user_id = u.user_id
+            JOIN products p ON ob.product_id = p.product_id
+            JOIN sizes s ON ob.size_id = s.size_id
+            WHERE user_email = %s;
+            """
+
+            # Execute the query
+            cursor.execute(query, (email,))
+
+            # Fetch all results
+            result = cursor.fetchall()
+
+            # Process the results into a list of dictionaries
+            orders = []
+            for row in result:
+                order = {
+                    'Order': row[0],
+                    'Product': row[1],
+                    'Size': row[2],
+                    'Quantity': row[3],
+                    'Total Cost': row[4],
+                    'Type': row[5],
+                    'Status': row[6],
+                    'Order Date': row[7]
                 }
                 orders.append(order)
 
