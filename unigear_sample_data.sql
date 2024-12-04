@@ -27,7 +27,7 @@ CREATE TABLE if NOT EXISTS `organization` (
 DROP TABLE if EXISTS `user`;
 CREATE TABLE if NOT EXISTS `user` (
 	user_id INT AUTO_INCREMENT PRIMARY KEY,
-	user_name VARCHAR(30) NOT NULL,
+	user_name VARCHAR(199) NOT NULL,
 	user_email VARCHAR(99) NOT NULL,
 	user_password VARCHAR(199) DEFAULT NULL,
 	user_contact CHAR(11) DEFAULT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 	quantity INT NOT NULL,
 	total_cost DECIMAL(10, 2) NOT NULL,
 	order_status BOOLEAN NOT NULL,
-	purchase_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `fk_order_user` FOREIGN KEY (user_id) REFERENCES `user` (user_id),
 	CONSTRAINT `fk_order_product` FOREIGN KEY (product_id) REFERENCES `products` (product_id),
 	CONSTRAINT `fk_order_size` FOREIGN KEY (size_id) REFERENCES `sizes` (size_id)
@@ -187,7 +187,77 @@ INSERT INTO user (user_name, user_email, user_password, user_contact, user_addre
 ('Ella Chen', 'ella.chen@example.com', 'securepassword5', '5432109876', '987 Ocean St, Iligan City', 'seller', 'COET-EC'), 
 ('Frank Martinez', 'frank.martinez@example.com', 'securepassword6', '4321098765', '135 Mountain St, Iligan City', 'user', 'CON-EC'), 
 ('Grace Wong', 'grace.wong@example.com', 'securepassword7', '3210987654', '246 Valley St, Iligan City', 'user', 'CON-EC'), 
-('Unigear Admin', 'unigear@gmail.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CCS-EC');
+('Unigear Admin', 'unigear@gmail.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CCS-EC'),
+('Emmanuel Fitz Ciano', 'emmanuelfitz.ciano@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CASS-EC'),
+('Hussam Bansao', 'hussam.bansao@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CEBA-EC'),
+('Lavigne Sistona', 'lavignekaye.sistona@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CASS-EC'),
+('Chriscent Pingol', 'chriscentlouisjune.pingol@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CCS-EC');
+-- /\ /\ /\ INSERT YOUR ACCOUNT HERE /\ /\ /\
+-- /\ /\ /\ INSERT YOUR ACCOUNT HERE /\ /\ /\
+-- /\ /\ /\ INSERT YOUR ACCOUNT HERE /\ /\ /\
+
+-- CSM Organizations
+INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role, org_id) VALUES
+('CSM Chemistry Society', 'csm.chemsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CHEMSOC'),
+('CSM Haynayan Society', 'csm.haynayan@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'HAYNAYAN'),
+('CSM Kapisanan ng mga Mag-aaral sa Pisika', 'csm.kmp@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'KMP'),
+('CSM Marine Science Students Society', 'csm.massts@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'MASSTS'),
+('CSM Statistics and Mathematics Society', 'csm.smas@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'SMAS'),
+('CSM Biological Sciences Graduate Society', 'csm.bsgs@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'BSGS'),
+
+-- CED Organizations
+('CED Association of Students Educators in Science and Math', 'ced.assssma@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'ASSESMA'),
+('CED Physical Education Student Organization', 'ced.dpeso@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'DPESO'),
+('CED SIDLAK', 'ced.sidlak@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'SIDLAK'),
+('CED Society of Language Educators', 'ced.sled@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'SLED'),
+('CED Student Tech and Entrep of the Philippines', 'ced.step@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'STEP'),
+
+-- COET Organizations
+('COET Junior Philippine Institute of Civil Engineers', 'coet.jpice@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPICE'),
+('COET Association of Civil Engineering Students', 'coet.aces@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'ACES'),
+('COET Ceramics Engineering Society', 'coet.ceres@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CERES'),
+('COET Electrical Engineering Technology Society', 'coet.elets@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'ELETS'),
+('COET Guild of Mining Engineering Students', 'coet.gmes@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'GEMS'),
+('COET Institute of Computer Engineering of the Phil SE', 'coet.icepse@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'ICEPSE'),
+('COET Institute of Integrated Electrical Engineering Students', 'coet.iiees@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'IIEES'),
+('COET Junior Institute of Elec and comm Engineering of the Phil', 'coet.jiecep@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JIECEP'),
+('COET Junior Phillipines Institute of Chemical Engineers', 'coet.jpiche@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPICHE'),
+('COET Junior Phillipine Society of Mechanical Engineers', 'coet.jpsm@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPSME'),
+('COET Junior Society of Metallurgical Engineers of the Phil', 'coet.jsmep@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JSMEP'),
+('COET Department of Chemical Engineering Technology', 'aghimuan society', NULL, NULL, NULL, 'seller', 'AGHIMUAN'),
+('COET Junior Society Of Environmental Engineers of the Philippines', 'coet.jseep@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JSEEP'),
+('COET Materials Engineering Technology Society', 'masetso.mmt@gmail.com', NULL, NULL, NULL, 'seller', 'MaSETSo'),
+('COET Junior Industrial Automation @ Mechatronics Society', 'societyofjiams@gmail.com', NULL, NULL, NULL, 'seller', 'JIAMS'),
+
+-- CASS Organizations
+('Katastaasang Sanggunian ng mga Mag-aaral', 'kasama@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'KASAMA'),
+('CASS Historical society', 'cass.histsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'HISTORYSOC'),
+('CASS Junior Philosophers Guild', 'cass.jpg@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPG'),
+('CASS Kabataang Pilipinong Aakay sa Bayan', 'cass.kapilasbayan@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'KAPILAS BAYAN'),
+('CASS Political Science Society', 'cass.pss.@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'PSS'),
+('CASS Psychology Society', 'cass.psychsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'PSHCH-SOC'),
+('CASS Sociology Society', 'cass.sociosoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'SOCIO'),
+('CASS Literature, Language, and Culture Society', 'cass.abeo@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'LILACS'),
+
+-- CEBA Organizations
+('CEBA Junior Economics Society', 'cbaa.jes@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JES'),
+('CEBA Junior Entrepreneurship and Marketing Society', 'cbaa.jems@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JEMS'),
+('CEBA Society of Hospitality and Tourism Management', 'cbaa.shtm@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'SHTM'),
+('CEBA Junior Philippine Institute of Accountants', 'cbaa.jpia@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPIA'),
+
+-- CCS Organizations
+('CCS Computer Application Officers', 'ccs.cao@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'COM-APPS'),
+('CCS Computer Science Society', 'ccs.comsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'COM-SOC'),
+('CCS Junior Information Technology Society', 'ccs.jits@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JITS'),
+
+-- Executive Councils
+('CASS Executive Council', 'cass.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CASS-EC'),
+('CEBA Executive Council', 'cbaa.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CEBA-EC'),
+('CCS Executive Council', 'ccs.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CCS-EC'),
+('CED Executive Council', 'ced.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CED-EC'),
+('COET Executive Council', 'coet.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'COET-EC'),
+('CON Executive Council', 'con.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CON-EC'),
+('CSM Executive Council', 'csm.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CSM-EC');
 
 INSERT INTO sizes (size_name) VALUES 
 ('XS'),
