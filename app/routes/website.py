@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort
+from app.models.product import Product
+from app.models.user import User
 from app.forms import ProductForm
 
 
@@ -152,6 +154,9 @@ def merch_details(product_id):
 @website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
 @login_is_required
 def preorder(product_id):
+    user = User.get_by_email(session['email'])
+    product = Product.get_by_id(product_id)
+    
     from app import mysql
 
     size = request.form.get('selectedSizes')
@@ -180,6 +185,13 @@ def preorder(product_id):
               WHERE product_id = %s and size_id = %s
             """,
             (quantity, product_id, size)
+        )
+        cursor.execute(
+            """
+              INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, order_status) VALUES 
+              (%s, %s, %s, %s, %s, 0);
+            """,
+            (user.user_id, product_id, size, quantity, product.price)
         )
         mysql.connection.commit()
         cursor.close()
