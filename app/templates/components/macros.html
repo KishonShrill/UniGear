@@ -1,7 +1,7 @@
-{% macro render_header(user=None) %}
+{% macro render_header(user=None, role=None) %}
 <header>
     <div class="logo">
-        <h1>UNIGEAR</h1>
+        <a href="{{ url_for('website.explore') }}">UNIGEAR</a>
     </div>
     <div class="search-bar">
         <input type="text" placeholder="Search...">
@@ -9,7 +9,11 @@
     </div>
     <div class="nav-links">
         {% if user %}
-            <a href="#">Dashboard</a>
+            {% if role == "seller" %}
+                <a href="{{ url_for('seller.my_orders') }}">Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('user.my_orders') }}">My Orders</a>
+            {% endif %}
             <a href="{{ url_for('auth.logout') }}">Log Out</a>
         {% else %}
             <a href="{{ url_for('auth.sign_up') }}">Sign Up</a>
@@ -59,4 +63,48 @@
     {% endif %}
 {% endwith %}
 </div>
+{% endmacro %}
+
+{% macro render_aside(role=None) %}
+<aside>
+    <div class="aside__tools" href="#">
+        <!-- <a class="aside__links">
+            <img src="{{ url_for('static', filename='images/dashboard-square-add-stroke-rounded.svg') }}" alt="Dashboard Logo">
+            <p>Dashboard</p>
+        </a> -->
+        {% if role == "seller" %}
+            <a class="aside__links" href="#">
+                <img src="{{ url_for('static', filename='images/sale-tag-01-stroke-rounded.svg') }}" alt="My Products Logo">
+                <p>My Products</p>
+            </a>
+            <a class="aside__links" href="{{ url_for('seller.my_orders') }}" visit>
+                <img src="{{ url_for('static', filename='images/container-truck-02-stroke-rounded.svg') }}" alt="Orders Logo">
+                <p>Orders</p>
+            </a>
+        {% else %}
+            <a class="aside__links" href="{{ url_for('user.my_orders') }}" visit>
+                <img src="{{ url_for('static', filename='images/container-truck-02-stroke-rounded.svg') }}" alt="Orders Logo">
+                <p>My Orders</p>
+            </a>
+            <a class="aside__links" href="#" visit>
+                <img src="#" alt="Add Logo for wishlist diri">
+                <p>My Wishlist</p>
+            </a>
+        {% endif %}
+    </div>
+    <div class="aside__account">
+        <a class="aside__links">
+            <img src="{{ url_for('static', filename='images/students-stroke-rounded.svg') }}" alt="College Logo">
+            <p>College: {{ session['org_id'] }}</p>
+        </a>
+        <hr />
+        <a class="aside__links">
+            <img src="{{ url_for('static', filename='images/user-circle-stroke-rounded.svg') }}" alt="Profile">
+            <div class="aside__account-info">
+                <p class="aside__account-info-title">Account</p>
+                <p class="aside__account-info-email">chriscentlouisjune.pingol@g.msuiit.edu.ph</p>
+            </div>
+        </a>
+    </div>
+  </aside>
 {% endmacro %}

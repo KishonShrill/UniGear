@@ -135,7 +135,7 @@ class Product(object):
                 s.size_name,
                 ob.quantity,
                 p.order_type,
-                p.order_status,
+                ob.order_status,
                 ob.order_date
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id

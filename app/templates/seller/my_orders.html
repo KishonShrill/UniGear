@@ -10,40 +10,11 @@
 
 {% block content %}
   <!-- Header -->
-  {{ components.render_header(user=session['name']) }}
+  {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
   <main class="orders">
-    <aside>
-      <div class="aside__tools" href="#">
-        <a class="aside__links">
-          <img src="{{ url_for('static', filename='images/dashboard-square-add-stroke-rounded.svg') }}" alt="Dashboard Logo">
-          <p>Dashboard</p>
-        </a>
-        <a class="aside__links" href="#">
-          <img src="{{ url_for('static', filename='images/sale-tag-01-stroke-rounded.svg') }}" alt="My Products Logo">
-          <p>My Products</p>
-        </a>
-        <a class="aside__links" href="{{ url_for('seller.my_orders') }}" visit>
-          <img src="{{ url_for('static', filename='images/container-truck-02-stroke-rounded.svg') }}" alt="Orders Logo">
-          <p>Orders</p>
-        </a>
-      </div>
-      <div class="aside__account">
-        <a class="aside__links">
-          <img src="{{ url_for('static', filename='images/students-stroke-rounded.svg') }}" alt="College Logo">
-          <p>College: <span id="org-id"></span></p>
-        </a>
-        <hr />
-        <a class="aside__links">
-          <img src="{{ url_for('static', filename='images/user-circle-stroke-rounded.svg') }}" alt="Profile">
-          <div class="aside__account-info">
-            <p class="aside__account-info-title">Account</p>
-            <p class="aside__account-info-email">chriscentlouisjune.pingol@g.msuiit.edu.ph</p>
-          </div>
-        </a>
-      </div>
-    </aside>
+    {{ components.render_aside(role=session['role']) }} 
 
     <section class="content">
       <div class="content-container content-header">
@@ -57,7 +28,7 @@
       <div class="content-container content-data">
         <div class="content-searchbar">
           <img src="{{ url_for('static', filename='images/search-02-stroke-rounded.svg') }}" alt="">
-          <input type="text" placeholder="Search by order#, customer, or product name" value="" />
+          <input id="searchBar" type="text" placeholder="Search by order#, customer, or product name" value="" />
         </div>
 
         <div class="content-database">
@@ -77,7 +48,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr>
+              <tr value="{{ order['Order'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Customer'] }}</td>
@@ -102,56 +73,104 @@
     </section>
   </main>
 
+  <!-- Dialog -->
+  <dialog class="modal" data-modal>
+    <div></div>
+    <img src="#" alt="#">
+    <button data-close-modal >Close</button>
+  </dialog>
+
   <!-- Footer -->
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
 
   <script>
-// JavaScript for row click highlight and checkbox toggle
-const rows = document.querySelectorAll("table tbody tr");
-const checkAll = document.getElementById("checkAll");
+    // JavaScript for row click highlight and checkbox toggle
+    const rows = document.querySelectorAll("table tbody tr");
+    const checkAll = document.getElementById("checkAll");
 
-rows.forEach(row => {
-  const checkbox = row.querySelector("input[type='checkbox']"); 
+    let lastClickedRow = null;
+    let clickCount = 0;
 
-  row.addEventListener("click", (e) => {
-    if (e.target !== checkbox && !e.target.closest("input[type='checkbox']")) {
-      rows.forEach(r => {
-        r.classList.remove("highlight"); 
-        r.querySelector("input[type='checkbox']").checked = false; 
+    rows.forEach(row => {
+      const checkbox = row.querySelector("input[type='checkbox']"); 
+
+      row.addEventListener("click", (e) => {
+        if (e.target !== checkbox && !e.target.closest("input[type='checkbox']")) {
+          const orderValue = row.getAttribute("value"); // Get the 'value' attribute from the <tr>
+
+          // Check if the same row was clicked twice consecutively
+          if (lastClickedRow === row) {
+            clickCount++;
+            if (clickCount === 2) {
+              openModal(orderValue); // Open modal on the second click
+              clickCount = 0; // Reset click count after opening the modal
+            }
+          } else {
+            // Reset the click count and set the new last clicked row
+            lastClickedRow = row;
+            clickCount = 1;
+
+            // Reset all other rows
+            rows.forEach(r => {
+              r.classList.remove("highlight");
+              r.querySelector("input[type='checkbox']").checked = false;
+            });
+
+            // Highlight the clicked row and check its checkbox
+            row.classList.add("highlight");
+            checkbox.checked = true;
+
+            checkAll.checked = false;
+          }
+        }
       });
 
-      // Highlight the clicked row and check its checkbox
-      row.classList.add("highlight");
-      checkbox.checked = true;
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          row.classList.add("highlight");
+        } else {
+          row.classList.remove("highlight");
+        }
+      });
+    });
 
-      checkAll.checked = false;
-    }
-  });
+    // Check All functionality
+    checkAll.addEventListener("change", () => {
+      const isChecked = checkAll.checked;
 
-  checkbox.addEventListener("change", () => {
-    if (checkbox.checked) {
-      row.classList.add("highlight");
-    } else {
-      row.classList.remove("highlight");
-    }
-  });
-});
-
-// Check All functionality
-checkAll.addEventListener("change", () => {
-  const isChecked = checkAll.checked;
-
-  rows.forEach(row => {
-    const checkbox = row.querySelector("input[type='checkbox']");
-    checkbox.checked = isChecked; 
-    if (isChecked) {
-      row.classList.add("highlight"); 
-    } else {
-      row.classList.remove("highlight"); 
-    }
-  });
-});
+      rows.forEach(row => {
+        const checkbox = row.querySelector("input[type='checkbox']");
+        checkbox.checked = isChecked; 
+        if (isChecked) {
+          row.classList.add("highlight"); 
+        } else {
+          row.classList.remove("highlight"); 
+        }
+      });
+    });
 
   </script>
+  <script>
+    // JavaScript for filtering table rows based on search input
+    const searchBar = document.getElementById("searchBar");
+    const tableRows = document.querySelectorAll("table tbody tr");
+
+    searchBar.addEventListener("input", () => {
+      const searchText = searchBar.value.toLowerCase(); // Get the search text and convert to lowercase
+
+      tableRows.forEach(row => {
+        const orderNumber = row.children[1].textContent.toLowerCase(); // Order# column
+        const productName = row.children[2].textContent.toLowerCase(); // Product column
+
+        // Check if either Order# or Product Name matches the search text
+        if (orderNumber.includes(searchText) || productName.includes(searchText)) {
+          row.style.display = ""; // Show the row if it matches
+        } else {
+          row.style.display = "none"; // Hide the row if it doesn't match
+        }
+      });
+    });
+  </script>
+  <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
 {% endblock %}
