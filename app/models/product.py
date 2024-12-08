@@ -140,7 +140,8 @@ class Product(object):
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
-            JOIN sizes s ON ob.size_id = s.size_id;
+            JOIN sizes s ON ob.size_id = s.size_id
+            ORDER BY ob.order_id ASC;
             """
 
             # Execute the query
@@ -159,8 +160,9 @@ class Product(object):
                     'Product': row[3],
                     'Size': row[4],
                     'Quantity': row[5],
-                    'Status': row[6],
-                    'Order Date': row[7]
+                    'Type': row[6],
+                    'Status': row[7],
+                    'Order Date': row[8]
                 }
                 orders.append(order)
 
@@ -195,7 +197,8 @@ class Product(object):
             JOIN user u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
-            WHERE user_email = %s;
+            WHERE user_email = %s
+            ORDER BY ob.order_id ASC;
             """
 
             # Execute the query

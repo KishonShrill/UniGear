@@ -93,16 +93,18 @@
         {% endif %}
     </div>
     <div class="aside__account">
+        {% if role == "seller" %}
         <a class="aside__links">
             <img src="{{ url_for('static', filename='images/students-stroke-rounded.svg') }}" alt="College Logo">
             <p>College: {{ session['org_id'] }}</p>
         </a>
+        {% endif %}
         <hr />
         <a class="aside__links">
             <img src="{{ url_for('static', filename='images/user-circle-stroke-rounded.svg') }}" alt="Profile">
             <div class="aside__account-info">
                 <p class="aside__account-info-title">Account</p>
-                <p class="aside__account-info-email">chriscentlouisjune.pingol@g.msuiit.edu.ph</p>
+                <p class="aside__account-info-email">{{ session['email'] }}</p>
             </div>
         </a>
     </div>
