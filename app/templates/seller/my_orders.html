@@ -26,6 +26,11 @@
       </div>
 
       <div class="content-container content-data">
+        <div class="content-tools">
+          <button class="btn deleteBtn">Delete All</button>
+          <!-- <button class="btn"></button> -->
+        </div>
+        
         <div class="content-searchbar">
           <img src="{{ url_for('static', filename='images/search-02-stroke-rounded.svg') }}" alt="">
           <input id="searchBar" type="text" placeholder="Search by order#, customer, or product name" value="" />
@@ -42,6 +47,7 @@
                 <th>Product</th>
                 <th>Size</th>
                 <th>Quantity</th>
+                <th>Type</th>
                 <th>Status</th>
                 <th>Order Date</th>
               </tr>
@@ -56,6 +62,12 @@
                 <td>{{ order['Product'] }}</td>
                 <td>{{ order['Size'] }}</td>
                 <td>{{ order['Quantity'] }}</td>
+                
+                {% if order['Type'] == 1 %}
+                <td>Time</td>
+                {% else %}
+                <td>Order</td>
+                {% endif %}
 
                 {% if order['Status'] == 1 %}
                 <td style="color: green;"><b>Paid</b></td>
@@ -63,8 +75,13 @@
                 <td style="color: red;"><b>N/A</b></td>
                 {% endif %}
 
-                <td>{{ order['Order Date'] }}</td>
-              </tr>
+                <td><p style="
+                  width: 9.2ch;
+                  height: 1rem;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: clip;">{{ order['Order Date'] }}</p></td>
+                </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -84,73 +101,7 @@
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
 
-  <script>
-    // JavaScript for row click highlight and checkbox toggle
-    const rows = document.querySelectorAll("table tbody tr");
-    const checkAll = document.getElementById("checkAll");
-
-    let lastClickedRow = null;
-    let clickCount = 0;
-
-    rows.forEach(row => {
-      const checkbox = row.querySelector("input[type='checkbox']"); 
-
-      row.addEventListener("click", (e) => {
-        if (e.target !== checkbox && !e.target.closest("input[type='checkbox']")) {
-          const orderValue = row.getAttribute("value"); // Get the 'value' attribute from the <tr>
-
-          // Check if the same row was clicked twice consecutively
-          if (lastClickedRow === row) {
-            clickCount++;
-            if (clickCount === 2) {
-              openModal(orderValue); // Open modal on the second click
-              clickCount = 0; // Reset click count after opening the modal
-            }
-          } else {
-            // Reset the click count and set the new last clicked row
-            lastClickedRow = row;
-            clickCount = 1;
-
-            // Reset all other rows
-            rows.forEach(r => {
-              r.classList.remove("highlight");
-              r.querySelector("input[type='checkbox']").checked = false;
-            });
-
-            // Highlight the clicked row and check its checkbox
-            row.classList.add("highlight");
-            checkbox.checked = true;
-
-            checkAll.checked = false;
-          }
-        }
-      });
-
-      checkbox.addEventListener("change", () => {
-        if (checkbox.checked) {
-          row.classList.add("highlight");
-        } else {
-          row.classList.remove("highlight");
-        }
-      });
-    });
-
-    // Check All functionality
-    checkAll.addEventListener("change", () => {
-      const isChecked = checkAll.checked;
-
-      rows.forEach(row => {
-        const checkbox = row.querySelector("input[type='checkbox']");
-        checkbox.checked = isChecked; 
-        if (isChecked) {
-          row.classList.add("highlight"); 
-        } else {
-          row.classList.remove("highlight"); 
-        }
-      });
-    });
-
-  </script>
+  <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
   <script>
     // JavaScript for filtering table rows based on search input
     const searchBar = document.getElementById("searchBar");
