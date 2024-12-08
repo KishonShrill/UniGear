@@ -112,10 +112,11 @@
 
       tableRows.forEach(row => {
         const orderNumber = row.children[1].textContent.toLowerCase(); // Order# column
-        const productName = row.children[2].textContent.toLowerCase(); // Product column
+        const customerName = row.children[2].textContent.toLowerCase(); // Customer column
+        const productName = row.children[4].textContent.toLowerCase(); // Customer column
 
         // Check if either Order# or Product Name matches the search text
-        if (orderNumber.includes(searchText) || productName.includes(searchText)) {
+        if (orderNumber.includes(searchText) || customerName.includes(searchText) || productName.includes(searchText)) {
           row.style.display = ""; // Show the row if it matches
         } else {
           row.style.display = "none"; // Hide the row if it doesn't match

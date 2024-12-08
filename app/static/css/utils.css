@@ -27,6 +27,7 @@ input {
 }
 
 .btn {
+  cursor: pointer;
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -117,4 +118,28 @@ dialog:-internal-dialog-in-top-layer::backdrop {
   background: white;
   border-radius: 0.25rem;
   z-index: 10;
+}
+
+.confirmation-btns {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-texts {
+  width: 100%; 
+  text-align: center; 
+  font-size: 1.25rem;
+}
+
+.cancel {
+  border: 1px solid black;
+  color: white;
+  background: #29AB51;
+}
+
+.confirm {
+  border: 1px solid black;
+  color: white;
+  background: red;
 }
