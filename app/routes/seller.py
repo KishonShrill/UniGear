@@ -85,7 +85,8 @@ def product_new_submit():
         return redirect(url_for('seller.product_new'))
        
       if len(description) <= 100:
-         flash (f"Enter a description for the product...","warning")
+         flash(f"A minimum of 100 characters for description...","warning")
+         flash(f"Chracter Length: {len(description)}","info")
          return redirect(url_for('seller.product_new'))
        
       if product_type == '':
