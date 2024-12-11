@@ -27,6 +27,7 @@ input {
 }
 
 .btn {
+  cursor: pointer;
   padding: 8px 16px;
   display: flex;
   align-items: center;
@@ -100,4 +101,45 @@ aside {
   overflow: hidden; 
   text-overflow: ellipsis; 
   color: #6d7071;
+}
+
+/* Dialog */
+/* Dialog */
+/* Dialog */
+dialog:-internal-dialog-in-top-layer::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  padding: 1rem;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  background: white;
+  border-radius: 0.25rem;
+  z-index: 10;
+}
+
+.confirmation-btns {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-texts {
+  width: 100%; 
+  text-align: center; 
+  font-size: 1.25rem;
+}
+
+.cancel {
+  border: 1px solid black;
+  color: white;
+  background: #29AB51;
+}
+
+.confirm {
+  border: 1px solid black;
+  color: white;
+  background: red;
 }

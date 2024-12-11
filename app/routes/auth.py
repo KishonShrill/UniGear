@@ -31,7 +31,7 @@ def seller_required(function):
         
         if not user_role or user_role.lower() != "seller":
             flash("Access denied. Only sellers can access this page.", "danger")
-            return abort(403)  # HTTP 403 Forbidden
+            return abort(404)  # HTTP 403 Forbidden
         
         # If everything checks out, allow access
         return function(*args, **kwargs)
@@ -156,15 +156,12 @@ def google_callback():
     
     # Check if user exists or create new one
     user = User.get_by_email(idinfo.get('email'))
-    print(f"User: {user}")
+    print(f"Role: {user.user_role}")
     session['role'] = user.user_role
+    session['org_id'] = user.org_id
     
-    if not user:
-      user = User.create_from_google(idinfo.get('name'), idinfo.get('email'))
-      print(f"I am a: {user.user_role}")
-      session['role'] = user.user_role
-    
-    print(f"I am a: {user.user_role}")
+    # print(f"User: {user}")  # TODO: For debugging purposes only
+    # print(f"I am a: {user.user_role}") # TODO: For debugging purposes only
 
     flash(f"Welcome {idinfo.get('name')}", "success")
     return redirect(url_for('website.explore'))

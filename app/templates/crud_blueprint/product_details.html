@@ -10,7 +10,7 @@
 
 {% block content %}
   <!-- Header -->
-  {{ components.render_header(user=session['name']) }}
+  {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Main Content -->
   <main class="product">
@@ -114,15 +114,42 @@
           <label for="quantity">QUANTITY</label>
           <input type="number" id="quantity" name="quantity" min="1" value="2" required>
         </div>
-        <input class="preorder-btn" id="pre_order" name="pre_order" type="submit" value="PRE-ORDER">
       </form>
+      <button class="preorder-btn" data-open-modal>PRE-ORDER</button>
     </section>
   </main>
+
+  <!-- Dialog -->
+  <dialog class="modal" data-modal>
+    <div style="margin-bottom: 1rem;">Are you sure you want to Pre-order this Item?</div>
+    <p class="modal-texts">Item: <b>{{ product.name }}</b></p>
+    <p class="modal-texts">Quantity: <b id="quantity-preview"></b></p>
+    <div class="confirmation-btns">
+      <button class="btn cancel" data-close-modal >Close</button>
+      <input class="btn confirm" id="pre_order" name="pre_order" type="submit" value="Submit" form="pre_order-form">
+    </div>
+  </dialog>
 
   <!-- Footer -->
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
+  <script>
+    const openButton = document.querySelector("[data-open-modal]")
+    const closeButton = document.querySelector("[data-close-modal]")
+    const modal = document.querySelector("[data-modal]")
 
+    const quantity = document.querySelector("#quantity")
+    const quantityPreviewer = document.querySelector("#quantity-preview")
+
+    openButton.addEventListener("click", () => {
+      modal.showModal()
+      quantityPreviewer.textContent = quantity.value;
+    })
+
+    closeButton.addEventListener("click", () => {
+      modal.close()
+    })
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const sizeBtns = document.querySelectorAll('.size-btn');

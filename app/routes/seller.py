@@ -67,18 +67,47 @@ def product_new_submit():
 
       sizes = selected_sizes.split(',')
       URLS = []
+      
+      # Checks for a valid form \/ \/ \/
+      # Checks for a valid form \/ \/ \/
+      # Checks for a valid form \/ \/ \/
+      
+      if len(name) == 0:
+         flash (f"Enter a name for the product...","warning")
+         return redirect(url_for('seller.product_new'))
+      
+      if not price.isdigit() or price.startswith("0"):
+        flash("Enter a valid price for the product. Must not start with 0.", "warning")
+        return redirect(url_for('seller.product_new'))
+      
+      if int(price) > 1000:
+        flash("Product should be affordable for students...", "warning")
+        return redirect(url_for('seller.product_new'))
+       
+      if len(description) <= 100:
+         flash(f"A minimum of 100 characters for description...","warning")
+         flash(f"Chracter Length: {len(description)}","info")
+         return redirect(url_for('seller.product_new'))
+       
+      if product_type == '':
+        flash (f"Pick atleast one size for product...","warning")
+        return redirect(url_for('seller.product_new'))
 
       for picture in picture_urls:
          print (f"Name: {picture.filename}")
 
       if len(picture_urls) == 0:
-         flash (f"You must submit one image: {str(e)}","Danger")
+         flash (f"You must submit one image: {str(e)}","danger")
          return redirect(url_for('seller.product_new'))
       
       for picture in picture_urls:
          if picture.filename=='':
-            flash(f"Upload at least one image", "Warning")
+            flash(f"Upload at least one image", "warning")
             return redirect(url_for('seller.product_new'))
+          
+      # Checks for a valid form /\ /\ /\
+      # Checks for a valid form /\ /\ /\
+      # Checks for a valid form /\ /\ /\
 
       # Put product in the Database and get ID
       product = Product(name, description, hook, product_type, price, preorder_type, 1)
@@ -87,8 +116,7 @@ def product_new_submit():
       # Add the size to the product
       for size in sizes:
         product.add_product_sizes(0, size)
-
-
+        
       # Handle file uploads
       for picture in picture_urls:
         # Assuming you save the picture and generate a URL
@@ -112,11 +140,9 @@ def product_new_submit():
           flash(f"An error occurred during file upload: {str(e)}", "danger")
           return redirect(url_for('seller.product_new'))
 
-
-      
       # TODO: Change return to redirect to dashboard page
       flash(f"Product created successfully!", "success")
-      return redirect(url_for('website.explore'))
+      return redirect(url_for('seller.my_orders'))
     except Exception as e:
       # If there’s an error, return it as part of the JSON response
       return jsonify(success=False, error=str(e)), 400

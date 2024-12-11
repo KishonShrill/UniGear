@@ -14,15 +14,15 @@
 
   <!-- Content -->
   <main class="orders">
-    {{ components.render_aside(role=session['role']) }} 
+    {{ components.render_aside(role=session['role']) }}
 
     <section class="content">
       <div class="content-container content-header">
-        <h1 class="content-title">Orders</h1>
-        <div class="content-buttons">
+        <h1 class="content-title">My Orders</h1>
+        <!-- <div class="content-buttons">
           <button class="btn export-btn">Export as CSV <img src="{{ url_for('static', filename='images/link-square-02-stroke-rounded.svg') }}" alt="Export Data"></button>
           <a class="btn new-product-btn" href="{{ url_for('seller.product_new') }}">New Product <img src="{{ url_for('static', filename='images/arrow-right-02-stroke-rounded.svg') }}" alt="Make new product"></a>
-        </div>
+        </div> -->
       </div>
 
       <div class="content-container content-data">
@@ -30,10 +30,10 @@
           <button class="btn deleteBtn">Delete All</button>
           <!-- <button class="btn"></button> -->
         </div>
-        
+
         <div class="content-searchbar">
           <img src="{{ url_for('static', filename='images/search-02-stroke-rounded.svg') }}" alt="">
-          <input id="searchBar" type="text" placeholder="Search by order#, customer, or product name" value="" />
+          <input id="searchBar" type="text" placeholder="Search by order# or product name" value="" />
         </div>
 
         <div class="content-database">
@@ -42,14 +42,13 @@
               <tr>
                 <th><input id="checkAll" type="checkbox"></th>
                 <th>Order#</th>
-                <th>Customer</th>
-                <th>Total costs</th>
                 <th>Product</th>
                 <th>Size</th>
                 <th>Quantity</th>
+                <th>Total costs</th>
                 <th>Type</th>
                 <th>Status</th>
-                <th>Order Date</th>
+                <th>Order</th>
               </tr>
             </thead>
             <tbody>
@@ -57,16 +56,15 @@
               <tr value="{{ order['Order'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
-                <td>{{ order['Customer'] }}</td>
-                <td>{{ order['Total Cost'] }}</td>
                 <td>{{ order['Product'] }}</td>
                 <td>{{ order['Size'] }}</td>
                 <td>{{ order['Quantity'] }}</td>
-                
+                <td>{{ order['Total Cost'] }}</td>
+
                 {% if order['Type'] == 1 %}
-                <td>Time</td>
+                <td>Time Based</td>
                 {% else %}
-                <td>Order</td>
+                <td>Order Based</td>
                 {% endif %}
 
                 {% if order['Status'] == 1 %}
@@ -81,7 +79,7 @@
                   white-space: nowrap;
                   overflow: hidden;
                   text-overflow: clip;">{{ order['Order Date'] }}</p></td>
-                </tr>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -112,11 +110,10 @@
 
       tableRows.forEach(row => {
         const orderNumber = row.children[1].textContent.toLowerCase(); // Order# column
-        const customerName = row.children[2].textContent.toLowerCase(); // Customer column
-        const productName = row.children[4].textContent.toLowerCase(); // Customer column
+        const productName = row.children[2].textContent.toLowerCase(); // Product column
 
         // Check if either Order# or Product Name matches the search text
-        if (orderNumber.includes(searchText) || customerName.includes(searchText) || productName.includes(searchText)) {
+        if (orderNumber.includes(searchText) || productName.includes(searchText)) {
           row.style.display = ""; // Show the row if it matches
         } else {
           row.style.display = "none"; // Hide the row if it doesn't match

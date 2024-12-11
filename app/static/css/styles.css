@@ -28,7 +28,8 @@ header {
 }
 
 /* UNIGEAR Logo */
-.logo h1 {
+.logo a {
+    text-decoration: none;
     font-family: 'Emblema One', sans-serif;
     font-size: 48px;
     font-weight: 400;
@@ -39,6 +40,7 @@ header {
     position: absolute;
     top: 4px;
     left: 12px;
+    color: white;
 }
 
 /* Centered Search Bar */
