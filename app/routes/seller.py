@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort, session
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
@@ -27,10 +27,16 @@ def my_orders():
   print(orders)
   return render_template('/seller/my_orders.html', orders=orders)
 
-@seller_bp.route('/my-products')
+@seller_bp.route('/seller/my-products')
 @seller_required
 def my_products():
-  ...
+    org_id = session.get('org_id')
+    print(f"Org ID: ", org_id)
+    if not org_id:
+        print("Org ID is missing from session")
+    products = Product.getProducts(org_id)
+    print(f"Products: {products}")
+    return render_template('/seller/my_products.html', products=products)
 
 @seller_bp.route('/profile')
 @seller_required

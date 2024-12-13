@@ -1,0 +1,112 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/my_products.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+{% endblock %}
+
+{% block content %}
+  <!-- Header -->
+  {{ components.render_header(user=session['name'], role=session['role']) }}
+
+  <!-- Content -->
+  <main class="products">
+    {{ components.render_aside(role=session['role']) }} 
+
+    <section class="content">
+      <div class="content-container content-header">
+        <h1 class="content-title">My Products</h1>
+        <div class="content-buttons">
+          <button class="btn export-btn">Export as CSV <img src="{{ url_for('static', filename='images/link-square-02-stroke-rounded.svg') }}" alt="Export Data"></button>
+          <a class="btn new-product-btn" href="{{ url_for('seller.product_new') }}">New Product <img src="{{ url_for('static', filename='images/arrow-right-02-stroke-rounded.svg') }}" alt="Make new product"></a>
+        </div>
+      </div>
+
+      <div class="content-container content-data">
+        <div class="content-tools">
+          <button class="btn deleteBtn">Delete All</button>
+          <!-- <button class="btn"></button> -->
+        </div>
+        
+        <div class="content-searchbar">
+          <img src="{{ url_for('static', filename='images/search-02-stroke-rounded.svg') }}" alt="">
+          <input id="searchBar" type="text" placeholder="Search by Product name, type" value="" />
+        </div>
+
+        <div class="content-database">
+          <table>
+            <thead>
+              <tr>
+                <th><input id="checkAll" type="checkbox"></th>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Type</th>
+                <th>Price</th>
+                <th>Order-Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in products %}
+              <tr 
+                data-image="{{ product['Picture_URL'] }}" 
+                data-name="{{ product['Product_Name'] }}"
+                >
+                <td><input type="checkbox"></td>
+                <td>{{ product['Product_id'] }}</td>
+                <td>{{ product['Product_Name'] }}</td>
+                <td>{{ product['Type'] }}</td>
+                <td>{{ product['Price'] }}</td>
+                {% if product['Order-Type'] == 1 %}
+                <td>Time</td>
+                {% else %}
+                <td>Order</td>
+                {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dialog -->
+  <!-- Dialog for Product Image and Name -->
+  <dialog class="modal" data-modal>
+    <div></div> <!-- This will hold the product name -->
+    <img src="#" alt="Product Image" />
+    <button data-close-modal>Close</button>
+  </dialog>  
+  
+
+  <!-- Footer -->
+  {{ components.render_alerts() }}
+  {{ components.render_footer() }}
+
+  <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
+  <script>
+    // JavaScript for filtering table rows based on search input
+    const searchBar = document.getElementById("searchBar");
+    const tableRows = document.querySelectorAll("table tbody tr");
+
+    searchBar.addEventListener("input", () => {
+      const searchText = searchBar.value.toLowerCase(); // Get the search text and convert to lowercase
+
+      tableRows.forEach(row => {
+        const productID = row.children[1].textContent.toLowerCase(); 
+        const productName = row.children[2].textContent.toLowerCase(); 
+        const type = row.children[3].textContent.toLowerCase(); 
+
+        if (productID.includes(searchText) || productName.includes(searchText) || type.includes(searchText)) {
+          row.style.display = ""; // Show the row if it matches
+        } else {
+          row.style.display = "none"; // Hide the row if it doesn't match
+        }
+      });
+    });
+  </script>
+  <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
+{% endblock %}

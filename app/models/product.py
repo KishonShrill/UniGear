@@ -230,3 +230,53 @@ class Product(object):
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
+
+    @staticmethod
+    def getProducts(org_id):
+        try:
+            # Create a connection object
+            print(f"org_id passed: {org_id}")
+            cursor = mysql.connection.cursor()
+
+            # Define the SQL query
+            query = """
+            SELECT  
+                p.product_id,
+                p.product_name, 
+                p.type,
+                p.price,
+                p.order_type,
+                pic.picture_url
+            FROM products p
+            LEFT JOIN user u ON p.seller_id = u.user_id
+            LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+            WHERE u.org_id = %s
+            ORDER BY p.product_id ASC;
+            """
+            print(f"Executing query: {query} with org_id: {org_id}")
+            cursor.execute(query, (org_id,))
+            result = cursor.fetchall()
+            print(f"Query result: {result}")
+
+            if not result:
+                return []
+
+            products = []
+            for row in result:
+                Picture_URL = row[5] if row[5] else 'app/static/images/placeholder.jpg'
+                product = {
+                    'Product_id': row[0],
+                    'Product_Name': row[1],
+                    'Type': row[2],
+                    'Price': row[3],
+                    'Order-Type': row[4],
+                    'Picture_URL': Picture_URL
+                }
+                products.append(product)
+            cursor.close()
+
+            return products  
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            return None
