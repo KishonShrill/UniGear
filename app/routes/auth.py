@@ -149,7 +149,6 @@ def google_callback():
       )
     
     # Store user info in the session
-    session['id'] = idinfo.get('sub')  # Unique Google user ID
     session['name'] = idinfo.get('name')
     session['email'] = idinfo.get('email')
     session['picture'] = idinfo.get('picture')
@@ -157,6 +156,8 @@ def google_callback():
     # Check if user exists or create new one
     user = User.get_by_email(idinfo.get('email'))
     print(f"Role: {user.user_role}")
+    session['id'] = user.user_id
+    print(f"User ID: {user.user_id}")
     session['role'] = user.user_role
     session['org_id'] = user.org_id
     
