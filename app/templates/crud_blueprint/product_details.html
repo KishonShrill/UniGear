@@ -48,6 +48,13 @@
 
     <!-- Product Details -->
     <section class="product__content-wrapper">
+      <div class="product__favorite">
+        <button class="favorite-btn {% if product.is_favorite %}favorited{% endif %}" data-product-id="{{ product.product_id }}">
+            <i class="fas fa-heart"></i> <span></span>
+        </button>
+      </div>
+
+
       <div class="product__content-back-wrapper">
         <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
         <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
@@ -179,4 +186,7 @@
       dots[slideIndex - 1].className += " active";
     }
   </script>
+  
+
+
 {% endblock %}

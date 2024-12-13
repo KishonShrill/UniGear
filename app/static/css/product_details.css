@@ -313,3 +313,13 @@ img.demo.cursor {
 .input-box span {
   font-size: 16px;             
 }
+
+
+.favorite-btn {
+  color: #888;
+  cursor: pointer;
+}
+
+.favorite-btn.favorited {
+  color: red; /* Or any color you prefer to indicate a favorite */
+}

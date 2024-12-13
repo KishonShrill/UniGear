@@ -13,6 +13,14 @@ def login_is_required(function):
   wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
   return wrapper
 
+@website_bp.route('/api/check-login', methods=['GET'])
+def check_login():
+    if "id" in session:
+        return {"logged_in": True}
+    else:
+        return {"logged_in": False}
+
+
 # Landing Page Route
 @website_bp.route('/')
 def landing():
@@ -190,3 +198,42 @@ def preorder(product_id):
 
     flash("Your pre-order was successful!", "success")
     return redirect(url_for('website.explore'))
+
+
+
+
+
+#Wishlist------------------------------------------------------------------
+@website_bp.route('/favorite/<int:product_id>', methods=['POST'])
+@login_is_required
+def toggle_favorite(product_id):
+    from app import mysql
+    
+    user_id = session.get("id")  
+    cursor = mysql.connection.cursor()
+
+    # Check if the product is already a favorite
+    cursor.execute(
+        "SELECT * FROM favorites WHERE user_id = %s AND product_id = %s",
+        (user_id, product_id)
+    )
+    favorite = cursor.fetchone()
+
+    if favorite:
+        # Remove favorite
+        cursor.execute(
+            "DELETE FROM favorites WHERE user_id = %s AND product_id = %s",
+            (user_id, product_id)
+        )
+        mysql.connection.commit()
+        cursor.close()
+        return {"status": "removed"}
+    else:
+        # Add favorite
+        cursor.execute(
+            "INSERT INTO favorites (user_id, product_id) VALUES (%s, %s)",
+            (user_id, product_id)
+        )
+        mysql.connection.commit()
+        cursor.close()
+        return {"status": "added"}

@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <main data-college-id="1">
-    {{ components.render_header() }}
+    {{ components.render_header(user=session['name']) }}
     <section id="college-cass-header-container">
         <div id="college-cass-header">
             <h1>COLLEGE OF ARTS AND SOCIAL SCIENCES</h1>
@@ -67,16 +67,18 @@
 
 {{ components.render_footer() }}
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const productsContainer = document.getElementById("org-products");
         const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
         const orgTabsContainer = document.getElementById("org-list");
-
-        let selectedType = 'all'; // Default to "All" type
-        let selectedOrgId = null; // To store the current selected organization ID
-
-        // Fetch organizations and populate organization tabs
+    
+        let selectedType = 'all'; 
+        let selectedOrgId = null; 
+    
+        let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
+    
         fetch('/api/cass/organizations')
             .then(response => response.json())
             .then(organizations => {
@@ -86,18 +88,15 @@
                     orgTab.setAttribute("data-org-id", org.id);
                     orgTab.innerText = org.name;
                     orgTabsContainer.appendChild(orgTab);
-
+    
                     orgTab.addEventListener("click", function () {
-                        // Update active tab
                         document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
                         orgTab.classList.add("active");
-
-                        // Load products for selected organization
+    
                         loadProductsForOrg(org.id);
                     });
                 });
-
-                // Automatically load the first organization's products
+    
                 if (organizations.length > 0) {
                     const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
                     firstOrgTab.classList.add("active");
@@ -108,24 +107,49 @@
                 console.error("Error fetching organizations:", error);
                 productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
             });
-
-        // Add event listeners to type tabs
+    
         typeTabs.forEach(tab => {
             tab.addEventListener("click", function () {
                 selectedType = tab.querySelector(".type-name").innerText.toLowerCase();
-                typeTabs.forEach(t => t.classList.remove("active")); // Remove active class from all tabs
-                tab.classList.add("active"); // Add active class to clicked tab
+                typeTabs.forEach(t => t.classList.remove("active")); 
+                tab.classList.add("active"); 
                 if (selectedOrgId) {
-                    loadProductsForOrg(selectedOrgId); // Reload products for the current organization
+                    loadProductsForOrg(selectedOrgId); 
                 }
             });
         });
-
+    
+        productsContainer.addEventListener("click", function (event) {
+            const favoriteBtn = event.target.closest(".favorite-btn");
+            if (favoriteBtn) {
+                const productCard = favoriteBtn.closest(".product-card");
+                const productId = productCard.getAttribute("data-product-id");
+    
+                // Check if the user is logged in
+                fetch('/api/check-login', {
+                    method: 'GET',
+                    credentials: 'same-origin', 
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.logged_in) {
+                            alert("You must log in to favorite products.");
+                            return;
+                        }
+    
+                        // If logged in, toggle favorite status
+                        toggleFavorite(productId, favoriteBtn);
+                    })
+                    .catch(error => {
+                        console.error("Error checking login status:", error);
+                    });
+            }
+        });
+    
         function loadProductsForOrg(org_id) {
             selectedOrgId = org_id;
             productsContainer.innerHTML = "<p>Loading products...</p>";
-
-            // Fetch products for the selected organization and type
+    
             fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
                 .then(response => response.json())
                 .then(products => {
@@ -133,19 +157,25 @@
                         productsContainer.innerHTML = "<p>No products available for this organization.</p>";
                         return;
                     }
-
+    
                     productsContainer.innerHTML = ''; // Clear existing products
-
+    
                     products.forEach(product => {
-                        const productCard = document.createElement("a");
+                        const productCard = document.createElement("div");
                         productCard.classList.add("product-card");
-                        productCard.href = `/product/${product.id}`; // Use product.id for the link
-
+                        productCard.setAttribute("data-product-id", product.id);
+    
+                        const isFavorite = favoriteProducts.includes(product.id);
                         const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
                         productCard.innerHTML = `
-                            <img src="${imgSrc}" alt="${product.name}">
-                            <h3>${product.name}</h3>
-                            <p>${product.description}</p>
+                            <a href="/product/${product.id}">
+                                <img src="${imgSrc}" alt="${product.name}">
+                                <h3>${product.name}</h3>
+                                <p>${product.description}</p>
+                            </a>
+                            <button class="favorite-btn ${isFavorite ? 'favorited' : ''}" data-product-id="${product.id}">
+                                <i class="fas fa-heart"></i>
+                            </button>
                         `;
                         productsContainer.appendChild(productCard);
                     });
@@ -155,9 +185,25 @@
                     productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
                 });
         }
-
+    
+        function toggleFavorite(productId, button) {
+            if (favoriteProducts.includes(productId)) {
+                // Remove from favorites
+                favoriteProducts = favoriteProducts.filter(id => id !== productId);
+                button.classList.remove("favorited");
+            } else {
+                // Add to favorites
+                favoriteProducts.push(productId);
+                button.classList.add("favorited");
+            }
+    
+            localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
+        }
     });
+    
 </script>
-
-
+    
+    
+    
+    
 {% endblock %}
