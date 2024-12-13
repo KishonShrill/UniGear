@@ -246,6 +246,8 @@ class Product(object):
                 p.type,
                 p.price,
                 p.order_type,
+                p.created_at,
+                p.updated_at,
                 pic.picture_url
             FROM products p
             LEFT JOIN user u ON p.seller_id = u.user_id
@@ -263,13 +265,15 @@ class Product(object):
 
             products = []
             for row in result:
-                Picture_URL = row[5] if row[5] else 'app/static/images/placeholder.jpg'
+                Picture_URL = row[7] if row[7] else 'app/static/images/placeholder.jpg'
                 product = {
                     'Product_id': row[0],
                     'Product_Name': row[1],
                     'Type': row[2],
                     'Price': row[3],
                     'Order-Type': row[4],
+                    'Created At': row[5],
+                    'Updated At': row[6],
                     'Picture_URL': Picture_URL
                 }
                 products.append(product)

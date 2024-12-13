@@ -46,13 +46,14 @@
                 <th>Type</th>
                 <th>Price</th>
                 <th>Order-Type</th>
+                <th>Created At</th>
+                <th>Updated At</th>
               </tr>
             </thead>
             <tbody>
               {% for product in products %}
               <tr 
                 data-image="{{ product['Picture_URL'] }}" 
-                data-name="{{ product['Product_Name'] }}"
                 >
                 <td><input type="checkbox"></td>
                 <td>{{ product['Product_id'] }}</td>
@@ -64,6 +65,8 @@
                 {% else %}
                 <td>Order</td>
                 {% endif %}
+                <td>{{ product['Created At']}}</td>
+                <td>{{ product['Updated At'] }}</td>
                 </tr>
               {% endfor %}
             </tbody>
