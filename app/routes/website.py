@@ -1,7 +1,12 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort
+from config import MAILTRAP_SERVER,MAILTRAP_PORT,MAILTRAP_USERNAME,MAILTRAP_PASSWORD
 from app.models.product import Product
 from app.models.user import User
+from app.models.order import Order
 from app.forms import ProductForm
+
+import smtplib
+from email.mime.text import MIMEText
 
 
 website_bp = Blueprint('website', __name__)
@@ -157,10 +162,9 @@ def preorder(product_id):
     user = User.get_by_email(session['email'])
     product = Product.get_by_id(product_id)
     
-    from app import mysql
-
     size = request.form.get('selectedSizes')
     quantity = request.form.get("quantity")
+    global order_number
 
     # Input and Picture validation
     try:
@@ -177,28 +181,51 @@ def preorder(product_id):
       return redirect(url_for('website.merch_details', product_id=product_id))
 
     try:
-        cursor = mysql.connection.cursor()
-        cursor.execute(
-            """
-              UPDATE product_sizes
-              SET product_quantity = product_quantity + %s 
-              WHERE product_id = %s and size_id = %s
-            """,
-            (quantity, product_id, size)
-        )
-        cursor.execute(
-            """
-              INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, order_status) VALUES 
-              (%s, %s, %s, %s, %s, 0);
-            """,
-            (user.user_id, product_id, size, quantity, product.price)
-        )
-        mysql.connection.commit()
-        cursor.close()
+        order_number = Order.preorderProduct(user.user_id, product.product_id, size, quantity, product.price)
     except Exception as e:
       print(f"Error occurred: {e}")
       flash("Something went wrong while pre-ordering the product. Please order again later...", "danger")
       return redirect(url_for('website.merch_details', product_id=product_id))
+        
+    summaryTotal = int(quantity) * product.price
+    
+    # Plain text content
+    text = f"""\
+    Unigear Team
+    Thank you for your purchase!
+    
+    Hi {user.user_name}, we were notified of your successful preorder of the product '{product.product_name}'. 
+    We will notify you when it is has reached the minimum pre-order goal.
+    
+    Order Summary
+    Name: {product.product_name}
+    Size: {size}
+    Quantity: {quantity}
+    Price: {product.price}
+    -----------------------------
+    Total: {summaryTotal}
+    """
+    
+    # Email Configuration
+    sender_email = "Unigear Team <seller@demomailtrap.com>"
+    receiver_email = user.user_email
+    
+    # Create MIMEText object
+    message = MIMEText(text, "plain")
+    message["Subject"] = f"Preorder #{order_number} Confirmed"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    
+    try:
 
+        with smtplib.SMTP(MAILTRAP_SERVER, MAILTRAP_PORT) as server:
+            server.starttls()
+            server.login(MAILTRAP_USERNAME, MAILTRAP_PASSWORD)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+        
+    except Exception as e:
+        print(f"{e}\n")
+        return f"Email has not been sent."
+    
     flash("Your pre-order was successful!", "success")
     return redirect(url_for('website.explore'))

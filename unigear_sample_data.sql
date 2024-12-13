@@ -179,14 +179,7 @@ INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VAL
 ('CON Executive Council', 'CON-EC', 'con.ec@g.msuiit.edu.ph', 6),
 ('CSM Executive Council', 'CSM-EC', 'csm.ec@g.msuiit.edu.ph', 7);
 
-INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role, org_id) VALUES 
-('Alice Thompson', 'alice.thompson@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '9876543210', '456 Forest St, Iligan City', 'user', 'CASS-EC'), 
-('Brian Lee', 'brian.lee@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '8765432109', '789 Hill St, Iligan City', 'user', 'CEBA-EC'), 
-('Catherine Kim', 'catherine.kim@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '7654321098', '321 River St, Iligan City', 'user', 'CCS-EC'), 
-('David Yang', 'david.yang@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '6543210987', '654 Lake St, Iligan City', 'user', 'CED-EC'), 
-('Ella Chen', 'ella.chen@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '5432109876', '987 Ocean St, Iligan City', 'user', 'COET-EC'), 
-('Frank Martinez', 'frank.martinez@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '4321098765', '135 Mountain St, Iligan City', 'user', 'CON-EC'), 
-('Grace Wong', 'grace.wong@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '3210987654', '246 Valley St, Iligan City', 'user', 'CON-EC'), 
+INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role, org_id) VALUES  
 ('Unigear Admin', 'unigear@gmail.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CCS-EC'),
 ('Emmanuel Fitz Ciano', 'emmanuelfitz.ciano@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CASS-EC'),
 ('Hussam Bansao', 'hussam.bansao@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CEBA-EC'),
