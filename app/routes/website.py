@@ -120,7 +120,7 @@ def merch_details(product_id):
     user_id = session.get("id")  # Get logged-in user's ID from session
     cursor = mysql.connection.cursor()
 
-    # Fetch product by ID
+    # Fetch product by ID with order type
     cursor.execute("SELECT * FROM products WHERE product_id = %s", (product_id,))
     product_row = cursor.fetchone()
 
@@ -132,11 +132,12 @@ def merch_details(product_id):
     product = {
         'product_id': product_row[0],
         'name': product_row[1],
-        'price': product_row[5],
         'description': product_row[2],
-        'preorder_count': product_row[0],
-        'type': product_row[4],
         'hook': product_row[3],
+        'type': product_row[4],
+        'price': product_row[5],
+        'preorder_count': product_row[6],
+        'order_type': product_row[7]  # Ensure order_type is included
     }
 
     # Fetch product images
