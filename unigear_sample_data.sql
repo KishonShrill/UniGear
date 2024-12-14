@@ -82,7 +82,6 @@ CREATE TABLE if NOT EXISTS `pictures` (
 );
 
 
-
 DROP TABLE if EXISTS `ordered_by`;
 CREATE TABLE if NOT EXISTS `ordered_by` (
 	order_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -112,16 +111,17 @@ BEGIN
     FROM ordered_by
     WHERE product_id = NEW.product_id;
 
-    -- If the total orders reach or exceed 50 and the order_type is 0, update it to 1
+    -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
     IF total_orders >= 50 THEN
-        UPDATE proucts
-        SET order_type = 1
-        WHERE product_id = NEW.product_id AND order_type = 0;
+        UPDATE products
+        SET order_type = 0
+        WHERE product_id = NEW.product_id AND order_type = 1;
     END IF;
 END;
 //
 
 DELIMITER ;
+
 
 -- Below is the sample data
 -- Below is the sample data
