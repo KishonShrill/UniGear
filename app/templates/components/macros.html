@@ -73,7 +73,7 @@
             <p>Dashboard</p>
         </a> -->
         {% if role == "seller" %}
-            <a class="aside__links" href="#">
+            <a class="aside__links" href="{{ url_for('seller.my_products') }}" visit>
                 <img src="{{ url_for('static', filename='images/sale-tag-01-stroke-rounded.svg') }}" alt="My Products Logo">
                 <p>My Products</p>
             </a>
