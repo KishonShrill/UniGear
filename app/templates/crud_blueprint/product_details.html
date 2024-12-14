@@ -17,7 +17,6 @@
   <!-- Main Content -->
   <main class="product">
     <section class="product__image-wrapper">
-
       <div class="product__image-gallery">
         <div class="product__image-preview" id="slides-container">
           {% for image in images %}
@@ -27,7 +26,6 @@
             </div>
           {% endfor %}
         </div>
-
         <a class="prev" onclick="plusSlides(-1)">❮</a>
         <a class="next" onclick="plusSlides(1)">❯</a>
       </div>
@@ -80,7 +78,7 @@
         <p1><b></b> {{ product.hook if product.hook else "N/A" }}</p1>
       </div>
 
-      <!-- Typesss -->
+      <!-- Types -->
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
@@ -89,28 +87,23 @@
           </div>
         </div>
 
-        <div>
-          <p>ORDER TYPE</p>
-          <div class="input-box">
-            <span>{{ "Goal Based" if product.preorder_count == 0 else "Time Based" }}</span>
-          </div>
+        <p>ORDER TYPE</p>
+        <div class="input-box">
+            <span>{{ "Goal Based" if product.order_type == 0 else "Time Based" }}</span>
         </div>
-
-        <!-- Size -->
-        <div class="product__size-wrapper">
-          <p>SIZE</p>
-          <div class="product__size-selector">
-            <button type="button" class="size-btn" data-size="1">XS</button>
-            <button type="button" class="size-btn" data-size="2">S</button>
-            <button type="button" class="size-btn" data-size="3">M</button>
-            <button type="button" class="size-btn" data-size="4">L</button>
-            <button type="button" class="size-btn" data-size="5">XL</button>
-            <button type="button" class="size-btn" data-size="6">2XL</button>
         
-            <input type="hidden" name="selectedSizes" id="selectedSizes" form="pre_order-form">
-          </div>
-        </div>
+
+        <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
+          {% for size in sizes %}
+              <!-- Button for each size, showing the size_name as label -->
+              <button type="button" class="size-btn" 
+                      data-size="{{ size[0] }}" 
+                      style="padding: 10px 20px;">
+                  {{ size[1] }}  <!-- size_name -->
+              </button>
+          {% endfor %}
       </div>
+
 
       <hr />
 
