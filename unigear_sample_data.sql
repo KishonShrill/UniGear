@@ -82,31 +82,6 @@ CREATE TABLE if NOT EXISTS `pictures` (
 );
 
 
-DELIMITER //
-
-CREATE TRIGGER update_order_type
-AFTER INSERT ON ordered_by
-FOR EACH ROW
-BEGIN
-    DECLARE total_orders INT;
-
-    -- Count the total orders for the newly inserted product
-    SELECT SUM(quantity)
-    INTO total_orders
-    FROM ordered_by
-    WHERE product_id = NEW.product_id;
-
-    -- If the total orders reach or exceed 50 and the order_type is 0, update it to 1
-    IF total_orders >= 50 THEN
-        UPDATE proucts
-        SET order_type = 1
-        WHERE product_id = NEW.product_id AND order_type = 0;
-    END IF;
-END;
-//
-
-DELIMITER ;
-
 
 DROP TABLE if EXISTS `ordered_by`;
 CREATE TABLE if NOT EXISTS `ordered_by` (
@@ -137,9 +112,9 @@ BEGIN
     FROM ordered_by
     WHERE product_id = NEW.product_id;
 
-    -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
+    -- If the total orders reach or exceed 50 and the order_type is 0, update it to 1
     IF total_orders >= 50 THEN
-        UPDATE products
+        UPDATE proucts
         SET order_type = 1
         WHERE product_id = NEW.product_id AND order_type = 0;
     END IF;
@@ -147,7 +122,6 @@ END;
 //
 
 DELIMITER ;
-
 
 -- Below is the sample data
 -- Below is the sample data
