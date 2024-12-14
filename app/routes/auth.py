@@ -109,6 +109,9 @@ def callback():
     # Check if user exists or create new one
     user = User.get_by_email(getEmail)
     print(f"User: {user}")
+    if not user:
+      flash(f"User does not exist", "warning")
+      return render_template('sign_in.html', form=form)
     
     # Check if password is the same with database
     isLogin = user.verify_password(getPassword)
