@@ -31,3 +31,36 @@ def my_orders():
   print(f"User: {user.user_email}")
   print(f"Orders: {orders}")
   return render_template('/user/my_orders.html', orders=orders)
+
+
+@user_bp.route('/user/profile', methods=['GET', 'POST'])
+@login_is_required 
+def profile():
+   # Mock user data (Replace this with data from your database)
+    user = {
+        "username": "Lavigne Kyottie",
+        "email": "example@example.com",
+        "phone": "123-456-7890",
+        "city": "Manila",
+        "barangay": "Sample Barangay",
+        "address": "12345 Sample Street"
+    }
+    
+    if request.method == 'POST':
+        # Handle form submission here
+        try:
+            user['username'] = request.form.get('username')
+            user['email'] = request.form.get('email')
+            user['phone'] = request.form.get('phone')
+            user['city'] = request.form.get('city')
+            user['barangay'] = request.form.get('barangay')
+            user['address'] = request.form.get('address')
+            
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for('user.profile'))
+        
+        except Exception as e:
+            flash(f"Error updating profile: {str(e)}", "danger")
+            return redirect(url_for('user.profile'))
+
+    return render_template('user/user_profile.html', user=user)
