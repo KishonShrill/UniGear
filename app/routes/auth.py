@@ -121,6 +121,7 @@ def callback():
     session['name'] = user.user_name
     session['email'] = user.user_email
     session['role'] = user.user_role
+    session['org_id'] = user.org_id
     
     flash(f"Welcome {user.user_name}", "success")
     return redirect(url_for('website.explore'))
