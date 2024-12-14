@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort,session
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
@@ -108,9 +108,17 @@ def product_new_submit():
       # Checks for a valid form /\ /\ /\
       # Checks for a valid form /\ /\ /\
       # Checks for a valid form /\ /\ /\
-
-      # Put product in the Database and get ID
-      product = Product(name, description, hook, product_type, price, preorder_type, 1)
+   
+      print (f"Type: {preorder_type}")
+         # Put product in the Database and get ID
+      product = Product(product_name=name,
+                        description=description,
+                        hook=hook,
+                        type=product_type,
+                        price=price,
+                        order_type=preorder_type,
+                        seller_id=session.get('id')
+      )
       product.save()
 
       # Add the size to the product

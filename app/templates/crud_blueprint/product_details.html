@@ -57,9 +57,9 @@
         <h3 id="price">₱{{ product.price }}</h3>
       </div>
 
-      <!-- That line and tabs -->
+      <!-- Tabs for Details -->
       <div class="product__content-details-box">
-        <p selected>Description</p>
+        <p>Description</p>
         <p>Details</p>
         <p>Specs</p>
       </div>
@@ -67,11 +67,11 @@
 
       <!-- Description -->
       <div class="product-detail">
-        <p><b></b> {{ product.description if product.description else "No description available." }}</p>
-        <p1><b></b> {{ product.hook if product.hook else "N/A" }}</p1>
+        <p>{{ product.description if product.description else "No description available." }}</p>
+        <p>{{ product.hook if product.hook else "N/A" }}</p>
       </div>
 
-      <!-- Types -->
+      <!-- Product Specifications -->
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
@@ -80,45 +80,45 @@
           </div>
         </div>
 
-        <p>ORDER TYPE</p>
         <div class="input-box">
-            <span>{{ "Goal Based" if product.order_type == 0 else "Time Based" }}</span>
+          <span class="{{ 'goal-based' if product.order_type == 0 else 'time-based' }}">
+            {{ "Goal Based" if product.order_type == 0 else "Time Based" }}
+          </span>
         </div>
         
 
         <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
           {% for size in sizes %}
-              <!-- Button for each size, showing the size_name as label -->
-              <button type="button" class="size-btn" 
-                      data-size="{{ size[0] }}" 
-                      style="padding: 10px 20px;">
-                  {{ size[1] }}  <!-- size_name -->
-              </button>
+            <button type="button" class="size-btn" 
+                    data-size="{{ size[0] }}" 
+                    style="padding: 10px 20px;">
+              {{ size[1] }}
+            </button>
           {% endfor %}
+        </div>
       </div>
-
 
       <hr />
 
-      <!-- Quantity and button-->
+      <!-- Quantity and Preorder Button -->
       <form id="pre_order-form" action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
         {{ form.csrf_token }}
         <div class="product__quantity-input">
           <label for="quantity">QUANTITY</label>
-          <input type="number" id="quantity" name="quantity" min="1" value="2" required>
+          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
         </div>
       </form>
       <button class="preorder-btn" data-open-modal>PRE-ORDER</button>
     </section>
   </main>
 
-  <!-- Dialog -->
+  <!-- Modal Dialog -->
   <dialog class="modal" data-modal>
-    <div style="margin-bottom: 1rem;">Are you sure you want to Pre-order this Item?</div>
+    <div style="margin-bottom: 1rem;">Are you sure you want to pre-order this item?</div>
     <p class="modal-texts">Item: <b>{{ product.name }}</b></p>
     <p class="modal-texts">Quantity: <b id="quantity-preview"></b></p>
     <div class="confirmation-btns">
-      <button class="btn cancel" data-close-modal >Close</button>
+      <button class="btn cancel" data-close-modal>Close</button>
       <input class="btn confirm" id="pre_order" name="pre_order" type="submit" value="Submit" form="pre_order-form">
     </div>
   </dialog>
@@ -126,7 +126,10 @@
   <!-- Footer -->
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
+
+  <!-- Scripts -->
   <script>
+    // Modal Logic
     const openButton = document.querySelector("[data-open-modal]");
     const closeButton = document.querySelector("[data-close-modal]");
     const modal = document.querySelector("[data-modal]");
@@ -142,80 +145,55 @@
     closeButton.addEventListener("click", () => {
       modal.close();
     });
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const sizeBtns = document.querySelectorAll('.size-btn');
-      const hiddenInput = document.getElementById('selectedSizes');
 
-      sizeBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-          sizeBtns.forEach(button => button.classList.remove('active'));
+    // Image Slider Logic
+    let slideIndex = 1;
+    showSlides(slideIndex);
 
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      const slides = document.getElementsByClassName("mySlides");
+      const dots = document.getElementsByClassName("demo");
+
+      if (n > slides.length) slideIndex = 1;
+      if (n < 1) slideIndex = slides.length;
+
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+
+      slides[slideIndex - 1].style.display = "flex";
+      dots[slideIndex - 1].className += " active";
+    }
+
+    // Size Selector Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const sizeButtons = document.querySelectorAll('.size-btn');
+      const hiddenInput = document.createElement('input');
+
+      hiddenInput.type = 'hidden';
+      hiddenInput.id = 'selectedSizes';
+      hiddenInput.name = 'selected_size';
+      document.querySelector('#pre_order-form').appendChild(hiddenInput);
+
+      sizeButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          sizeButtons.forEach(btn => btn.classList.remove('active'));
           this.classList.add('active');
           hiddenInput.value = this.getAttribute('data-size');
         });
       });
     });
   </script>
-  <script>
-    let slideIndex = 1; // Start with the first slide
-    showSlides(slideIndex);
-
-    // Change the current slide (prev/next)
-    function plusSlides(n) {
-      showSlides(slideIndex += n);
-    }
-
-    // Set the current slide (when clicking a thumbnail)
-    function currentSlide(n) {
-      showSlides(slideIndex = n);
-    }
-
-    // Show the current slide
-    function showSlides(n) {
-      const slides = document.getElementsByClassName("mySlides");
-      const dots = document.getElementsByClassName("demo");
-
-      // Handle edge cases: wrap around slides
-      if (n > slides.length) slideIndex = 1; // Go back to the first slide
-      if (n < 1) slideIndex = slides.length; // Go to the last slide
-
-      // Hide all slides
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-      }
-
-      // Remove the "active" class from all thumbnails
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active", "");
-      }
-
-      // Display the current slide
-      slides[slideIndex - 1].style.display = "flex";
-
-      // Add the "active" class to the corresponding thumbnail
-      dots[slideIndex - 1].className += " active";
-    }
-  </script>
-
-<script>
-  const sizeButtons = document.querySelectorAll('.size-btn');
-  const selectedSizesInput = document.getElementById('selectedSizes');
-
-  sizeButtons.forEach(button => {
-      button.addEventListener('click', function() {
-          const sizeId = this.getAttribute('data-size');
-          
-
-          selectedSizesInput.value = sizeId;
-
-          
-          sizeButtons.forEach(btn => btn.style.backgroundColor = '');
-          this.style.backgroundColor = '#f0ad4e';  
-      });
-  });
-
-</script>
-
 {% endblock %}
