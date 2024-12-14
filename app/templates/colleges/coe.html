@@ -8,7 +8,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <main data-college-id="5">
+<<<<<<< HEAD
     {{ components.render_header(user=session['name'], role=session['role']) }}
+=======
+    {{ components.render_header(user=session['name']) }}
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
     <section id="college-coe-header-container">
         <div id="college-coe-header">
             <h1>COLLEGE OF ENGINEERING</h1>
@@ -72,6 +76,7 @@
         const productsContainer = document.getElementById("org-products");
         const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
         const orgTabsContainer = document.getElementById("org-list");
+<<<<<<< HEAD
 
         let selectedType = 'all'; 
         let selectedOrgId = null; 
@@ -79,6 +84,14 @@
         
         let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
 
+=======
+    
+        let selectedType = 'all'; 
+        let selectedOrgId = null; 
+    
+        let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
+    
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
         fetch('/api/coe/organizations')
             .then(response => response.json())
             .then(organizations => {
@@ -88,16 +101,23 @@
                     orgTab.setAttribute("data-org-id", org.id);
                     orgTab.innerText = org.name;
                     orgTabsContainer.appendChild(orgTab);
-
+    
                     orgTab.addEventListener("click", function () {
-                        // Update active tab
                         document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
                         orgTab.classList.add("active");
+<<<<<<< HEAD
 
                         loadProductsForOrg(org.id);
                     });
                 });
 
+=======
+    
+                        loadProductsForOrg(org.id);
+                    });
+                });
+    
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
                 if (organizations.length > 0) {
                     const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
                     firstOrgTab.classList.add("active");
@@ -108,7 +128,11 @@
                 console.error("Error fetching organizations:", error);
                 productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
             });
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
         typeTabs.forEach(tab => {
             tab.addEventListener("click", function () {
                 selectedType = tab.querySelector(".type-name").innerText.toLowerCase();
@@ -119,8 +143,12 @@
                 }
             });
         });
+<<<<<<< HEAD
 
 
+=======
+    
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
         productsContainer.addEventListener("click", function (event) {
             const favoriteBtn = event.target.closest(".favorite-btn");
             if (favoriteBtn) {
@@ -147,11 +175,19 @@
                     });
             }
         });
+<<<<<<< HEAD
 
         function loadProductsForOrg(org_id) {
             selectedOrgId = org_id;
             productsContainer.innerHTML = "<p>Loading products...</p>";
 
+=======
+    
+        function loadProductsForOrg(org_id) {
+            selectedOrgId = org_id;
+            productsContainer.innerHTML = "<p>Loading products...</p>";
+    
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
             fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
                 .then(response => response.json())
                 .then(products => {
@@ -159,16 +195,19 @@
                         productsContainer.innerHTML = "<p>No products available for this organization.</p>";
                         return;
                     }
-
+    
                     productsContainer.innerHTML = ''; // Clear existing products
-
+    
                     products.forEach(product => {
                         const productCard = document.createElement("div");
                         productCard.classList.add("product-card");
                         productCard.setAttribute("data-product-id", product.id);
     
                         const isFavorite = favoriteProducts.includes(product.id);
+<<<<<<< HEAD
                         
+=======
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
                         const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
                         productCard.innerHTML = `
                             <a href="/product/${product.id}">
@@ -188,9 +227,13 @@
                     productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
                 });
         }
+<<<<<<< HEAD
 
 
 
+=======
+    
+>>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
         function toggleFavorite(productId, button) {
             if (favoriteProducts.includes(productId)) {
                 // Remove from favorites
@@ -205,7 +248,8 @@
             localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
         }
     });
-</script>
+    
+    </script>
 
 
 
