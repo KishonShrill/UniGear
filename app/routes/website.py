@@ -128,16 +128,15 @@ def merch_details(product_id):
         flash("Product not found.", "danger")
         return redirect(url_for('website.explore'))
 
-    # Convert product row to dictionary
+# Convert product row to dictionary
     product = {
         'product_id': product_row[0],
         'name': product_row[1],
-        'description': product_row[2],
+        'description': product_row[2], 
         'hook': product_row[3],
-        'type': product_row[4],
-        'price': product_row[5],
-        'preorder_count': product_row[6],
-        'order_type': product_row[7]  # Ensure order_type is included
+        'type': product_row[4],  
+        'price': product_row[5],  
+        'order_type': product_row[6],
     }
 
     # Fetch product images
