@@ -15,6 +15,14 @@ def login_is_required(function):
   wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
   return wrapper
 
+@website_bp.route('/api/check-login', methods=['GET'])
+def check_login():
+    if "id" in session:
+        return {"logged_in": True}
+    else:
+        return {"logged_in": False}
+
+
 # Landing Page Route
 @website_bp.route('/')
 def landing():
@@ -100,11 +108,11 @@ def explore():
 
     return render_template('explore.html', merchandise_data=sorted_merchandise_data, college_colors=college_colors)
 
-# Product Website
 @website_bp.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def merch_details(product_id):
     from app import mysql
 
+    user_id = session.get("id")  # Get logged-in user's ID from session
     cursor = mysql.connection.cursor()
 
     # Fetch product by ID
@@ -119,28 +127,64 @@ def merch_details(product_id):
     product = {
         'product_id': product_row[0],
         'name': product_row[1],
-        'price': product_row[5],  
-        'description': product_row[2], 
+        'price': product_row[5],
+        'description': product_row[2],
         'preorder_count': product_row[0],
-        'type': product_row[4],  
+        'type': product_row[4],
         'hook': product_row[3],
     }
 
-    # Fetch product images 
+    # Fetch product images
     cursor.execute("SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,))
     product_images = [img[0] for img in cursor.fetchall()]
 
     # Fetch product sizes
     cursor.execute("SELECT size_id, product_quantity FROM product_sizes WHERE product_id = %s", (product_id,))
     product_sizes = cursor.fetchall()
-    
+
     # Fetch total count of product quantities from all sizes
     cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (product_id,))
-    total_quantity = cursor.fetchone()[0]  # Retrieve the sum of quantities
-    
+    total_quantity = cursor.fetchone()[0]  
+
+    is_favorite = False
+    if user_id:
+        cursor.execute(
+            "SELECT * FROM favorites WHERE user_id = %s AND product_id = %s",
+            (user_id, product_id)
+        )
+        is_favorite = cursor.fetchone() is not None
+
     cursor.close()
-    
+
     form = ProductForm()
+
+    if request.method == 'POST' and user_id:  
+        cursor = mysql.connection.cursor()
+        cursor.execute(
+            "SELECT * FROM favorites WHERE user_id = %s AND product_id = %s",
+            (user_id, product_id)
+        )
+        favorite = cursor.fetchone()
+
+        if favorite:
+            # Remove favorite
+            cursor.execute(
+                "DELETE FROM favorites WHERE user_id = %s AND product_id = %s",
+                (user_id, product_id)
+            )
+            mysql.connection.commit()
+            flash("Removed from favorites.", "info")
+        else:
+            # Add favorite
+            cursor.execute(
+                "INSERT INTO favorites (user_id, product_id) VALUES (%s, %s)",
+                (user_id, product_id)
+            )
+            mysql.connection.commit()
+            flash("Added to favorites.", "success")
+
+        cursor.close()
+        return redirect(url_for('website.merch_details', product_id=product_id))
 
     return render_template(
         'crud_blueprint/product_details.html',
@@ -148,8 +192,10 @@ def merch_details(product_id):
         images=product_images,
         sizes=product_sizes,
         form=form,
-        total_quantity=total_quantity
+        total_quantity=total_quantity,
+        is_favorite=is_favorite  
     )
+
 
 @website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
 @login_is_required
@@ -202,3 +248,39 @@ def preorder(product_id):
 
     flash("Your pre-order was successful!", "success")
     return redirect(url_for('website.explore'))
+
+
+
+
+#Wishlist------------------------------------------------------------------
+@website_bp.route('/favorite/<int:product_id>', methods=['POST'])
+@login_is_required
+def toggle_favorite(product_id):
+    from app import mysql
+    
+    user_id = session.get("id")  
+    cursor = mysql.connection.cursor()
+    # Check if the product is already a favorite
+    cursor.execute(
+        "SELECT * FROM favorites WHERE user_id = %s AND product_id = %s",
+        (user_id, product_id)
+    )
+    favorite = cursor.fetchone()
+    if favorite:
+        # Remove favorite
+        cursor.execute(
+            "DELETE FROM favorites WHERE user_id = %s AND product_id = %s",
+            (user_id, product_id)
+        )
+        mysql.connection.commit()
+        cursor.close()
+        return {"status": "removed"}
+    else:
+        # Add favorite
+        cursor.execute(
+            "INSERT INTO favorites (user_id, product_id) VALUES (%s, %s)",
+            (user_id, product_id)
+        )
+        mysql.connection.commit()
+        cursor.close()
+        return {"status": "added"}

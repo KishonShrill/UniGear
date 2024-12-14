@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 {% endblock %}
 
 {% block content %}
@@ -59,11 +61,16 @@
         <h3 id="price">₱{{ product.price }}</h3>
       </div>
 
-      <!-- That line and tabss -->
-      <div class="product__content-details-box">
-        <p selected>Description</p>
-        <p>Details</p>
-        <p>Specs</p>
+      <!-- That line and tabs -->
+      <div class="product__content-details">
+        <div class="product__content-details-box">
+          <p selected>Description</p>
+          <p>Details</p>
+          <p>Specs</p>
+        </div>
+        <button id="favorite-btn" class="favorite-btn {% if not session.get('logged_in') %}gray-btn{% endif %}">
+          <i class="fas fa-heart"></i>
+        </button>        
       </div>
       <hr style="margin-bottom: 2rem;"/>
 
@@ -133,77 +140,83 @@
   <!-- Footer -->
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
+
   <script>
-    const openButton = document.querySelector("[data-open-modal]")
-    const closeButton = document.querySelector("[data-close-modal]")
-    const modal = document.querySelector("[data-modal]")
-
-    const quantity = document.querySelector("#quantity")
-    const quantityPreviewer = document.querySelector("#quantity-preview")
-
-    openButton.addEventListener("click", () => {
-      modal.showModal()
-      quantityPreviewer.textContent = quantity.value;
-    })
-
-    closeButton.addEventListener("click", () => {
-      modal.close()
-    })
-  </script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const sizeBtns = document.querySelectorAll('.size-btn');
-      const hiddenInput = document.getElementById('selectedSizes');
-
-      sizeBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-          sizeBtns.forEach(button => button.classList.remove('active'));
-          
-          this.classList.add('active');
-          
-          hiddenInput.value = this.getAttribute('data-size');
+    document.addEventListener("DOMContentLoaded", function () {
+        const favoriteBtn = document.getElementById("favorite-btn");
+        const productId = document.querySelector("main").getAttribute("data-product-id");
+    
+      //  if (favoriteBtn.classList.contains("gray-btn")) {
+       //     favoriteBtn.addEventListener("click", function () {
+       //         alert("You must log in to favorite products.");
+      //      });
+       //     return;
+      //  }
+    
+        let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
+    
+        if (favoriteProducts.includes(productId)) {
+            favoriteBtn.classList.add("favorited");
+        }
+    
+        favoriteBtn.addEventListener("click", function () {
+            fetch('/api/check-login', {
+                method: 'GET',
+                credentials: 'same-origin',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.logged_in) {
+                    alert("You must log in to favorite products.");
+                    return;
+                }
+    
+                if (favoriteProducts.includes(productId)) {
+                    favoriteProducts = favoriteProducts.filter(id => id !== productId);
+                    favoriteBtn.classList.remove("favorited");
+                } else {
+                    favoriteProducts.push(productId);
+                    favoriteBtn.classList.add("favorited");
+                }
+    
+                localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
+            })
+            .catch(error => console.error("Error checking login status:", error));
         });
-      });
     });
-  </script>
-  <script>
-    let slideIndex = 1; // Start with the first slide
-    showSlides(slideIndex);
-
-    // Change the current slide (prev/next)
-    function plusSlides(n) {
-      showSlides(slideIndex += n);
-    }
-
-    // Set the current slide (when clicking a thumbnail)
-    function currentSlide(n) {
-      showSlides(slideIndex = n);
-    }
-
-    // Show the current slide
-    function showSlides(n) {
-      const slides = document.getElementsByClassName("mySlides");
-      const dots = document.getElementsByClassName("demo");
-
-      // Handle edge cases: wrap around slides
-      if (n > slides.length) slideIndex = 1; // Go back to the first slide
-      if (n < 1) slideIndex = slides.length; // Go to the last slide
-
-      // Hide all slides
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-      }
-
-      // Remove the "active" class from all thumbnails
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active", "");
-      }
-
-      // Display the current slide
-      slides[slideIndex - 1].style.display = "flex";
-
-      // Add the "active" class to the corresponding thumbnail
-      dots[slideIndex - 1].className += " active";
-    }
-  </script>
+    </script>
+    
+    <script>
+    const openButton = document.querySelector("[data-open-modal]");
+    const closeButton = document.querySelector("[data-close-modal]");
+    const modal = document.querySelector("[data-modal]");
+    const quantity = document.querySelector("#quantity");
+    const quantityPreviewer = document.querySelector("#quantity-preview");
+    
+    openButton.addEventListener("click", () => {
+        modal.showModal();
+        quantityPreviewer.textContent = quantity.value;
+    });
+    
+    closeButton.addEventListener("click", () => {
+        modal.close();
+    });
+    </script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        const hiddenInput = document.getElementById('selectedSizes');
+    
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                sizeBtns.forEach(button => button.classList.remove('active'));
+                this.classList.add('active');
+                hiddenInput.value = this.getAttribute('data-size');
+            });
+        });
+    });
+    </script>
+    
+  
 {% endblock %}

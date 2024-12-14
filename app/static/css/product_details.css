@@ -185,16 +185,21 @@ img.demo.cursor {
   align-items: center;      
   font-family: "Lato", sans-serif;
 }
-.product__content-details-box {
+.product__content-details {
+  position: relative;
   margin-top: 0;
+  display: flex;
+  justify-content: space-between;
+}
+.product__content-details-box {
   display: flex;
   gap: 30px
 }
-.product__content-details-box > p{
+.product__content-details-box p{
   font-family: "Bebas Neue", sans-serif;
   font-size: 1rem;
 }
-.product__content-details-box > p[selected]{
+.product__content-details-box p[selected]{
   border-bottom: 2px solid black;
 }
 
@@ -312,4 +317,34 @@ img.demo.cursor {
 
 .input-box span {
   font-size: 16px;             
+}
+
+
+.favorite-btn {
+  position: absolute;
+  right: 0;
+  background: none;
+  justify-self: flex-end;
+  border: none;
+  font-size: 1.5rem; 
+  cursor: pointer;
+  color: #d3d3d3; 
+  z-index: 1000;  
+}
+
+.favorite-btn.favorited {
+  color: red; 
+}
+
+.favorite-btn i {
+  pointer-events: none; 
+}
+
+
+.gray-btn {
+  color: gray; 
+}
+
+.gray-btn:hover {
+  color: red;
 }
