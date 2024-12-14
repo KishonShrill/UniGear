@@ -146,12 +146,12 @@
         const favoriteBtn = document.getElementById("favorite-btn");
         const productId = document.querySelector("main").getAttribute("data-product-id");
     
-        if (favoriteBtn.classList.contains("gray-btn")) {
-            favoriteBtn.addEventListener("click", function () {
-                alert("You must log in to favorite products.");
-            });
-            return;
-        }
+      //  if (favoriteBtn.classList.contains("gray-btn")) {
+       //     favoriteBtn.addEventListener("click", function () {
+       //         alert("You must log in to favorite products.");
+      //      });
+       //     return;
+      //  }
     
         let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
     
