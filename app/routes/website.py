@@ -107,7 +107,7 @@ def merch_details(product_id):
 
     cursor = mysql.connection.cursor()
 
-    # Fetch product by ID
+    # Fetch product by ID with order type
     cursor.execute("SELECT * FROM products WHERE product_id = %s", (product_id,))
     product_row = cursor.fetchone()
 
@@ -119,24 +119,28 @@ def merch_details(product_id):
     product = {
         'product_id': product_row[0],
         'name': product_row[1],
-        'price': product_row[5],  
-        'description': product_row[2], 
-        'preorder_count': product_row[0],
-        'type': product_row[4],  
+        'description': product_row[2],
         'hook': product_row[3],
+        'type': product_row[4],
+        'price': product_row[5],
+        'preorder_count': product_row[6],
+        'order_type': product_row[7]  # Ensure order_type is included
     }
 
-    # Fetch product images 
+    # Fetch other product details (sizes, images, etc.)
+    cursor.execute(""" 
+        SELECT ps.size_id, s.size_name, ps.product_quantity
+        FROM product_sizes ps
+        JOIN sizes s ON ps.size_id = s.size_id
+        WHERE ps.product_id = %s
+    """, (product_id,))
+    product_sizes = cursor.fetchall()
+
     cursor.execute("SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,))
     product_images = [img[0] for img in cursor.fetchall()]
 
-    # Fetch product sizes
-    cursor.execute("SELECT size_id, product_quantity FROM product_sizes WHERE product_id = %s", (product_id,))
-    product_sizes = cursor.fetchall()
-    
-    # Fetch total count of product quantities from all sizes
     cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (product_id,))
-    total_quantity = cursor.fetchone()[0]  # Retrieve the sum of quantities
+    total_quantity = cursor.fetchone()[0]
     
     cursor.close()
     
@@ -150,6 +154,8 @@ def merch_details(product_id):
         form=form,
         total_quantity=total_quantity
     )
+
+
 
 @website_bp.route('/product/<int:product_id>/preorder', methods=['POST'])
 @login_is_required

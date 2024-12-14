@@ -15,7 +15,6 @@
   <!-- Main Content -->
   <main class="product">
     <section class="product__image-wrapper">
-
       <div class="product__image-gallery">
         <div class="product__image-preview" id="slides-container">
           {% for image in images %}
@@ -25,7 +24,6 @@
             </div>
           {% endfor %}
         </div>
-
         <a class="prev" onclick="plusSlides(-1)">❮</a>
         <a class="next" onclick="plusSlides(1)">❯</a>
       </div>
@@ -59,7 +57,7 @@
         <h3 id="price">₱{{ product.price }}</h3>
       </div>
 
-      <!-- That line and tabss -->
+      <!-- That line and tabs -->
       <div class="product__content-details-box">
         <p selected>Description</p>
         <p>Details</p>
@@ -73,7 +71,7 @@
         <p1><b></b> {{ product.hook if product.hook else "N/A" }}</p1>
       </div>
 
-      <!-- Typesss -->
+      <!-- Types -->
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
@@ -82,28 +80,23 @@
           </div>
         </div>
 
-        <div>
-          <p>ORDER TYPE</p>
-          <div class="input-box">
-            <span>{{ "Goal Based" if product.preorder_count == 0 else "Time Based" }}</span>
-          </div>
+        <p>ORDER TYPE</p>
+        <div class="input-box">
+            <span>{{ "Goal Based" if product.order_type == 0 else "Time Based" }}</span>
         </div>
-
-        <!-- Size -->
-        <div class="product__size-wrapper">
-          <p>SIZE</p>
-          <div class="product__size-selector">
-            <button type="button" class="size-btn" data-size="1">XS</button>
-            <button type="button" class="size-btn" data-size="2">S</button>
-            <button type="button" class="size-btn" data-size="3">M</button>
-            <button type="button" class="size-btn" data-size="4">L</button>
-            <button type="button" class="size-btn" data-size="5">XL</button>
-            <button type="button" class="size-btn" data-size="6">2XL</button>
         
-            <input type="hidden" name="selectedSizes" id="selectedSizes" form="pre_order-form">
-          </div>
-        </div>
+
+        <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
+          {% for size in sizes %}
+              <!-- Button for each size, showing the size_name as label -->
+              <button type="button" class="size-btn" 
+                      data-size="{{ size[0] }}" 
+                      style="padding: 10px 20px;">
+                  {{ size[1] }}  <!-- size_name -->
+              </button>
+          {% endfor %}
       </div>
+
 
       <hr />
 
@@ -134,21 +127,21 @@
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
   <script>
-    const openButton = document.querySelector("[data-open-modal]")
-    const closeButton = document.querySelector("[data-close-modal]")
-    const modal = document.querySelector("[data-modal]")
+    const openButton = document.querySelector("[data-open-modal]");
+    const closeButton = document.querySelector("[data-close-modal]");
+    const modal = document.querySelector("[data-modal]");
 
-    const quantity = document.querySelector("#quantity")
-    const quantityPreviewer = document.querySelector("#quantity-preview")
+    const quantity = document.querySelector("#quantity");
+    const quantityPreviewer = document.querySelector("#quantity-preview");
 
     openButton.addEventListener("click", () => {
-      modal.showModal()
+      modal.showModal();
       quantityPreviewer.textContent = quantity.value;
-    })
+    });
 
     closeButton.addEventListener("click", () => {
-      modal.close()
-    })
+      modal.close();
+    });
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -158,9 +151,8 @@
       sizeBtns.forEach(btn => {
         btn.addEventListener('click', function() {
           sizeBtns.forEach(button => button.classList.remove('active'));
-          
+
           this.classList.add('active');
-          
           hiddenInput.value = this.getAttribute('data-size');
         });
       });
@@ -206,4 +198,24 @@
       dots[slideIndex - 1].className += " active";
     }
   </script>
+
+<script>
+  const sizeButtons = document.querySelectorAll('.size-btn');
+  const selectedSizesInput = document.getElementById('selectedSizes');
+
+  sizeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+          const sizeId = this.getAttribute('data-size');
+          
+
+          selectedSizesInput.value = sizeId;
+
+          
+          sizeButtons.forEach(btn => btn.style.backgroundColor = '');
+          this.style.backgroundColor = '#f0ad4e';  
+      });
+  });
+
+</script>
+
 {% endblock %}
