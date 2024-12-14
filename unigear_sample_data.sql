@@ -82,6 +82,22 @@ CREATE TABLE if NOT EXISTS `pictures` (
 );
 
 
+
+DROP TABLE if EXISTS `ordered_by`;
+CREATE TABLE if NOT EXISTS `ordered_by` (
+	order_id INT AUTO_INCREMENT PRIMARY KEY,
+	user_id INT NOT NULL,
+	product_id INT NOT NULL,
+	size_id INT NOT NULL,
+	quantity INT NOT NULL,
+	total_cost DECIMAL(10, 2) NOT NULL,
+	order_status BOOLEAN NOT NULL,
+	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT `fk_order_user` FOREIGN KEY (user_id) REFERENCES `user` (user_id),
+	CONSTRAINT `fk_order_product` FOREIGN KEY (product_id) REFERENCES `products` (product_id),
+	CONSTRAINT `fk_order_size` FOREIGN KEY (size_id) REFERENCES `sizes` (size_id)
+);
+
 DELIMITER //
 
 CREATE TRIGGER update_order_type
@@ -106,23 +122,6 @@ END;
 //
 
 DELIMITER ;
-
-
-DROP TABLE if EXISTS `ordered_by`;
-CREATE TABLE if NOT EXISTS `ordered_by` (
-	order_id INT AUTO_INCREMENT PRIMARY KEY,
-	user_id INT NOT NULL,
-	product_id INT NOT NULL,
-	size_id INT NOT NULL,
-	quantity INT NOT NULL,
-	total_cost DECIMAL(10, 2) NOT NULL,
-	order_status BOOLEAN NOT NULL,
-	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT `fk_order_user` FOREIGN KEY (user_id) REFERENCES `user` (user_id),
-	CONSTRAINT `fk_order_product` FOREIGN KEY (product_id) REFERENCES `products` (product_id),
-	CONSTRAINT `fk_order_size` FOREIGN KEY (size_id) REFERENCES `sizes` (size_id)
-);
-
 
 -- Below is the sample data
 -- Below is the sample data
