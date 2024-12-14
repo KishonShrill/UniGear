@@ -10,7 +10,7 @@ class Product(object):
         self.hook = hook
         self.type = type
         self.price = price
-        self.order_type = bool(order_type)
+        self.order_type = order_type
         self.seller_id = seller_id
 
     def save(self):
