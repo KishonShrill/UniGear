@@ -248,24 +248,4 @@
       });
     });
   </script>
-
-<script>
-  const sizeButtons = document.querySelectorAll('.size-btn');
-  const selectedSizesInput = document.getElementById('selectedSizes');
-
-  sizeButtons.forEach(button => {
-      button.addEventListener('click', function() {
-          const sizeId = this.getAttribute('data-size');
-          
-
-          selectedSizesInput.value = sizeId;
-
-          
-          sizeButtons.forEach(btn => btn.style.backgroundColor = '');
-          this.style.backgroundColor = '#f0ad4e';  
-      });
-  });
-
-</script>
-
 {% endblock %}
