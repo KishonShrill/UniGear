@@ -14,6 +14,7 @@
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
+  <form id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">{{ form.csrf_token }}</form>
   <main class="product">
     <section class="product__image-wrapper">
 
@@ -53,19 +54,18 @@
       </div>
     </section>
 
-    <form class="product__content-wrapper" id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">
-      {{ form.csrf_token }}
+    <div class="product__content-wrapper">
       <div class="product__content-back-wrapper">
         <a class="product__content-back" href="../../"><b>Home</b></a>
         <a class="product__content-back" href="../"><b>Back to Shop</b></a>
       </div>
 
       <div class="input-box">
-        <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="">
+        <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="" form="product-form">
         <label for="name" hidden>Please input a product name...</label>
       </div>
       <div class="input-box">
-        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="" inputmode="numeric" pattern="[0-9]+">
+        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="" inputmode="numeric" pattern="[0-9]+" form="product-form">
         <label for="price" hidden>Please input a price for the product...</label>
       </div>
       
@@ -77,17 +77,17 @@
       <hr />
       
       <div class="input-box">
-        <textarea id="description" name="description" placeholder="Please add a product description..." required="" type="text" value=""></textarea>
+        <textarea id="description" name="description" placeholder="Please add a product description..." required="" type="text" value="" form="product-form"></textarea>
         <label for="description" hidden>Please add a product description...</label>
       </div>
       <div class="input-box">
-        <input id="hook" name="hook" placeholder="[optional] Add product hook" type="text" value="">
+        <input id="hook" name="hook" placeholder="[optional] Add product hook" type="text" value="" form="product-form">
       </div>
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
           <div class="input-box">
-            <select id="type" name="type" required="">
+            <select id="type" name="type" required="" form="product-form">
               <option value="" selected>Choose a type...</option>
               <option value="t-shirt">T-Shirt</option>
               <option value="hoodie">Hoodie</option>
@@ -110,14 +110,14 @@
             <button type="button" class="size-btn" data-size="6">2XL</button>
 
             <!-- Hidden input to store selected sizes -->
-            <input type="hidden" name="selectedSizes" id="selectedSizes">
+            <input type="hidden" name="selectedSizes" id="selectedSizes" form="product-form">
           </div>
         </div>
 
         <div>
           <p>ORDER TYPE</p>
           <div class="input-box">
-            <select name="preorder" id="preorder" required>
+            <select name="preorder" id="preorder" form="product-form" required>
               <option value="" selected>Choose a type...</option>
               <option value="0">Goal Based</option>
               <option value="1">Time Based</option>
@@ -126,12 +126,12 @@
           </div>
         </div>
         <!-- Remove for Product Details -->
-        <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*">
-        <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*">
+        <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
+        <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <!-- Remove for Product Details -->
       </div>
       <button id="create_product" data-open-modal>Create Product</button>
-    </form>
+    </div>
   </main>
 
   <!-- Dialog -->
