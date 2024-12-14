@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort,session
-
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
