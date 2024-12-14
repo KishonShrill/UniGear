@@ -291,3 +291,22 @@ INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, orde
 (1, 3, 3, 1, 15.99, false),  -- John Doe orders 1 Business Planner
 (3, 2, 2, 1, 15.99, false),  -- Mark Johnson orders 3 Art Supplies Kits
 (4, 4, 4, 1, 15.99, true);  -- Emily Davis orders 1 Teacher's Guide
+
+
+
+
+
+
+
+
+
+DROP TABLE IF EXISTS favorites;
+CREATE TABLE IF NOT EXISTS favorites (
+    favorite_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_favorite_user FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_favorite_product FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_favorite (user_id, product_id)
+);
