@@ -305,6 +305,32 @@ def preorder(product_id):
     return redirect(url_for('website.explore'))
 
 
+def convert_size(size_number):
+    """
+    Convert numeric size to text representation.
+    
+    Args:
+        size_number (int): Numeric size from 1 to 6
+    
+    Returns:
+        str: Corresponding size in text (xs, s, m, l, xl, 2xl)
+    
+    Raises:
+        ValueError: If size_number is not between 1 and 6
+    """
+    size_map = {
+        1: 'XS',
+        2: 'S', 
+        3: 'M',
+        4: 'L',
+        5: 'XL',
+        6: '2XL'
+    }
+    
+    if size_number not in size_map:
+        raise ValueError(f"Invalid size number. Must be between 1 and 6. Received: {size_number}")
+    
+    return size_map[size_number]
 
 
 #Wishlist------------------------------------------------------------------
@@ -339,29 +365,3 @@ def toggle_favorite(product_id):
         mysql.connection.commit()
         cursor.close()
         return {"status": "added"}
-def convert_size(size_number):
-    """
-    Convert numeric size to text representation.
-    
-    Args:
-        size_number (int): Numeric size from 1 to 6
-    
-    Returns:
-        str: Corresponding size in text (xs, s, m, l, xl, 2xl)
-    
-    Raises:
-        ValueError: If size_number is not between 1 and 6
-    """
-    size_map = {
-        1: 'XS',
-        2: 'S', 
-        3: 'M',
-        4: 'L',
-        5: 'XL',
-        6: '2XL'
-    }
-    
-    if size_number not in size_map:
-        raise ValueError(f"Invalid size number. Must be between 1 and 6. Received: {size_number}")
-    
-    return size_map[size_number]
