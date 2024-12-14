@@ -87,11 +87,14 @@
           </div>
         </div>
 
-        <div class="input-box">
-          <span class="{{ 'goal-based' if product.order_type == 0 else 'time-based' }}">
-            {{ "Goal Based" if product.order_type == 0 else "Time Based" }}
-          </span>
-        </div>
+        <div>
+          <p>ORDER TYPE</p>
+          <div class="input-box">
+            <span class="{{ 'goal-based' if product.order_type == 0 else 'time-based' }}">
+              {{ "Goal Based" if product.order_type == 0 else "Time Based" }}
+            </span>
+          </div>
+      </div>
         
 
         <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
