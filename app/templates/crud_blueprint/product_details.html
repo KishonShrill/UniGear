@@ -6,11 +6,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 {% endblock %}
 
 {% block content %}
   <!-- Header -->
   {{ components.render_header(user=session['name'], role=session['role']) }}
+
+  <!-- Favorite Button (Moved to the top-right corner) -->
+  <button id="favorite-btn" class="favorite-btn">
+      <i class="fas fa-heart"></i>
+  </button>
 
   <!-- Main Content -->
   <main class="product">
@@ -59,7 +66,7 @@
         <h3 id="price">₱{{ product.price }}</h3>
       </div>
 
-      <!-- That line and tabss -->
+      <!-- That line and tabs -->
       <div class="product__content-details-box">
         <p selected>Description</p>
         <p>Details</p>
@@ -133,6 +140,56 @@
   <!-- Footer -->
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
+
+  <script>
+    // Favorite button functionality
+    document.addEventListener("DOMContentLoaded", function () {
+        const favoriteBtn = document.getElementById("favorite-btn");
+        const productId = document.querySelector("main").getAttribute("data-product-id");
+
+        // Retrieve favorites from localStorage
+        let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
+
+        // Check if the current product is already a favorite
+        if (favoriteProducts.includes(productId)) {
+            favoriteBtn.classList.add("favorited");
+        }
+
+        // Add event listener for the favorite button
+        favoriteBtn.addEventListener("click", function () {
+            // Check login status
+            fetch('/api/check-login', {
+                method: 'GET',
+                credentials: 'same-origin', 
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.logged_in) {
+                        alert("You must log in to favorite products.");
+                        return;
+                    }
+
+                    // Toggle favorite status
+                    if (favoriteProducts.includes(productId)) {
+                        // Remove from favorites
+                        favoriteProducts = favoriteProducts.filter(id => id !== productId);
+                        favoriteBtn.classList.remove("favorited");
+                    } else {
+                        // Add to favorites
+                        favoriteProducts.push(productId);
+                        favoriteBtn.classList.add("favorited");
+                    }
+
+                    // Update localStorage
+                    localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
+                })
+                .catch(error => {
+                    console.error("Error checking login status:", error);
+                });
+        });
+    });
+  </script>
+
   <script>
     const openButton = document.querySelector("[data-open-modal]")
     const closeButton = document.querySelector("[data-close-modal]")
@@ -150,6 +207,7 @@
       modal.close()
     })
   </script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const sizeBtns = document.querySelectorAll('.size-btn');
@@ -160,50 +218,9 @@
           sizeBtns.forEach(button => button.classList.remove('active'));
           
           this.classList.add('active');
-          
           hiddenInput.value = this.getAttribute('data-size');
         });
       });
     });
-  </script>
-  <script>
-    let slideIndex = 1; // Start with the first slide
-    showSlides(slideIndex);
-
-    // Change the current slide (prev/next)
-    function plusSlides(n) {
-      showSlides(slideIndex += n);
-    }
-
-    // Set the current slide (when clicking a thumbnail)
-    function currentSlide(n) {
-      showSlides(slideIndex = n);
-    }
-
-    // Show the current slide
-    function showSlides(n) {
-      const slides = document.getElementsByClassName("mySlides");
-      const dots = document.getElementsByClassName("demo");
-
-      // Handle edge cases: wrap around slides
-      if (n > slides.length) slideIndex = 1; // Go back to the first slide
-      if (n < 1) slideIndex = slides.length; // Go to the last slide
-
-      // Hide all slides
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-      }
-
-      // Remove the "active" class from all thumbnails
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active", "");
-      }
-
-      // Display the current slide
-      slides[slideIndex - 1].style.display = "flex";
-
-      // Add the "active" class to the corresponding thumbnail
-      dots[slideIndex - 1].className += " active";
-    }
   </script>
 {% endblock %}

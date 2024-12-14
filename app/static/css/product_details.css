@@ -313,3 +313,24 @@ img.demo.cursor {
 .input-box span {
   font-size: 16px;             
 }
+
+
+.favorite-btn {
+  position: fixed;
+  top: 320px;   
+  right: 100px; 
+  background: none;
+  border: none;
+  font-size: 30px; 
+  cursor: pointer;
+  color: #d3d3d3; 
+  z-index: 1000;  
+}
+
+.favorite-btn.favorited {
+  color: red; 
+}
+
+.favorite-btn i {
+  pointer-events: none; 
+}
