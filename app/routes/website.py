@@ -252,45 +252,6 @@ def preorder(product_id):
 
 
 
-
-#Wishlist------------------------------------------------------------------
-@website_bp.route('/favorite/<int:product_id>', methods=['POST'])
-@login_is_required
-def toggle_favorite(product_id):
-    from app import mysql
-    
-    user_id = session.get("id")  
-    cursor = mysql.connection.cursor()
-
-    # Check if the product is already a favorite
-    cursor.execute(
-        "SELECT * FROM favorites WHERE user_id = %s AND product_id = %s",
-        (user_id, product_id)
-    )
-    favorite = cursor.fetchone()
-
-    if favorite:
-        # Remove favorite
-        cursor.execute(
-            "DELETE FROM favorites WHERE user_id = %s AND product_id = %s",
-            (user_id, product_id)
-        )
-        mysql.connection.commit()
-        cursor.close()
-        return {"status": "removed"}
-    else:
-        # Add favorite
-        cursor.execute(
-            "INSERT INTO favorites (user_id, product_id) VALUES (%s, %s)",
-            (user_id, product_id)
-        )
-        mysql.connection.commit()
-        cursor.close()
-        return {"status": "added"}
-
-
-
-
 #Wishlist------------------------------------------------------------------
 @website_bp.route('/favorite/<int:product_id>', methods=['POST'])
 @login_is_required

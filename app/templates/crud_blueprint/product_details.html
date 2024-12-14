@@ -14,7 +14,6 @@
   <!-- Header -->
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
-  <!-- Favorite Button (Moved to the top-right corner) -->
   <button id="favorite-btn" class="favorite-btn">
       <i class="fas fa-heart"></i>
   </button>
@@ -55,13 +54,6 @@
 
     <!-- Product Details -->
     <section class="product__content-wrapper">
-      <div class="product__favorite">
-        <button class="favorite-btn {% if product.is_favorite %}favorited{% endif %}" data-product-id="{{ product.product_id }}">
-            <i class="fas fa-heart"></i> <span></span>
-        </button>
-      </div>
-
-
       <div class="product__content-back-wrapper">
         <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
         <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
@@ -230,51 +222,4 @@
       });
     });
   </script>
-<<<<<<< HEAD
 {% endblock %}
-=======
-  <script>
-    let slideIndex = 1; // Start with the first slide
-    showSlides(slideIndex);
-
-    // Change the current slide (prev/next)
-    function plusSlides(n) {
-      showSlides(slideIndex += n);
-    }
-
-    // Set the current slide (when clicking a thumbnail)
-    function currentSlide(n) {
-      showSlides(slideIndex = n);
-    }
-
-    // Show the current slide
-    function showSlides(n) {
-      const slides = document.getElementsByClassName("mySlides");
-      const dots = document.getElementsByClassName("demo");
-
-      // Handle edge cases: wrap around slides
-      if (n > slides.length) slideIndex = 1; // Go back to the first slide
-      if (n < 1) slideIndex = slides.length; // Go to the last slide
-
-      // Hide all slides
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-      }
-
-      // Remove the "active" class from all thumbnails
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active", "");
-      }
-
-      // Display the current slide
-      slides[slideIndex - 1].style.display = "flex";
-
-      // Add the "active" class to the corresponding thumbnail
-      dots[slideIndex - 1].className += " active";
-    }
-  </script>
-  
-
-
-{% endblock %}
->>>>>>> cfa474006c2e926f668e5fe1baf25079d99b0aa9
