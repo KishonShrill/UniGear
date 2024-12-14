@@ -14,10 +14,6 @@
   <!-- Header -->
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
-  <button id="favorite-btn" class="favorite-btn">
-      <i class="fas fa-heart"></i>
-  </button>
-
   <!-- Main Content -->
   <main class="product">
     <section class="product__image-wrapper">
@@ -66,10 +62,15 @@
       </div>
 
       <!-- That line and tabs -->
-      <div class="product__content-details-box">
-        <p selected>Description</p>
-        <p>Details</p>
-        <p>Specs</p>
+      <div class="product__content-details">
+        <div class="product__content-details-box">
+          <p selected>Description</p>
+          <p>Details</p>
+          <p>Specs</p>
+        </div>
+        <button id="favorite-btn" class="favorite-btn {% if not session.get('logged_in') %}gray-btn{% endif %}">
+          <i class="fas fa-heart"></i>
+        </button>        
       </div>
       <hr style="margin-bottom: 2rem;"/>
 
@@ -141,85 +142,81 @@
   {{ components.render_footer() }}
 
   <script>
-    // Favorite button functionality
     document.addEventListener("DOMContentLoaded", function () {
         const favoriteBtn = document.getElementById("favorite-btn");
         const productId = document.querySelector("main").getAttribute("data-product-id");
-
-        // Retrieve favorites from localStorage
+    
+        if (favoriteBtn.classList.contains("gray-btn")) {
+            favoriteBtn.addEventListener("click", function () {
+                alert("You must log in to favorite products.");
+            });
+            return;
+        }
+    
         let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
-
-        // Check if the current product is already a favorite
+    
         if (favoriteProducts.includes(productId)) {
             favoriteBtn.classList.add("favorited");
         }
-
-        // Add event listener for the favorite button
+    
         favoriteBtn.addEventListener("click", function () {
-            // Check login status
             fetch('/api/check-login', {
                 method: 'GET',
-                credentials: 'same-origin', 
+                credentials: 'same-origin',
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.logged_in) {
-                        alert("You must log in to favorite products.");
-                        return;
-                    }
-
-                    // Toggle favorite status
-                    if (favoriteProducts.includes(productId)) {
-                        // Remove from favorites
-                        favoriteProducts = favoriteProducts.filter(id => id !== productId);
-                        favoriteBtn.classList.remove("favorited");
-                    } else {
-                        // Add to favorites
-                        favoriteProducts.push(productId);
-                        favoriteBtn.classList.add("favorited");
-                    }
-
-                    // Update localStorage
-                    localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
-                })
-                .catch(error => {
-                    console.error("Error checking login status:", error);
-                });
+            .then(response => response.json())
+            .then(data => {
+                if (!data.logged_in) {
+                    alert("You must log in to favorite products.");
+                    return;
+                }
+    
+                if (favoriteProducts.includes(productId)) {
+                    favoriteProducts = favoriteProducts.filter(id => id !== productId);
+                    favoriteBtn.classList.remove("favorited");
+                } else {
+                    favoriteProducts.push(productId);
+                    favoriteBtn.classList.add("favorited");
+                }
+    
+                localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
+            })
+            .catch(error => console.error("Error checking login status:", error));
         });
     });
-  </script>
-
-  <script>
-    const openButton = document.querySelector("[data-open-modal]")
-    const closeButton = document.querySelector("[data-close-modal]")
-    const modal = document.querySelector("[data-modal]")
-
-    const quantity = document.querySelector("#quantity")
-    const quantityPreviewer = document.querySelector("#quantity-preview")
-
+    </script>
+    
+    <script>
+    const openButton = document.querySelector("[data-open-modal]");
+    const closeButton = document.querySelector("[data-close-modal]");
+    const modal = document.querySelector("[data-modal]");
+    const quantity = document.querySelector("#quantity");
+    const quantityPreviewer = document.querySelector("#quantity-preview");
+    
     openButton.addEventListener("click", () => {
-      modal.showModal()
-      quantityPreviewer.textContent = quantity.value;
-    })
-
-    closeButton.addEventListener("click", () => {
-      modal.close()
-    })
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const sizeBtns = document.querySelectorAll('.size-btn');
-      const hiddenInput = document.getElementById('selectedSizes');
-
-      sizeBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-          sizeBtns.forEach(button => button.classList.remove('active'));
-          
-          this.classList.add('active');
-          hiddenInput.value = this.getAttribute('data-size');
-        });
-      });
+        modal.showModal();
+        quantityPreviewer.textContent = quantity.value;
     });
-  </script>
+    
+    closeButton.addEventListener("click", () => {
+        modal.close();
+    });
+    </script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        const hiddenInput = document.getElementById('selectedSizes');
+    
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                sizeBtns.forEach(button => button.classList.remove('active'));
+                this.classList.add('active');
+                hiddenInput.value = this.getAttribute('data-size');
+            });
+        });
+    });
+    </script>
+    
+  
 {% endblock %}
