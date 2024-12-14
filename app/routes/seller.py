@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort, session
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
@@ -27,21 +27,43 @@ def my_orders():
   print(orders)
   return render_template('/seller/my_orders.html', orders=orders)
 
-@seller_bp.route('/seller/my-products')
+@seller_bp.route('/my-products')
 @seller_required
 def my_products():
-    org_id = session.get('org_id')
-    print(f"Org ID: ", org_id)
-    if not org_id:
-        print("Org ID is missing from session")
-    products = Product.getProducts(org_id)
-    print(f"Products: {products}")
-    return render_template('/seller/my_products.html', products=products)
-
-@seller_bp.route('/profile')
-@seller_required
-def profile():
   ...
+
+# Seller Profile Route
+@seller_bp.route('/seller/profile', methods=['GET', 'POST'])
+@seller_required 
+def profile():
+   # Mock user data (Replace this with data from your database)
+    user = {
+        "username": "Lavigne Kyottie",
+        "email": "example@example.com",
+        "phone": "123-456-7890",
+        "city": "Manila",
+        "barangay": "Sample Barangay",
+        "address": "12345 Sample Street"
+    }
+    
+    if request.method == 'POST':
+        # Handle form submission here
+        try:
+            user['username'] = request.form.get('username')
+            user['email'] = request.form.get('email')
+            user['phone'] = request.form.get('phone')
+            user['city'] = request.form.get('city')
+            user['barangay'] = request.form.get('barangay')
+            user['address'] = request.form.get('address')
+            
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for('seller.profile'))
+        
+        except Exception as e:
+            flash(f"Error updating profile: {str(e)}", "danger")
+            return redirect(url_for('seller.profile'))
+
+    return render_template('seller/seller_profile.html', user=user)
   
   
 # Product Creation Form Route
@@ -52,6 +74,7 @@ def profile():
 def product_new():
   form = ProductForm()
   return render_template('/crud_blueprint/product_page-create.html', form=form)
+
 
 @seller_bp.route('/product/new/submit', methods=['POST', 'GET'])
 @seller_required
@@ -73,47 +96,18 @@ def product_new_submit():
 
       sizes = selected_sizes.split(',')
       URLS = []
-      
-      # Checks for a valid form \/ \/ \/
-      # Checks for a valid form \/ \/ \/
-      # Checks for a valid form \/ \/ \/
-      
-      if len(name) == 0:
-         flash (f"Enter a name for the product...","warning")
-         return redirect(url_for('seller.product_new'))
-      
-      if not price.isdigit() or price.startswith("0"):
-        flash("Enter a valid price for the product. Must not start with 0.", "warning")
-        return redirect(url_for('seller.product_new'))
-      
-      if int(price) > 1000:
-        flash("Product should be affordable for students...", "warning")
-        return redirect(url_for('seller.product_new'))
-       
-      if len(description) <= 100:
-         flash(f"A minimum of 100 characters for description...","warning")
-         flash(f"Chracter Length: {len(description)}","info")
-         return redirect(url_for('seller.product_new'))
-       
-      if product_type == '':
-        flash (f"Pick atleast one size for product...","warning")
-        return redirect(url_for('seller.product_new'))
 
       for picture in picture_urls:
          print (f"Name: {picture.filename}")
 
       if len(picture_urls) == 0:
-         flash (f"You must submit one image: {str(e)}","danger")
+         flash (f"You must submit one image: {str(e)}","Danger")
          return redirect(url_for('seller.product_new'))
       
       for picture in picture_urls:
          if picture.filename=='':
-            flash(f"Upload at least one image", "warning")
+            flash(f"Upload at least one image", "Warning")
             return redirect(url_for('seller.product_new'))
-          
-      # Checks for a valid form /\ /\ /\
-      # Checks for a valid form /\ /\ /\
-      # Checks for a valid form /\ /\ /\
 
       # Put product in the Database and get ID
       product = Product(name, description, hook, product_type, price, preorder_type, 1)
@@ -122,7 +116,8 @@ def product_new_submit():
       # Add the size to the product
       for size in sizes:
         product.add_product_sizes(0, size)
-        
+
+
       # Handle file uploads
       for picture in picture_urls:
         # Assuming you save the picture and generate a URL
@@ -146,9 +141,11 @@ def product_new_submit():
           flash(f"An error occurred during file upload: {str(e)}", "danger")
           return redirect(url_for('seller.product_new'))
 
+
+      
       # TODO: Change return to redirect to dashboard page
       flash(f"Product created successfully!", "success")
-      return redirect(url_for('seller.my_orders'))
+      return redirect(url_for('website.explore'))
     except Exception as e:
       # If there’s an error, return it as part of the JSON response
       return jsonify(success=False, error=str(e)), 400
