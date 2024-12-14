@@ -67,7 +67,11 @@
 
 {% macro render_aside(role=None) %}
 <aside>
-    <div class="aside__tools">
+    <div class="aside__tools" href="#">
+        <!-- <a class="aside__links">
+            <img src="{{ url_for('static', filename='images/dashboard-square-add-stroke-rounded.svg') }}" alt="Dashboard Logo">
+            <p>Dashboard</p>
+        </a> -->
         {% if role == "seller" %}
             <a class="aside__links" href="{{ url_for('seller.my_products') }}" visit>
                 <img src="{{ url_for('static', filename='images/sale-tag-01-stroke-rounded.svg') }}" alt="My Products Logo">
@@ -83,28 +87,26 @@
                 <p>My Orders</p>
             </a>
             <a class="aside__links" href="#" visit>
-                <img src="#" alt="Wishlist Logo">
+                <img src="#" alt="Add Logo for wishlist diri">
                 <p>My Wishlist</p>
             </a>
         {% endif %}
     </div>
     <div class="aside__account">
         {% if role == "seller" %}
-            <a class="aside__links" href="{{ url_for('seller.profile') }}"> <!-- Seller Profile Link -->
-                <img src="{{ url_for('static', filename='images/students-stroke-rounded.svg') }}" alt="College Logo">
-                <p>College: {{ session['org_id'] }}</p>
-            </a>
-        {% else %}
-            <a class="aside__links" href="{{ url_for('user.profile') }}"> <!-- Regular User Profile Link -->
-                <img src="{{ url_for('static', filename='images/user-circle-stroke-rounded.svg') }}" alt="Profile">
-                <div class="aside__account-info">
-                    <p class="aside__account-info-title">Account</p>
-                    <p class="aside__account-info-email">{{ session['email'] }}</p>
-                </div>
-            </a>
+        <a class="aside__links" href="{{ url_for('seller.profile') }}"> 
+            <img src="{{ url_for('static', filename='images/students-stroke-rounded.svg') }}" alt="College Logo">
+            <p>College: {{ session['org_id'] }}</p>
+        </a>
         {% endif %}
         <hr />
-        <!-- Profile section is now conditional based on role -->
+        <a class="aside__links" href="{{ url_for('user.profile') }}"> 
+            <img src="{{ url_for('static', filename='images/user-circle-stroke-rounded.svg') }}" alt="Profile">
+            <div class="aside__account-info">
+                <p class="aside__account-info-title">Account</p>
+                <p class="aside__account-info-email">{{ session['email'] }}</p>
+            </div>
+        </a>
     </div>
-</aside>
+  </aside>
 {% endmacro %}
