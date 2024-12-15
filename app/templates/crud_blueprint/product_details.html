@@ -99,10 +99,16 @@
 
         <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
           {% for size in sizes %}
-            <button type="button" class="size-btn" 
+            <button type="button" 
+                    class="size-btn" 
                     data-size="{{ size[0] }}" 
-                    style="padding: 10px 20px;">
-              {{ size[1] }}
+            >
+              {% if size[0] == 1 %}XS{% endif %}
+              {% if size[0] == 2 %}S{% endif %}
+              {% if size[0] == 3 %}M{% endif %}
+              {% if size[0] == 4 %}L{% endif %}
+              {% if size[0] == 5 %}XL{% endif %}
+              {% if size[0] == 6 %}2XL{% endif %}
             </button>
           {% endfor %}
         </div>
@@ -117,6 +123,7 @@
           <label for="quantity">QUANTITY</label>
           <input type="number" id="quantity" name="quantity" min="1" value="1" required>
         </div>
+        <input type="hidden" id="selectedSize" name="selectedSizes" form="pre_order-form" value="">
       </form>
       <button class="preorder-btn" data-open-modal>PRE-ORDER</button>
     </section>
@@ -141,14 +148,6 @@
     document.addEventListener("DOMContentLoaded", function () {
         const favoriteBtn = document.getElementById("favorite-btn");
         const productId = document.querySelector("main").getAttribute("data-product-id");
-    
-      //  if (favoriteBtn.classList.contains("gray-btn")) {
-       //     favoriteBtn.addEventListener("click", function () {
-       //         alert("You must log in to favorite products.");
-      //      });
-       //     return;
-      //  }
-    
         let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
     
         if (favoriteProducts.includes(productId)) {
@@ -228,23 +227,20 @@
       slides[slideIndex - 1].style.display = "flex";
       dots[slideIndex - 1].className += " active";
     }
+  </script>
 
-    // Size Selector Logic
-    document.addEventListener('DOMContentLoaded', () => {
-      const sizeButtons = document.querySelectorAll('.size-btn');
-      const hiddenInput = document.createElement('input');
+  <script>
+    // Size Selector and Btn Highlight Logic
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    const selectedSize = document.querySelector('#selectedSize')
+    const hiddenInput = document.createElement('input');
 
-      hiddenInput.type = 'hidden';
-      hiddenInput.id = 'selectedSizes';
-      hiddenInput.name = 'selected_size';
-      document.querySelector('#pre_order-form').appendChild(hiddenInput);
-
-      sizeButtons.forEach(button => {
-        button.addEventListener('click', function () {
-          sizeButtons.forEach(btn => btn.classList.remove('active'));
-          this.classList.add('active');
-          hiddenInput.value = this.getAttribute('data-size');
-        });
+    sizeButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        sizeButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        selectedSize.value = this.getAttribute('data-size');
+        console.log("Value: " + selectedSize.value)
       });
     });
   </script>
