@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort, session
+from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
+from app.models.user import User
 
 import cloudinary.api
 import cloudinary.uploader
@@ -27,21 +28,53 @@ def my_orders():
   print(orders)
   return render_template('/seller/my_orders.html', orders=orders)
 
-@seller_bp.route('/seller/my-products')
+@seller_bp.route('/my-products')
 @seller_required
 def my_products():
-    org_id = session.get('org_id')
-    print(f"Org ID: ", org_id)
-    if not org_id:
-        print("Org ID is missing from session")
-    products = Product.getProducts(org_id)
-    print(f"Products: {products}")
-    return render_template('/seller/my_products.html', products=products)
-
-@seller_bp.route('/profile')
-@seller_required
-def profile():
   ...
+
+# Seller Profile Route
+@seller_bp.route('/seller/profile', methods=['GET', 'POST'])
+@seller_required 
+def profile():
+    # Fetch user data from the database
+    user = User.get_by_email(session['email'])
+    
+    if not user:
+        flash("User not found!", "danger")
+        return redirect(url_for('user.profile'))
+
+    # Handle form submission
+    if request.method == 'POST':
+        try:
+            # Get form data
+            user.user_name = request.form.get('username')
+            user.user_email = request.form.get('email')
+            user.user_contact = request.form.get('phone')
+            user.user_address = request.form.get('address')
+            user.user_role = request.form.get('role')  # If applicable
+            user.org_id = request.form.get('org_id')  # If applicable
+            # Save updated user data to the database
+            user.save()
+
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for('seller.profile'))
+        
+        except Exception as e:
+            flash(f"Error updating profile: {str(e)}", "danger")
+            return redirect(url_for('seller.profile'))
+
+    # Split the user_address into components for display
+    if user and user.user_address:
+        parts = user.user_address.split(", ")
+        zipcode_street = parts[0] if len(parts) > 0 else ""
+        barangay = parts[1] if len(parts) > 1 else ""
+        city = parts[2] if len(parts) > 2 else ""
+    else:
+        zipcode_street, barangay, city = "", "", ""
+
+    # Render the profile page with the current user data
+    return render_template('seller/seller_profile.html', user=user, zipcode_street=zipcode_street, barangay=barangay, city=city)
   
   
 # Product Creation Form Route
@@ -52,6 +85,7 @@ def profile():
 def product_new():
   form = ProductForm()
   return render_template('/crud_blueprint/product_page-create.html', form=form)
+
 
 @seller_bp.route('/product/new/submit', methods=['POST', 'GET'])
 @seller_required
@@ -103,12 +137,12 @@ def product_new_submit():
          print (f"Name: {picture.filename}")
 
       if len(picture_urls) == 0:
-         flash (f"You must submit one image: {str(e)}","danger")
+         flash (f"You must submit one image: {str(e)}","Danger")
          return redirect(url_for('seller.product_new'))
       
       for picture in picture_urls:
          if picture.filename=='':
-            flash(f"Upload at least one image", "warning")
+            flash(f"Upload at least one image", "Warning")
             return redirect(url_for('seller.product_new'))
           
       # Checks for a valid form /\ /\ /\
@@ -130,7 +164,8 @@ def product_new_submit():
       # Add the size to the product
       for size in sizes:
         product.add_product_sizes(0, size)
-        
+
+
       # Handle file uploads
       for picture in picture_urls:
         # Assuming you save the picture and generate a URL
@@ -154,6 +189,8 @@ def product_new_submit():
           flash(f"An error occurred during file upload: {str(e)}", "danger")
           return redirect(url_for('seller.product_new'))
 
+
+      
       # TODO: Change return to redirect to dashboard page
       flash(f"Product created successfully!", "success")
 # After successfully saving the product

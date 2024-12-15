@@ -1,0 +1,161 @@
+main.orders {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 1rem; /* Added gap between aside and content */
+    background-color: #f7f7f7;
+}
+
+.content {
+    width: 100%;
+    height: calc(100vh - 60px - 57px);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Stretch content across container */
+    overflow-y: scroll;
+}
+
+/* Content Header */
+.content-header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-title {
+    font-weight: bold;
+    font-size: 39px;
+}
+
+/* General Layout */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 32px;
+    height: 712px;
+ 
+    background-color: #f7f7f7;
+  }
+  
+  /* Section Title */
+  .profile-title {
+    font-size: 2rem; /* 32px */
+    font-weight: bold;
+    color: black;
+    text-align: left;
+  }
+  
+  /* Profile Card Container */
+  .profile-card {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: none;
+    padding: 32px 48px;
+   
+    border-radius: 0px;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 25%);
+  
+    overflow: visible;
+    border: none; /* Ensure border is removed */
+  }
+  
+  /* Profile Picture Container */
+  .profile-picture {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 3rem 0;
+  }
+  
+  /* Profile Picture (SVG) */
+  .profile-picture svg {
+    width: 171px;
+    height: 171px;
+    stroke: #1e1e1e;
+    border: none; /* Ensure no border around SVG */
+  }
+  
+  /* Form Container */
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 16px;
+    overflow: visible;
+  }
+  
+  /* Section Subtitle */
+  .form-title {
+    width: 100%;
+    font-size: 1.525rem; /* 18px */
+    font-weight: bold;
+    color: black;
+    text-align: left;
+  }
+  
+  /* Form Group */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 16px;
+  }
+  
+  /* Input Field Container */
+  .input-container {
+    position: relative;
+    width: 100%;
+    max-width: 703px;
+    height: 72px;
+  }
+
+  .input-label {
+    font-size: 14px;
+  }
+  
+  /* Input Field */
+  .input-field {
+    width: min(500px, 100%);
+    height: 48px;
+    padding-left: 1rem;
+
+    font-size: 1rem; /* 16px */
+    border: 2px solid #EAEAEA;
+    outline: none; /* Remove default browser outline */
+    background-color: white;
+    /* border-radius: 4px; */
+    box-sizing: border-box;
+    color: #485246;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  /* Placeholder Styling */
+  .input-field::placeholder {
+    color: #a0a0a0; /* Light gray for placeholders */
+  }
+  
+  /* Input Focus */
+  .input-field:focus {
+    outline: none !important; /* Remove focus outline */
+    box-shadow: none; /* Optional: Disable shadow focus effect */
+  }
+  
+  /* Profile Card Container */
+  .profile-card {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: none;
+    padding: 32px 16px;
+   
+    border-radius: 0px;
+  
+    overflow: visible;
+    border: none; /* Ensure border is removed */
+  }
+  
