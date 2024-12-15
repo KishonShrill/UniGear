@@ -114,8 +114,8 @@ BEGIN
     -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
     IF total_orders >= 50 THEN
         UPDATE products
-        SET order_type = 0
-        WHERE product_id = NEW.product_id AND order_type = 1;
+        SET order_type = 1
+        WHERE product_id = NEW.product_id AND order_type = 0;
     END IF;
 END;
 //
@@ -309,14 +309,6 @@ INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, orde
 (1, 3, 3, 1, 15.99, false),  -- John Doe orders 1 Business Planner
 (3, 2, 2, 1, 15.99, false),  -- Mark Johnson orders 3 Art Supplies Kits
 (4, 4, 4, 1, 15.99, true);  -- Emily Davis orders 1 Teacher's Guide
-
-
-
-
-
-
-
-
 
 DROP TABLE IF EXISTS favorites;
 CREATE TABLE IF NOT EXISTS favorites (
