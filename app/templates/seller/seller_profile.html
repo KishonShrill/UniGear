@@ -46,13 +46,13 @@
           <p class="form-title">Contact Details</p>
           <div class="form-group">
             <div class="input-container">
-              <input type="text" class="input-field" placeholder="Username" />
+              <input type="text" class="input-field" name="username" placeholder="Username" value="{{ user.user_name }}" readonly/>
             </div>
             <div class="input-container">
-              <input type="email" class="input-field" placeholder="Email" />
+              <input type="email" class="input-field" name="email" placeholder="Email" value="{{ user.user_email }}" readonly/>
             </div>
             <div class="input-container">
-              <input type="text" class="input-field" placeholder="Organization ID" />
+              <input type="text" class="input-field" name="org_id" placeholder="Organization ID" value="{{ user.org_id }}"readonly/>
     
         </div>
       </div>
