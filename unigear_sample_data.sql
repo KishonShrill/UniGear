@@ -114,8 +114,8 @@ BEGIN
     -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
     IF total_orders >= 50 THEN
         UPDATE products
-        SET order_type = 0
-        WHERE product_id = NEW.product_id AND order_type = 1;
+        SET order_type = 1
+        WHERE product_id = NEW.product_id AND order_type = 0;
     END IF;
 END;
 //
