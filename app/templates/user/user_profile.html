@@ -47,28 +47,28 @@
             <p class="form-title">Contact Details</p>
             <div class="form-group">
               <div class="input-container">
-                <input type="text" class="input-field" placeholder="Username" />
+                  <input type="text" class="input-field" name="username" placeholder="Username" value="{{ user.user_name }}" readonly />
               </div>
               <div class="input-container">
-                <input type="email" class="input-field" placeholder="Email" />
+                  <input type="email" class="input-field" name="email" placeholder="Email" value="{{ user.user_email }}" readonly />
               </div>
               <div class="input-container">
-                <input type="tel" class="input-field" placeholder="Phone" />
+                  <input type="tel" class="input-field" name="phone" placeholder="Phone" value="{{ user.user_contact }}" readonly/>
               </div>
-            </div>
-            <p class="form-title">Address</p>
-            <div class="form-group">
-              <div class="input-container">
-                <input type="text" class="input-field" placeholder="City" />
-              </div>
-              <div class="input-container">
-                <input type="text" class="input-field" placeholder="Barangay" />
-              </div>
-              <div class="input-container">
-                <input type="text" class="input-field" placeholder="Zip Code / Street Address" />
-      
           </div>
-        </div>
+          
+          <p class="form-title">Address</p>
+          <div class="form-group">
+              <div class="input-container">
+                  <input type="text" class="input-field" name="city" placeholder="City" value="{{ city }}"readonly />
+              </div>
+              <div class="input-container">
+                  <input type="text" class="input-field" name="barangay" placeholder="Barangay" value="{{ barangay }}"readonly />
+              </div>
+              <div class="input-container">
+                  <input type="text" class="input-field" name="address" placeholder="Street Address" value="{{ zipcode_street }}"readonly />
+              </div>
+          </div>          
           
             </div>
           </form>

@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
+from app.models.user import User
 
 import cloudinary.api
 import cloudinary.uploader
@@ -36,26 +37,26 @@ def my_products():
 @seller_bp.route('/seller/profile', methods=['GET', 'POST'])
 @seller_required 
 def profile():
-   # Mock user data (Replace this with data from your database)
-    user = {
-        "username": "Lavigne Kyottie",
-        "email": "example@example.com",
-        "phone": "123-456-7890",
-        "city": "Manila",
-        "barangay": "Sample Barangay",
-        "address": "12345 Sample Street"
-    }
+    # Fetch user data from the database
+    user = User.get_by_email(session['email'])
     
+    if not user:
+        flash("User not found!", "danger")
+        return redirect(url_for('user.profile'))
+
+    # Handle form submission
     if request.method == 'POST':
-        # Handle form submission here
         try:
-            user['username'] = request.form.get('username')
-            user['email'] = request.form.get('email')
-            user['phone'] = request.form.get('phone')
-            user['city'] = request.form.get('city')
-            user['barangay'] = request.form.get('barangay')
-            user['address'] = request.form.get('address')
-            
+            # Get form data
+            user.user_name = request.form.get('username')
+            user.user_email = request.form.get('email')
+            user.user_contact = request.form.get('phone')
+            user.user_address = request.form.get('address')
+            user.user_role = request.form.get('role')  # If applicable
+            user.org_id = request.form.get('org_id')  # If applicable
+            # Save updated user data to the database
+            user.save()
+
             flash("Profile updated successfully!", "success")
             return redirect(url_for('seller.profile'))
         
@@ -63,7 +64,17 @@ def profile():
             flash(f"Error updating profile: {str(e)}", "danger")
             return redirect(url_for('seller.profile'))
 
-    return render_template('seller/seller_profile.html', user=user)
+    # Split the user_address into components for display
+    if user and user.user_address:
+        parts = user.user_address.split(", ")
+        zipcode_street = parts[0] if len(parts) > 0 else ""
+        barangay = parts[1] if len(parts) > 1 else ""
+        city = parts[2] if len(parts) > 2 else ""
+    else:
+        zipcode_street, barangay, city = "", "", ""
+
+    # Render the profile page with the current user data
+    return render_template('seller/seller_profile.html', user=user, zipcode_street=zipcode_street, barangay=barangay, city=city)
   
   
 # Product Creation Form Route
