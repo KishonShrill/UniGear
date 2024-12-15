@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort, session
+from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, abort,session
+
 from app.models.product import Product
 from app.forms import ProductForm
 from app.routes.auth import seller_required
@@ -86,11 +87,11 @@ def product_new_submit():
         flash("Enter a valid price for the product. Must not start with 0.", "warning")
         return redirect(url_for('seller.product_new'))
       
-      if int(price) > 1000:
+      if int(price) > 10000:
         flash("Product should be affordable for students...", "warning")
         return redirect(url_for('seller.product_new'))
        
-      if len(description) <= 100:
+      if len(description) <= 50:
          flash(f"A minimum of 100 characters for description...","warning")
          flash(f"Chracter Length: {len(description)}","info")
          return redirect(url_for('seller.product_new'))
@@ -114,9 +115,17 @@ def product_new_submit():
       # Checks for a valid form /\ /\ /\
       # Checks for a valid form /\ /\ /\
       # Checks for a valid form /\ /\ /\
-
-      # Put product in the Database and get ID
-      product = Product(name, description, hook, product_type, price, preorder_type, 1)
+   
+      print (f"Type: {preorder_type}")
+         # Put product in the Database and get ID
+      product = Product(product_name=name,
+                        description=description,
+                        hook=hook,
+                        type=product_type,
+                        price=price,
+                        order_type=preorder_type,
+                        seller_id=session.get('id')
+      )
       product.save()
 
       # Add the size to the product
@@ -148,7 +157,8 @@ def product_new_submit():
 
       # TODO: Change return to redirect to dashboard page
       flash(f"Product created successfully!", "success")
-      return redirect(url_for('seller.my_orders'))
+# After successfully saving the product
+      return redirect(url_for('website.merch_details', product_id=product.product_id))
     except Exception as e:
       # If there’s an error, return it as part of the JSON response
       return jsonify(success=False, error=str(e)), 400

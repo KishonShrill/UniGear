@@ -17,7 +17,6 @@
   <!-- Main Content -->
   <main class="product">
     <section class="product__image-wrapper">
-
       <div class="product__image-gallery">
         <div class="product__image-preview" id="slides-container">
           {% for image in images %}
@@ -27,7 +26,6 @@
             </div>
           {% endfor %}
         </div>
-
         <a class="prev" onclick="plusSlides(-1)">❮</a>
         <a class="next" onclick="plusSlides(1)">❯</a>
       </div>
@@ -76,11 +74,11 @@
 
       <!-- Description -->
       <div class="product-detail">
-        <p><b></b> {{ product.description if product.description else "No description available." }}</p>
-        <p1><b></b> {{ product.hook if product.hook else "N/A" }}</p1>
+        <p>{{ product.description if product.description else "No description available." }}</p>
+        <p>{{ product.hook if product.hook else "N/A" }}</p>
       </div>
 
-      <!-- Typesss -->
+      <!-- Product Specifications -->
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
@@ -92,47 +90,52 @@
         <div>
           <p>ORDER TYPE</p>
           <div class="input-box">
-            <span>{{ "Goal Based" if product.preorder_count == 0 else "Time Based" }}</span>
+            <span class="{{ 'goal-based' if product.order_type == 0 else 'time-based' }}">
+              {{ "Goal Based" if product.order_type == 0 else "Time Based" }}
+            </span>
           </div>
-        </div>
-
-        <!-- Size -->
-        <div class="product__size-wrapper">
-          <p>SIZE</p>
-          <div class="product__size-selector">
-            <button type="button" class="size-btn" data-size="1">XS</button>
-            <button type="button" class="size-btn" data-size="2">S</button>
-            <button type="button" class="size-btn" data-size="3">M</button>
-            <button type="button" class="size-btn" data-size="4">L</button>
-            <button type="button" class="size-btn" data-size="5">XL</button>
-            <button type="button" class="size-btn" data-size="6">2XL</button>
+      </div>
         
-            <input type="hidden" name="selectedSizes" id="selectedSizes" form="pre_order-form">
-          </div>
+
+        <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
+          {% for size in sizes %}
+            <button type="button" 
+                    class="size-btn" 
+                    data-size="{{ size[0] }}" 
+            >
+              {% if size[0] == 1 %}XS{% endif %}
+              {% if size[0] == 2 %}S{% endif %}
+              {% if size[0] == 3 %}M{% endif %}
+              {% if size[0] == 4 %}L{% endif %}
+              {% if size[0] == 5 %}XL{% endif %}
+              {% if size[0] == 6 %}2XL{% endif %}
+            </button>
+          {% endfor %}
         </div>
       </div>
 
       <hr />
 
-      <!-- Quantity and button-->
+      <!-- Quantity and Preorder Button -->
       <form id="pre_order-form" action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
         {{ form.csrf_token }}
         <div class="product__quantity-input">
           <label for="quantity">QUANTITY</label>
-          <input type="number" id="quantity" name="quantity" min="1" value="2" required>
+          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
         </div>
+        <input type="hidden" id="selectedSize" name="selectedSizes" form="pre_order-form" value="">
       </form>
       <button class="preorder-btn" data-open-modal>PRE-ORDER</button>
     </section>
   </main>
 
-  <!-- Dialog -->
+  <!-- Modal Dialog -->
   <dialog class="modal" data-modal>
-    <div style="margin-bottom: 1rem;">Are you sure you want to Pre-order this Item?</div>
+    <div style="margin-bottom: 1rem;">Are you sure you want to pre-order this item?</div>
     <p class="modal-texts">Item: <b>{{ product.name }}</b></p>
     <p class="modal-texts">Quantity: <b id="quantity-preview"></b></p>
     <div class="confirmation-btns">
-      <button class="btn cancel" data-close-modal >Close</button>
+      <button class="btn cancel" data-close-modal>Close</button>
       <input class="btn confirm" id="pre_order" name="pre_order" type="submit" value="Submit" form="pre_order-form">
     </div>
   </dialog>
@@ -145,14 +148,6 @@
     document.addEventListener("DOMContentLoaded", function () {
         const favoriteBtn = document.getElementById("favorite-btn");
         const productId = document.querySelector("main").getAttribute("data-product-id");
-    
-      //  if (favoriteBtn.classList.contains("gray-btn")) {
-       //     favoriteBtn.addEventListener("click", function () {
-       //         alert("You must log in to favorite products.");
-      //      });
-       //     return;
-      //  }
-    
         let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
     
         if (favoriteProducts.includes(productId)) {
@@ -201,22 +196,52 @@
     closeButton.addEventListener("click", () => {
         modal.close();
     });
-    </script>
-    
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sizeBtns = document.querySelectorAll('.size-btn');
-        const hiddenInput = document.getElementById('selectedSizes');
-    
-        sizeBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                sizeBtns.forEach(button => button.classList.remove('active'));
-                this.classList.add('active');
-                hiddenInput.value = this.getAttribute('data-size');
-            });
-        });
+
+    // Image Slider Logic
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      const slides = document.getElementsByClassName("mySlides");
+      const dots = document.getElementsByClassName("demo");
+
+      if (n > slides.length) slideIndex = 1;
+      if (n < 1) slideIndex = slides.length;
+
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+
+      slides[slideIndex - 1].style.display = "flex";
+      dots[slideIndex - 1].className += " active";
+    }
+  </script>
+
+  <script>
+    // Size Selector and Btn Highlight Logic
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    const selectedSize = document.querySelector('#selectedSize')
+    const hiddenInput = document.createElement('input');
+
+    sizeButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        sizeButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        selectedSize.value = this.getAttribute('data-size');
+        console.log("Value: " + selectedSize.value)
+      });
     });
-    </script>
-    
-  
+  </script>
 {% endblock %}
