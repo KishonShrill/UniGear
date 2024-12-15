@@ -3,22 +3,23 @@
 {% import "components/macros.html" as components %}
 
 {% block head %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
 {% endblock %}
 
 {% block content %}
   <!-- Header -->
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
-  <main style="
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  ">
-    <div class="error-conatiner">
+  <main class="error">
+    <div class="error-container">
       <h1 class="error-title">401</h1>
-      <p class="error-message">You are not logged in!<br><a href="{{ url_for('website.explore') }}">Go Back</a> to whence you came from...</p>
+      <h2 class="error-subtitle">ERROR UNAUTHORIZED</h2>
+      <p class="error-message">You are not logged in!<br>Go back to whence you came from...</p>
+      <div style="display: flex; gap: 1rem;">
+        <a class="btn error-redirect-btn secondary" href="{{ url_for('website.explore') }}">Go Back</a>
+        <a class="btn error-redirect-btn" href="{{ url_for('auth.sign_in') }}">Sign In</a>
+      </div>
     </div>
   </main>
 

@@ -1,7 +1,12 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort
+from config import MAILTRAP_SERVER,MAILTRAP_PORT,MAILTRAP_USERNAME,MAILTRAP_PASSWORD
 from app.models.product import Product
 from app.models.user import User
+from app.models.order import Order
 from app.forms import ProductForm
+
+import smtplib
+from email.mime.text import MIMEText
 
 
 website_bp = Blueprint('website', __name__)
@@ -203,10 +208,9 @@ def preorder(product_id):
     user = User.get_by_email(session['email'])
     product = Product.get_by_id(product_id)
     
-    from app import mysql
-
     size = request.form.get('selectedSizes')
     quantity = request.form.get("quantity")
+    global order_number
 
     # Input and Picture validation
     try:
@@ -223,33 +227,110 @@ def preorder(product_id):
       return redirect(url_for('website.merch_details', product_id=product_id))
 
     try:
-        cursor = mysql.connection.cursor()
-        cursor.execute(
-            """
-              UPDATE product_sizes
-              SET product_quantity = product_quantity + %s 
-              WHERE product_id = %s and size_id = %s
-            """,
-            (quantity, product_id, size)
-        )
-        cursor.execute(
-            """
-              INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, order_status) VALUES 
-              (%s, %s, %s, %s, %s, 0);
-            """,
-            (user.user_id, product_id, size, quantity, product.price)
-        )
-        mysql.connection.commit()
-        cursor.close()
+        order_number = Order.preorderProduct(user.user_id, product.product_id, size, quantity, product.price)
     except Exception as e:
       print(f"Error occurred: {e}")
       flash("Something went wrong while pre-ordering the product. Please order again later...", "danger")
       return redirect(url_for('website.merch_details', product_id=product_id))
+    
+    sizeInText = convert_size(int(size))
+    summaryTotal = int(quantity) * product.price
+    
+    # Plain text content
+    text = f"""\
+    <html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
+            <h1 style="text-align: center; color: white; background-color: #1a1a1a; padding: 15px; margin: 0;">Unigear Team</h1>
+            
+            <div style="padding: 20px;">
+                <h2>Thank you for your purchase!</h2>
+                <p style="font-size: 16px;">Hello <strong>{user.user_name}</strong>, we were notified of your successful preorder of the product '{product.product_name}'.<br/>We will notify you when it is has reached the minimum pre-order goal.</p>
+                
+                <h3>Order Summary</h3>
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <tr style="background-color: #f4f4f4;">
+                        <th style="text-align: left; padding: 10px; border: 1px solid #ddd;">Product Name</th>
+                        <th style="text-align: left; padding: 10px; border: 1px solid #ddd;">Size</th>
+                        <th style="text-align: left; padding: 10px; border: 1px solid #ddd;">Quantity</th>
+                        <th style="text-align: left; padding: 10px; border: 1px solid #ddd;">Price</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{product.product_name}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{sizeInText}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">{quantity}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">₱{summaryTotal}</td>
+                    </tr>
+                </table>
+                
+                <p style="font-size: 16px;">Thank you for using our service!</p>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="http://localhost:5000/user/my-orders" style="font-size:16px; text-decoration:none; display:inline-block; color:#fff; padding:20px 25px; background-color:#2a9d8f; text-align:center; border-radius:5px; max-width:200px; margin:0 auto;">
+                        View Your Order
+                    </a>
+                </div>
+            </div>
+            
+            <footer style="text-align: center; background-color: #1a1a1a; color: white; padding: 15px; margin: 0;">
+                <p style="margin: 0;">&copy; 2024 College Marketplace</p>
+            </footer>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Email Configuration
+    sender_email = "Unigear Team <seller@demomailtrap.com>"
+    receiver_email = user.user_email
+    
+    # Create MIMEText object
+    message = MIMEText(text, "html")
+    message["Subject"] = f"Preorder #{order_number} Confirmed"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    
+    try:
 
+        with smtplib.SMTP(MAILTRAP_SERVER, MAILTRAP_PORT) as server:
+            server.starttls()
+            server.login(MAILTRAP_USERNAME, MAILTRAP_PASSWORD)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+        
+    except Exception as e:
+        print(f"{e}\n")
+        return f"Email has not been sent."
+    
     flash("Your pre-order was successful!", "success")
     return redirect(url_for('website.explore'))
 
 
+def convert_size(size_number):
+    """
+    Convert numeric size to text representation.
+    
+    Args:
+        size_number (int): Numeric size from 1 to 6
+    
+    Returns:
+        str: Corresponding size in text (xs, s, m, l, xl, 2xl)
+    
+    Raises:
+        ValueError: If size_number is not between 1 and 6
+    """
+    size_map = {
+        1: 'XS',
+        2: 'S', 
+        3: 'M',
+        4: 'L',
+        5: 'XL',
+        6: '2XL'
+    }
+    
+    if size_number not in size_map:
+        raise ValueError(f"Invalid size number. Must be between 1 and 6. Received: {size_number}")
+    
+    return size_map[size_number]
 
 
 #Wishlist------------------------------------------------------------------

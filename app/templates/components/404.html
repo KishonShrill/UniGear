@@ -3,22 +3,20 @@
 {% import "components/macros.html" as components %}
 
 {% block head %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
 {% endblock %}
 
 {% block content %}
   <!-- Header -->
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
-  <main style="
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  ">
-    <div class="error-conatiner">
+  <main class="error">
+    <div class="error-container">
       <h1 class="error-title">404</h1>
-      <p class="error-message">You seem lost my child. <br><a href="{{ url_for('website.explore') }}">Go Back</a> to whence you came from...</p>
+      <h2 class="error-subtitle">PAGE NOT FOUND</h2>
+      <p class="error-message">The page you are looking for might have been removed<br/>has it's name changed or is temporarily unavaiable.</p>
+      <a class="btn error-redirect-btn" href="{{ url_for('website.explore') }}">Explore</a>
     </div>
   </main>
 
