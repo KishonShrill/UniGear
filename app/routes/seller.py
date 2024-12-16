@@ -233,3 +233,89 @@ def product_new_submit():
     
   if request.method == 'GET':
     return abort(404)
+  
+@seller_bp.route('/product/edit/<int:product_id>', methods=['GET', 'POST'])
+@seller_required
+def product_edit(product_id):
+    product = Product.get_by_id(product_id)
+    if not product:
+        flash("Product not found!", "danger")
+        return redirect(url_for('seller.dashboard'))
+
+    form = ProductForm(obj=product)  # Populate the form with existing product data
+
+    if request.method == 'POST':
+        # Extract form data
+        name = request.form.get("name")
+        price = request.form.get("price")
+        description = request.form.get("description")
+        hook = request.form.get("hook")
+        product_type = request.form.get("type")
+        preorder_type = request.form.get("preorder")
+        selected_sizes = request.form.get("selectedSizes")
+        picture_urls = request.files.getlist("picture_urls")
+
+        # Validate form data
+        if len(name) == 0:
+            flash("Enter a name for the product", "warning")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        if not price.isdigit() or price.startswith("0"):
+            flash("Enter a valid price for the product", "warning")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        if int(price) > 10000:
+            flash("Product should be affordable for students", "warning")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        if len(description) <= 50:
+            flash("Description should have at least 100 characters", "warning")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        if not product_type:
+            flash("Pick at least one type for the product", "warning")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        # Update product information in the database
+        try:
+            Product.update(
+                product_id=product_id,
+                product_name=name,
+                description=description,
+                hook=hook,
+                type=product_type,
+                price=price,
+                order_type=preorder_type
+            )
+
+            # Update sizes
+            sizes = selected_sizes.split(',')
+            for size in sizes:
+                product.add_product_sizes(0, size)
+
+            # Handle file uploads for images
+            if picture_urls:
+                for picture in picture_urls:
+                    filename = secure_filename(picture.filename)
+                    cloudinary_url = ""
+                    try:
+                        # Upload to Cloudinary
+                        upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+                        cloudinary_url = upload_result.get('secure_url')
+
+                        # Save the Cloudinary URL to the database for this product
+                        product.add_product_pictures(cloudinary_url)
+
+                    except Exception as e:
+                        flash(f"An error occurred during file upload: {str(e)}", "danger")
+                        return redirect(url_for('seller.product_edit', product_id=product_id))
+
+            flash("Product updated successfully!", "success")
+            return redirect(url_for('website.merch_details', product_id=product.product_id))
+
+        except Exception as e:
+            flash(f"Error updating product: {str(e)}", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+    # If it's a GET request, render the edit form
+    return render_template('crud_blueprint/product_page-edit.html', form=form, product=product)
