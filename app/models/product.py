@@ -53,7 +53,64 @@ class Product(object):
         cursor.execute(query, (self.product_id, picture_url))
         mysql.connection.commit()
         cursor.close()
-         
+
+    def update_details(self, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
+        """Update product details."""
+        Product.update(
+            product_id=self.product_id,
+            product_name=product_name,
+            description=description,
+            hook=hook,
+            type=type,
+            price=price,
+            order_type=order_type
+        )
+
+
+    @staticmethod
+    def update_pictures(self, picture_urls):
+        """Update pictures for the product."""
+        cursor = mysql.connection.cursor()
+
+        # Fetch existing pictures for the product
+        query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
+        cursor.execute(query_fetch, (self.product_id,))
+        existing_pictures = {row[0] for row in cursor.fetchall()}
+
+        # Add new pictures or ignore duplicates
+        for picture_url in picture_urls:
+            if picture_url not in existing_pictures:
+                query_insert = """
+                INSERT INTO pictures (picture_id, picture_url)
+                VALUES (%s, %s)
+                """
+                cursor.execute(query_insert, (self.product_id, picture_url))
+
+        mysql.connection.commit()
+        cursor.close()
+    
+    @staticmethod
+    def update_pictures(self, picture_urls):
+        """Update pictures for the product."""
+        cursor = mysql.connection.cursor()
+
+        # Fetch existing pictures for the product
+        query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
+        cursor.execute(query_fetch, (self.product_id,))
+        existing_pictures = {row[0] for row in cursor.fetchall()}
+
+        # Add new pictures or ignore duplicates
+        for picture_url in picture_urls:
+            if picture_url not in existing_pictures:
+                query_insert = """
+                INSERT INTO pictures (picture_id, picture_url)
+                VALUES (%s, %s)
+                """
+                cursor.execute(query_insert, (self.product_id, picture_url))
+
+        mysql.connection.commit()
+        cursor.close()
+
 
     @staticmethod
     def get_by_name(product_name):
