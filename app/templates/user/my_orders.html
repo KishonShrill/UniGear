@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/order_page.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -53,7 +54,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}">
+              <tr value="{{ order['Order'] }}" data="{{ order['Product ID'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Product'] }}</td>
@@ -120,6 +121,41 @@
         }
       });
     });
+  </script>
+  <script>
+    // Example deleteOrder function
+    function deleteOrder(orderId) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      console.log(`Order #${orderId} has been deleted.`);
+      if (!orderId) {
+        console.error("Order ID is missing!");
+        return;
+      }
+
+      fetch('/user/my-orders/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Correct Content-Type
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ product_id: orderId }), // Send product_id in JSON format
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Success:', data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+      modal.close(); // Close the modal after confirmation
+    }
   </script>
   <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
 {% endblock %}

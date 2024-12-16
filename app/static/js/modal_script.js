@@ -15,31 +15,26 @@ function openModal(orderValue) {
 
 deleteOneBtn.addEventListener("click", () => {
   modal.querySelector("div").textContent = `Are you sure you want to cancel order #${deleteOneBtn.value}`;
-  
+
   let confirmButton = document.createElement("button");
   confirmButton.textContent = "Confirm";
   confirmButton.setAttribute("onclick", `deleteOrder(${deleteOneBtn.value})`);
-  
+
   // Remove any existing confirm button to avoid duplicates
   const existingConfirmButton = modal.querySelector("button[data-confirm]");
   if (existingConfirmButton) {
     existingConfirmButton.remove();
   }
-  
+
   // Add the confirm button to the modal
   confirmButton.setAttribute("data-confirm", "true");
   modal.appendChild(confirmButton);
   modal.showModal()
 })
 
-function setDeleteBtn(orderValue) {
+function setDeleteBtn(orderValue, productId) {
   deleteOneBtn.value = orderValue
-}
-
-// Example deleteOrder function
-function deleteOrder(orderId) {
-  console.log(`Order #${orderId} has been deleted.`);
-  modal.close(); // Close the modal after confirmation
+  deleteOneBtn.data = productId
 }
 
 // Function to open modal with product details
@@ -48,12 +43,12 @@ function openProductModal(productImageURL, productName) {
 
   // Check if imageURL is valid, if not, use the placeholder
   const imageSrc = productImageURL ? productImageURL : '/static/images/placeholder.jpg';
-  
+
   // Set the modal content dynamically
   modal.querySelector("div").textContent = productName; // Set the product name
   modal.querySelector("img").src = imageSrc; // Set the product image URL or placeholder
   modal.querySelector("img").alt = `${productName} image`; // Set alt text for the image
-  
+
   modal.showModal(); // Open the dialog
 }
 

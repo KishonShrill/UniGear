@@ -192,7 +192,8 @@ class Product(object):
                 ob.total_cost,
                 p.order_type,
                 ob.order_status,
-                ob.order_date
+                ob.order_date,
+                p.product_id
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
@@ -218,7 +219,8 @@ class Product(object):
                     'Total Cost': row[4],
                     'Type': row[5],
                     'Status': row[6],
-                    'Order Date': row[7]
+                    'Order Date': row[7],
+                    'Product ID': row[8]
                 }
                 orders.append(order)
 
