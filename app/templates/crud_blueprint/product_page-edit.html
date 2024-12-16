@@ -14,7 +14,7 @@
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
-  <form id="product-form" method="POST" action="{{ url_for('seller.product_edit', product_id=product.product_id) }}" enctype="multipart/form-data">{{ form.csrf_token }}</form>
+  <form id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">{{ form.csrf_token }}</form>
   <main class="product">
     <section class="product__image-wrapper">
 
@@ -61,41 +61,35 @@
       </div>
 
       <div class="input-box">
-        <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="{{product.product_name}}" form="product-form">
-        <label for="name" hidden>Please input a product name...</label>
+        <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="{{ product.name }}" form="product-form">
       </div>
       <div class="input-box">
-        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="{{product.price}}" inputmode="numeric" pattern="[0-9]+" form="product-form">
-        <label for="price" hidden>Please input a price for the product...</label>
+        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="{{ product.price }}" inputmode="numeric" form="product-form">
       </div>
-      
+        
       <div class="product__content-details-box">
         <p selected>description</p>
-        <p>details</p>
-        <p>specs</p>
       </div>
       <hr />
-      
+        
       <div class="input-box">
-        <textarea id="description" name="description" placeholder="Please add a product description..." required="" type="text" form="product-form">{{ product.description }}</textarea>
-        <label for="description" hidden>Please add a product description...</label>
+        <textarea id="description" name="description" placeholder="Please add a product description..." required="" form="product-form">{{ product.description }}</textarea>
       </div>
       <div class="input-box">
-        <input id="hook" name="hook" placeholder="[optional] Add product hook" type="text" value="{{product.hook}}" form="product-form">
+        <input id="hook" name="hook" placeholder="[optional] Add product hook" value="{{ product.hook }}" form="product-form">
       </div>
+
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
           <div class="input-box">
             <select id="type" name="type" required="" form="product-form">
-              <option value="" {% if not product.type %}selected{% endif %}>Choose a type...</option>
-              <option value="t-shirt" {% if product.type == 't-shirt' %}selected{% endif %}>T-Shirt</option>
-              <option value="hoodie" {% if product.type == 'hoodie' %}selected{% endif %}>Hoodie</option>
-              <option value="footwear" {% if product.type == 'footwear' %}selected{% endif %}>Footwear</option>
-              <option value="lanyard" {% if product.type == 'lanyard' %}selected{% endif %}>Lanyard</option>
-              <option value="pin" {% if product.type == 'pin' %}selected{% endif %}>Pin</option>
+              <option value="t-shirt" {% if product.product_type == 't-shirt' %}selected{% endif %}>T-Shirt</option>
+              <option value="hoodie" {% if product.product_type == 'hoodie' %}selected{% endif %}>Hoodie</option>
+              <option value="footwear" {% if product.product_type == 'footwear' %}selected{% endif %}>Footwear</option>
+              <option value="lanyard" {% if product.product_type == 'lanyard' %}selected{% endif %}>Lanyard</option>
+              <option value="pin" {% if product.product_type == 'pin' %}selected{% endif %}>Pin</option>
             </select>
-            <label for="type" hidden>Type needed: please choose a type...</label>
           </div>
         </div>
 
@@ -108,7 +102,7 @@
             <button type="button" class="size-btn" data-size="4">L</button>
             <button type="button" class="size-btn" data-size="5">XL</button>
             <button type="button" class="size-btn" data-size="6">2XL</button>
-
+  
             <!-- Hidden input to store selected sizes -->
             <input type="hidden" name="selectedSizes" id="selectedSizes" form="product-form">
           </div>
@@ -118,25 +112,20 @@
           <p>ORDER TYPE</p>
           <div class="input-box">
             <select name="preorder" id="preorder" form="product-form" required>
-              <option value="" {% if not product.order_type %}selected{% endif %}>Choose a type...</option>
-              <option value="0" {% if product.order_type == 0 %}selected{% endif %}>Goal Based</option>
-              <option value="1" {% if product.order_type == 1 %}selected{% endif %}>Time Based</option>
+              <option value="0" {% if product.preorder_type == '0' %}selected{% endif %}>Goal Based</option>
+              <option value="1" {% if product.preorder_type == '1' %}selected{% endif %}>Time Based</option>
             </select>
-            <label for="preorder" hidden>How many products will you sell?</label>
           </div>
         </div>
-        <!-- Remove for Product Details -->
-        <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
-        <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
-        <!-- Remove for Product Details -->
+        
       </div>
-      <button id="create_product" data-open-modal>Udate Product</button>
+      <button id="create_product" data-open-modal>Update Product</button>
     </div>
   </main>
 
   <!-- Dialog -->
   <dialog class="modal" data-modal>
-    <div style="margin-bottom: 1rem;">Are you sure you want to create this product?</div>
+    <div style="margin-bottom: 1rem;">Are you sure you want to update this product?</div>
     <div class="confirmation-btns">
       <button class="btn cancel" data-close-modal >Close</button>
       <input class="btn confirm" name="create_product" type="submit" value="Submit">
@@ -163,7 +152,6 @@
       const form = document.getElementById('product-form');
       form.submit(); // Submit the form manually
     });
-
   </script>
   <script>
     // REMOVE NING SCRIPT SA PRODUCT DETAILS

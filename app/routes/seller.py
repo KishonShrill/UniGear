@@ -284,13 +284,10 @@ def product_edit(product_id):
         flash("Product not found!", "danger")
         return redirect(url_for('seller.dashboard'))
 
-    form = ProductForm(obj=product)
+    form = ProductForm(obj=product)  # Populate the form with existing product data
 
-    # Fetch the associated pictures and sizes to display in the form
-    product_pictures = product.get_product_pictures(product_id)  # Assuming this returns a list of picture URLs
-    product_sizes = product.get_product_sizes(product_id)  # Assuming this returns a list of sizes
-    
     if request.method == 'POST':
+        # Extract form data
         name = request.form.get("name")
         price = request.form.get("price")
         description = request.form.get("description")
@@ -300,6 +297,7 @@ def product_edit(product_id):
         selected_sizes = request.form.get("selectedSizes")
         picture_urls = request.files.getlist("picture_urls")
 
+        # Validate form data
         if len(name) == 0:
             flash("Enter a name for the product", "warning")
             return redirect(url_for('seller.product_edit', product_id=product_id))
@@ -320,8 +318,8 @@ def product_edit(product_id):
             flash("Pick at least one type for the product", "warning")
             return redirect(url_for('seller.product_edit', product_id=product_id))
 
+        # Update product information in the database
         try:
-            print("Calling Product.update()...")
             Product.update(
                 product_id=product_id,
                 product_name=name,
@@ -332,31 +330,27 @@ def product_edit(product_id):
                 order_type=preorder_type
             )
 
-            print("clearing sizes")
+            # Update sizes
             sizes = selected_sizes.split(',')
-            product.clear_sizes(product_id)  # Clear previous sizes before adding new ones
-            print("size cleared")
             for size in sizes:
-                print(f"Adding size: {size}")  # Debugging each size being added
-                product.add_product_sizes(size)
+                product.add_product_sizes(0, size)
 
+            # Handle file uploads for images
             if picture_urls:
                 for picture in picture_urls:
-                    if picture and picture.filename:
-                        filename = secure_filename(picture.filename)
-                        try:
-                            # Debugging: Check if file is being processed
-                            print(f"Uploading picture: {filename}")
-                            upload_result = cloudinary.uploader.upload(picture, public_id=filename)
-                            cloudinary_url = upload_result.get('secure_url')
+                    filename = secure_filename(picture.filename)
+                    cloudinary_url = ""
+                    try:
+                        # Upload to Cloudinary
+                        upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+                        cloudinary_url = upload_result.get('secure_url')
 
-                            # Save the Cloudinary URL to the database for this product
-                            product.add_product_pictures(cloudinary_url)
-                            print(f"Picture uploaded successfully: {cloudinary_url}")
+                        # Save the Cloudinary URL to the database for this product
+                        product.add_product_pictures(cloudinary_url)
 
-                        except Exception as e:
-                            flash(f"An error occurred during file upload: {str(e)}", "danger")
-                            return redirect(url_for('seller.product_edit', product_id=product_id))
+                    except Exception as e:
+                        flash(f"An error occurred during file upload: {str(e)}", "danger")
+                        return redirect(url_for('seller.product_edit', product_id=product_id))
 
             flash("Product updated successfully!", "success")
             return redirect(url_for('website.merch_details', product_id=product.product_id))
@@ -365,6 +359,5 @@ def product_edit(product_id):
             flash(f"Error updating product: {str(e)}", "danger")
             return redirect(url_for('seller.product_edit', product_id=product_id))
 
-    # Pass product_pictures and product_sizes to the template
-    return render_template('crud_blueprint/product_page-edit.html', form=form, product=product,
-                           product_pictures=product_pictures, product_sizes=product_sizes)
+    # If it's a GET request, render the edit form
+    return render_template('crud_blueprint/product_page-edit.html', form=form, product=product)
