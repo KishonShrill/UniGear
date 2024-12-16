@@ -103,11 +103,11 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 -- Below is the sample data
 INSERT INTO college (college_name) VALUES 
 ('College of Arts and Social Sciences'),
-('College of Computer Studies'),
 ('College of Business Administration'),
-('College of Health Sciences'),
-('College of Engineering'),
+('College of Computer Studies'),
 ('College of Education'),
+('College of Engineering'),
+('College of Health Sciences'),
 ('College of Science and Mathematics');
 
 -- CSM Organizations

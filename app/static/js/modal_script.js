@@ -1,10 +1,7 @@
-// const openButton = document.querySelector("[data-open-modal]")
+const deleteOneBtn = document.querySelector("#deleteOne")
 const closeButton = document.querySelector("[data-close-modal]")
-const modal = document.querySelector("[data-modal]")
+const modal = document.querySelector("dialog[data-modal]")
 
-// openButton.addEventListener("click", () => {
-//   modal.showModal()
-// })
 
 closeButton.addEventListener("click", () => {
   modal.close()
@@ -14,6 +11,35 @@ function openModal(orderValue) {
   const modal = document.querySelector("dialog[data-modal]");
   modal.querySelector("div").textContent = `Order: ${orderValue}`; // Example usage of the order value
   modal.showModal(); // Open the dialog
+}
+
+deleteOneBtn.addEventListener("click", () => {
+  modal.querySelector("div").textContent = `Are you sure you want to cancel order #${deleteOneBtn.value}`;
+  
+  let confirmButton = document.createElement("button");
+  confirmButton.textContent = "Confirm";
+  confirmButton.setAttribute("onclick", `deleteOrder(${deleteOneBtn.value})`);
+  
+  // Remove any existing confirm button to avoid duplicates
+  const existingConfirmButton = modal.querySelector("button[data-confirm]");
+  if (existingConfirmButton) {
+    existingConfirmButton.remove();
+  }
+  
+  // Add the confirm button to the modal
+  confirmButton.setAttribute("data-confirm", "true");
+  modal.appendChild(confirmButton);
+  modal.showModal()
+})
+
+function setDeleteBtn(orderValue) {
+  deleteOneBtn.value = orderValue
+}
+
+// Example deleteOrder function
+function deleteOrder(orderId) {
+  console.log(`Order #${orderId} has been deleted.`);
+  modal.close(); // Close the modal after confirmation
 }
 
 // Function to open modal with product details

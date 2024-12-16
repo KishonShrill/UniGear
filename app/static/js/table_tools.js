@@ -1,4 +1,6 @@
-const table_tools = document.querySelector(".content-tools")
+const table_tools = document.querySelector("#deleteAll")
+const deleteOne = document.querySelector("#deleteOne")
+
 
 // JavaScript for row click highlight and checkbox toggle
 const rows = document.querySelectorAll("table tbody tr");
@@ -7,7 +9,9 @@ const checkAll = document.getElementById("checkAll");
 // Helper function to toggle `table_tools` visibility
 function toggleTableToolsVisibility() {
   const checkedCount = document.querySelectorAll("table tbody input[type='checkbox']:checked").length;
+  table_tools.style.display = checkedCount > 1 ? "block" : "none";
   table_tools.style.visibility = checkedCount > 1 ? "visible" : "hidden";
+  deleteOne.style.visibility = (checkedCount > 0) && (checkedCount != 2) ? "visible" : "hidden";
 }
 
 let lastClickedRow = null;
@@ -31,6 +35,7 @@ rows.forEach(row => {
         // Reset the click count and set the new last clicked row
         lastClickedRow = row;
         clickCount = 1;
+        setDeleteBtn(orderValue);
 
         // Reset all other rows
         rows.forEach(r => {

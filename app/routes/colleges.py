@@ -55,7 +55,7 @@ def get_organization_products():
     org_id = request.args.get('org_id')  # Get the org_id from the request
     product_type = request.args.get('type')  # Get the product type from the request (if any)
 
-    print(f"Type: {product_type}")
+    print(f"Type: {org_id}")
 
     # Base query
     query = """
