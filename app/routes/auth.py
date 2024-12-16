@@ -87,8 +87,12 @@ def submit_sign_up():
     user = User.get_by_email(email)
     
     if not user:
-      print(f"Debug: {username}, {email}, {password}, {contact}, {address}")
-      user = User.create_from_website(username, email, password, contact, address)
+      try:
+        print(f"Debug: {username}, {email}, {password}, {contact}, {address}")
+        user = User.create_from_website(username, email, password, contact, address)
+      except Exception as e:
+        flash(f"The contact number is already used...", "warning")
+        return redirect(url_for('auth.sign_up'))
       
     flash(f"Account created successfully...", "success")
     return redirect(url_for('auth.sign_in'))
