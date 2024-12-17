@@ -54,7 +54,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}" data="{{ order['Product ID'] }}">
+              <tr value="{{ order['Order'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Product'] }}</td>
@@ -121,7 +121,7 @@
         }
       });
     });
-  </script>
+  </script>  
   <script>
     // Example deleteOrder function
     function deleteOrder(orderId) {
@@ -139,20 +139,9 @@
           'Content-Type': 'application/json', // Correct Content-Type
           'X-CSRFToken': csrfToken,
         },
-        body: JSON.stringify({ product_id: orderId }), // Send product_id in JSON format
+        body: JSON.stringify({order_id: orderId}), // Send product_id in JSON format
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log('Success:', data);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
+      .then(deleteCheckedRows())
 
       modal.close(); // Close the modal after confirmation
     }
