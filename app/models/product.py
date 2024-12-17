@@ -1,6 +1,7 @@
 from app import mysql
 from datetime import datetime
 from flask import current_app
+from datetime import datetime
 
 class Product(object):
     def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None, product_id=None):
@@ -31,14 +32,29 @@ class Product(object):
     def getID(self):
         return self.product_id
 
-    def add_product_sizes(self, product_quantity, size_id):
+
+    def clear_sizes(self, product_id):
+        """Deleting the sizes that the product had"""
+        query = """
+        DELETE FROM product_sizes
+        WHERE product_id = %s
+        """
+
+        cursor = mysql.connection.cursor()  # Ensure cursor is properly initialized
+        cursor.execute(query, (product_id,))  # Wrap product_id in a tuple
+        mysql.connection.commit()
+        cursor.close()
+
+
+
+    def add_product_sizes(self, size_id):
         """Add sizes to the product."""
         query = """
         INSERT INTO product_sizes (product_id, product_quantity, size_id)
-        VALUES (%s, %s, %s)
+        VALUES (%s, 0, %s)
         """
         cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_id, product_quantity, size_id))
+        cursor.execute(query, (self.product_id, size_id))
         mysql.connection.commit()
         cursor.close()
 
@@ -52,6 +68,19 @@ class Product(object):
         cursor.execute(query, (self.product_id, picture_url))
         mysql.connection.commit()
         cursor.close()
+    
+    def remove_product_picture(self, picture_id):
+        """remove pictures"""
+        query = """
+        DELETE FROM pictures
+        WHERE picture_id = %s
+        """
+        cursor = mysql.connection.cursor()  # Ensure cursor is properly initialized
+        cursor.execute(query, (picture_id,))  # Wrap product_id in a tuple
+        mysql.connection.commit()
+        cursor.close()
+
+
 
     def update_details(self, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
         """Update product details."""
@@ -147,25 +176,38 @@ class Product(object):
             )
         return None  # If no match, return None
 
+    from datetime import datetime
+
     @staticmethod
     def update(product_id, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
         """Update product details."""
-        query = """
-        UPDATE products
-        SET 
-            product_name = COALESCE(%s, product_name),
-            description = COALESCE(%s, description),
-            hook = COALESCE(%s, hook),
-            type = COALESCE(%s, type),
-            price = COALESCE(%s, price),
-            order_type = COALESCE(%s, order_type),
-            updated_at = %s
-        WHERE product_id = %s
-        """
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (product_name, description, hook, type, price, order_type, datetime.now(), product_id))
-        mysql.connection.commit()
-        cursor.close()
+        try:
+            query = """
+            UPDATE products
+            SET 
+                product_name = COALESCE(%s, product_name),
+                description = COALESCE(%s, description),
+                hook = COALESCE(%s, hook),
+                type = COALESCE(%s, type),
+                price = COALESCE(%s, price),
+                order_type = COALESCE(%s, order_type),
+                updated_at = %s
+            WHERE product_id = %s
+            """
+            print("Creating cursor...")
+            cursor = mysql.connection.cursor()
+            print(f"Cursor created: {cursor}")
+            print("Executing query...")
+            cursor.execute(query, (product_name, description, hook, type, price, order_type, datetime.now(), product_id))
+            mysql.connection.commit()
+            cursor.close()
+            print("Product updated successfully!")
+        except AttributeError as e:
+            print(f"AttributeError: {str(e)}")
+        except Exception as e:
+            print(f"Error updating product: {str(e)}")
+
+
 
     @staticmethod
     def delete(product_id):
@@ -295,11 +337,10 @@ class Product(object):
     @staticmethod
     def getProducts(org_id):
         try:
-            # Create a connection object
+
             print(f"org_id passed: {org_id}")
             cursor = mysql.connection.cursor()
 
-            # Define the SQL query
             query = """
             SELECT  
                 p.product_id,
@@ -308,11 +349,9 @@ class Product(object):
                 p.price,
                 p.order_type,
                 p.created_at,
-                p.updated_at,
-                pic.picture_url
+                p.updated_at
             FROM products p
             LEFT JOIN user u ON p.seller_id = u.user_id
-            LEFT JOIN pictures pic ON p.product_id = pic.picture_id
             WHERE u.org_id = %s
             ORDER BY p.product_id ASC;
             """
@@ -320,13 +359,10 @@ class Product(object):
             cursor.execute(query, (org_id,))
             result = cursor.fetchall()
             print(f"Query result: {result}")
-
             if not result:
                 return []
-
             products = []
             for row in result:
-                Picture_URL = row[7] if row[7] else 'app/static/images/placeholder.jpg'
                 product = {
                     'Product_id': row[0],
                     'Product_Name': row[1],
@@ -334,12 +370,10 @@ class Product(object):
                     'Price': row[3],
                     'Order-Type': row[4],
                     'Created At': row[5],
-                    'Updated At': row[6],
-                    'Picture_URL': Picture_URL
+                    'Updated At': row[6]
                 }
                 products.append(product)
             cursor.close()
-
             return products  
 
         except Exception as e:
