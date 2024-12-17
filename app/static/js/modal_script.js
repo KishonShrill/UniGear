@@ -32,9 +32,8 @@ deleteOneBtn.addEventListener("click", () => {
   modal.showModal()
 })
 
-function setDeleteBtn(orderValue, productId) {
+function setDeleteBtn(orderValue) {
   deleteOneBtn.value = orderValue
-  deleteOneBtn.data = productId
 }
 
 // Function to open modal with product details

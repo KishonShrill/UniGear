@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/my_products.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -27,8 +28,8 @@
 
       <div class="content-container content-data">
         <div class="content-tools">
-          <button class="btn deleteBtn">Delete All</button>
-          <!-- <button class="btn"></button> -->
+          <button class="btn deleteBtn" id="deleteAll">Delete All</button>
+          <button class="btn deleteBtn" id="deleteOne" value="">Delete</button>
         </div>
         
         <div class="content-searchbar">
@@ -52,9 +53,7 @@
             </thead>
             <tbody>
               {% for product in products %}
-              <tr 
-                data-image="{{ product['Picture_URL'] }}" 
-                >
+              <tr value="{{ product['Product_id'] }}" data-image="{{ product['Picture_URL'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ product['Product_id'] }}</td>
                 <td>{{ product['Product_Name'] }}</td>
@@ -110,6 +109,30 @@
         }
       });
     });
+  </script>
+  <script>
+    // Example deleteOrder function
+    function deleteOrder(productId) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      console.log(`Order #${productId} has been deleted.`);
+      if (!productId) {
+        console.error("Product ID is missing!");
+        return;
+      }
+
+      fetch('/seller/my-products/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Correct Content-Type
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
+      })
+      .then(deleteCheckedRows())
+
+      modal.close(); // Close the modal after confirmation
+    }
   </script>
   <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
 {% endblock %}

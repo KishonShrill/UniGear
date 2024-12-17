@@ -120,7 +120,7 @@ class Product(object):
         cursor.close()
         
     @staticmethod
-    def getOrders():
+    def getOrders(org_id):
         try:
             # Create a connection object
             cursor = mysql.connection.cursor()
@@ -141,11 +141,13 @@ class Product(object):
             JOIN user u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
+            JOIN user seller ON p.seller_id = seller.user_id
+            WHERE seller.org_id = %s
             ORDER BY ob.order_id ASC;
             """
 
             # Execute the query
-            cursor.execute(query)
+            cursor.execute(query, (org_id,))
 
             # Fetch all results
             result = cursor.fetchall()

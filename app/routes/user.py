@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, session, abort
 from app.models.product import Product
 from app.models.user import User
+from app.models.order import Order
 from app.forms import *
 
 
@@ -38,21 +39,23 @@ def my_orders():
 @user_bp.route('/user/my-orders/delete', methods=['POST','GET'])
 @login_is_required
 def delete_order():
-    try:
-        data = request.get_json()  # Parse the JSON body
-        print(f"Received data: {data}")  # Log received data
+    if request.method == 'POST':
+        try:
+            data = request.get_json()  # Parse the JSON body
+            print(f"Received data: {data}")  # Log received data
 
-        product_id = data.get('product_id')  # Extract product_id
-        if not product_id:
-            return jsonify({"error": "Product ID is required"}), 400
+            order_id = data.get('order_id')  # Extract product_id
+            if not order_id:
+                return jsonify({"error": "Order ID is required"}), 400
 
-        # Perform your logic here, e.g., delete the order in the database
-        # cursor.execute("DELETE FROM orders WHERE product_id = %s", (product_id,))
-
-        return jsonify({"success": True, "message": f"Product {product_id} deleted"}), 200
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"error": "Something went wrong"}), 500
+            print(f"\nOrder ID: {order_id}")
+            Order.deletePreorder(order_id)
+            # jsonify({"success": True, "message": f"Product {product_id} deleted"}), 200
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "Something went wrong"}), 500
+    if request.method == 'GET':
+        return abort(404)
 
 
 @user_bp.route('/user/profile', methods=['GET', 'POST'])
