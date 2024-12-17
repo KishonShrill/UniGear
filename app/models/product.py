@@ -341,3 +341,51 @@ class Product(object):
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
+        
+    @staticmethod
+    def get_product_pictures(product_id):
+        """Get all picture URLs for a given product ID."""
+        query = "SELECT picture_url FROM pictures WHERE picture_id = %s"
+        cursor = mysql.connection.cursor()  # Get the database cursor
+        
+        try:
+            # Execute the query with the product ID
+            cursor.execute(query, (product_id,))
+            
+            # Fetch all the results
+            results = cursor.fetchall()
+            
+            # Extract picture URLs from the results
+            picture_urls = [row[0] for row in results]  # Assuming fetchall() returns a list of tuples
+            
+            return picture_urls
+        except Exception as e:
+            print(f"Error fetching product pictures: {e}")
+            return []
+        finally:
+            # Ensure the cursor is closed after the operation
+            cursor.close()
+
+    @staticmethod
+    def get_product_sizes(product_id):
+        """Get all size IDs for a given product ID."""
+        query = "SELECT size_id FROM product_sizes WHERE product_id = %s"
+        cursor = mysql.connection.cursor()  # Get the database cursor
+        
+        try:
+            # Execute the query with the product ID
+            cursor.execute(query, (product_id,))
+            
+            # Fetch all the results
+            results = cursor.fetchall()
+            
+            # Extract size IDs from the results
+            sizes = [row[0] for row in results]  # Assuming fetchall() returns a list of tuples
+            
+            return sizes
+        except Exception as e:
+            print(f"Error fetching sizes: {e}")
+            return []
+        finally:
+            # Ensure the cursor is closed after the operation
+            cursor.close()
