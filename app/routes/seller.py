@@ -237,14 +237,12 @@ def product_new_submit():
       )
       product.save()
 
-      # Add the size to the product
       for size in sizes:
         product.add_product_sizes(0, size)
 
 
       # Handle file uploads
       for picture in picture_urls:
-        # Assuming you save the picture and generate a URL
         cloudinary_url = ""
 
         filename = secure_filename(picture.filename)
@@ -286,7 +284,7 @@ def product_edit(product_id):
         flash("Product not found!", "danger")
         return redirect(url_for('seller.dashboard'))
 
-    form = ProductForm(obj=product)  
+    form = ProductForm(obj=product)
 
     # Fetch the associated pictures and sizes to display in the form
     product_pictures = product.get_product_pictures(product_id)  # Assuming this returns a list of picture URLs
@@ -299,10 +297,9 @@ def product_edit(product_id):
         hook = request.form.get("hook")
         product_type = request.form.get("type")
         preorder_type = request.form.get("preorder")
-        selected_sizes = request.form.get("selectedSizes")  # Assuming it's a comma-separated string
+        selected_sizes = request.form.get("selectedSizes")
         picture_urls = request.files.getlist("picture_urls")
 
-        # Validate form data
         if len(name) == 0:
             flash("Enter a name for the product", "warning")
             return redirect(url_for('seller.product_edit', product_id=product_id))
@@ -324,6 +321,7 @@ def product_edit(product_id):
             return redirect(url_for('seller.product_edit', product_id=product_id))
 
         try:
+            print("Calling Product.update()...")
             Product.update(
                 product_id=product_id,
                 product_name=name,
@@ -334,29 +332,31 @@ def product_edit(product_id):
                 order_type=preorder_type
             )
 
-            # Update sizes
+            print("clearing sizes")
             sizes = selected_sizes.split(',')
-            product.clear_sizes()  # Clear previous sizes before adding new ones
+            product.clear_sizes(product_id)  # Clear previous sizes before adding new ones
+            print("size cleared")
             for size in sizes:
-                product.add_product_sizes(size)  # Add new sizes for the product
+                print(f"Adding size: {size}")  # Debugging each size being added
+                product.add_product_sizes(size)
 
-            # Handle file uploads for images
             if picture_urls:
                 for picture in picture_urls:
                     if picture and picture.filename:
                         filename = secure_filename(picture.filename)
                         try:
-                            # Upload to Cloudinary or save locally
+                            # Debugging: Check if file is being processed
+                            print(f"Uploading picture: {filename}")
                             upload_result = cloudinary.uploader.upload(picture, public_id=filename)
                             cloudinary_url = upload_result.get('secure_url')
 
                             # Save the Cloudinary URL to the database for this product
                             product.add_product_pictures(cloudinary_url)
+                            print(f"Picture uploaded successfully: {cloudinary_url}")
 
                         except Exception as e:
                             flash(f"An error occurred during file upload: {str(e)}", "danger")
                             return redirect(url_for('seller.product_edit', product_id=product_id))
-
 
             flash("Product updated successfully!", "success")
             return redirect(url_for('website.merch_details', product_id=product.product_id))
