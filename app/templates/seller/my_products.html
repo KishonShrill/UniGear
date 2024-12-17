@@ -49,6 +49,7 @@
                 <th>Order-Type</th>
                 <th>Created At</th>
                 <th>Updated At</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -66,6 +67,10 @@
                 {% endif %}
                 <td>{{ product['Created At']}}</td>
                 <td>{{ product['Updated At'] }}</td>
+                <td>
+                  <a href="{{ url_for('seller.product_edit', product_id=product['Product_id']) }}" class="btn edit-btn">Edit</a>
+
+                </td>
                 </tr>
               {% endfor %}
             </tbody>
