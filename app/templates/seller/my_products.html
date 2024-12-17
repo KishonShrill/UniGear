@@ -53,9 +53,7 @@
             </thead>
             <tbody>
               {% for product in products %}
-              <tr 
-                data-image="{{ product['Picture_URL'] }}" 
-                >
+              <tr >
                 <td><input type="checkbox"></td>
                 <td>{{ product['Product_id'] }}</td>
                 <td>{{ product['Product_Name'] }}</td>
@@ -85,7 +83,6 @@
   <!-- Dialog for Product Image and Name -->
   <dialog class="modal" data-modal>
     <div></div> <!-- This will hold the product name -->
-    <img src="#" alt="Product Image" />
     <button data-close-modal>Close</button>
   </dialog>  
   
