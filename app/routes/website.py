@@ -48,7 +48,8 @@ def explore():
             LEFT JOIN pictures pic ON p.product_id = pic.picture_id
         )
         SELECT 
-            p.product_id AS 'Product', 
+            p.product_id AS 'Product',
+            p.product_name AS 'Name',
             col.college_name AS 'College', 
             ps.picture_url AS 'Picture'
         FROM products p
@@ -56,7 +57,7 @@ def explore():
         LEFT JOIN organization org ON u.org_id = org.org_id
         LEFT JOIN college col ON org.college_id = col.college_id
         LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
-        GROUP BY p.product_id, col.college_name, ps.picture_url;
+        GROUP BY p.product_id, p.product_name, col.college_name, ps.picture_url;
     """
     cursor.execute(query)
     result = cursor.fetchall()
@@ -80,11 +81,12 @@ def explore():
 
     # Populate merchandise data with query results
     for row in result:
-        college = row[1]
+        college = row[2]
         if college in merchandise_data:
             merchandise_data[college]['products'].append({
                 'product_id': row[0],
-                'picture_url': row[2] if row[2] else '/static/images/placeholder.jpg'
+                'product_name': row[1],
+                'picture_url': row[3] if row[3] else '/static/images/placeholder.jpg'
             })
 
     # Define the order of colleges
@@ -299,7 +301,7 @@ def preorder(product_id):
         
     except Exception as e:
         print(f"{e}\n")
-        return f"Email has not been sent."
+        return f"Email has not been sent. {e}"
     
     flash("Your pre-order was successful!", "success")
     return redirect(url_for('website.explore'))
@@ -308,15 +310,9 @@ def preorder(product_id):
 def convert_size(size_number):
     """
     Convert numeric size to text representation.
-    
-    Args:
-        size_number (int): Numeric size from 1 to 6
-    
-    Returns:
-        str: Corresponding size in text (xs, s, m, l, xl, 2xl)
-    
-    Raises:
-        ValueError: If size_number is not between 1 and 6
+    Args:       size_number (int): Numeric size from 1 to 6
+    Returns:    str: Corresponding size in text (xs, s, m, l, xl, 2xl)
+    Raises:     ValueError: If size_number is not between 1 and 6
     """
     size_map = {
         1: 'XS',
