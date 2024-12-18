@@ -103,15 +103,16 @@ def profile():
 @user_bp.route('/user/my-orders/upload', methods=['POST'])
 def upload_file():
     try:
+        # Check if file is present in request
         if 'file' not in request.files:
             return jsonify({'error': 'No file part'}), 400
         
         file = request.files['file']
         order_id = request.form.get('order_id')
         
-        if not file:
+        if not file or file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
-        
+            
         if not order_id:
             return jsonify({'error': 'No order ID provided'}), 400
 

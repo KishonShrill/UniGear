@@ -135,16 +135,18 @@ function handleFileUpload(event, orderId) {
           paymentConfirmBtn.onclick = function () {
               // Create FormData object to send the file to the backend
               const formData = new FormData();
-              formData.append('file', file);
+              formData.append('file', file);  // Append the file
+              formData.append('order_id', orderId);  // Append the order ID
               
+              console.log("PICTURE: ", formData)
 
               // Send the file to the server for upload
               fetch('/user/my-orders/upload', {  // Ensure this matches your Flask route
                   method: 'POST',
                   headers: {
-                    
-                  }
-                  body: formData
+                    'X-CSRFToken': csrfToken,
+                  },
+                  body: formData  // Send the FormData object directly
               })
               .then(response => response.json())
               .then(data => {

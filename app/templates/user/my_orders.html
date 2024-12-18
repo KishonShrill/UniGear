@@ -30,6 +30,7 @@
         <div class="content-tools">
           <button class="btn deleteBtn" id="deleteAll">Delete All</button>
           <button class="btn deleteBtn" id="deleteOne" value="">Delete</button>
+          <button class="btn editBtn" style="display: none;" id="editOne" value="">Edit</button>
         </div>
 
         <div class="content-searchbar">
@@ -124,7 +125,7 @@
   <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 100%; height: auto;">
   <div id="viewModalButtons">
     <button id="viewCloseBtn">Close</button>
-    <button id="viewChangeBtn">Change File</button>
+    <!-- <button id="viewChangeBtn">Change File</button> -->
   </div>
 </dialog>
 
@@ -142,8 +143,9 @@
 
   <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
   <script>
-
-
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const editOneBtn = document.querySelector("#editOne")
+function setEditBtn(orderValue) {editOneBtn.value = orderValue}
     // JavaScript for filtering table rows based on search input
     const searchBar = document.getElementById("searchBar");
     const tableRows = document.querySelectorAll("table tbody tr");
