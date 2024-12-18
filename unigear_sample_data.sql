@@ -97,6 +97,31 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 	CONSTRAINT `fk_order_size` FOREIGN KEY (size_id) REFERENCES `sizes` (size_id)
 );
 
+DELIMITER //
+
+CREATE TRIGGER update_order_type
+AFTER INSERT ON ordered_by
+FOR EACH ROW
+BEGIN
+    DECLARE total_orders INT;
+
+    -- Count the total orders for the newly inserted product
+    SELECT SUM(quantity)
+    INTO total_orders
+    FROM ordered_by
+    WHERE product_id = NEW.product_id;
+
+    -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
+    IF total_orders >= 50 THEN
+        UPDATE products
+        SET order_type = 1
+        WHERE product_id = NEW.product_id AND order_type = 0;
+    END IF;
+END;
+//
+
+DELIMITER ;
+
 
 -- Below is the sample data
 -- Below is the sample data
@@ -284,14 +309,6 @@ INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, orde
 (1, 3, 3, 1, 15.99, false),  -- John Doe orders 1 Business Planner
 (3, 2, 2, 1, 15.99, false),  -- Mark Johnson orders 3 Art Supplies Kits
 (4, 4, 4, 1, 15.99, true);  -- Emily Davis orders 1 Teacher's Guide
-
-
-
-
-
-
-
-
 
 DROP TABLE IF EXISTS favorites;
 CREATE TABLE IF NOT EXISTS favorites (
