@@ -70,119 +70,121 @@
 {{ components.render_footer() }}
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const productsContainer = document.getElementById("org-products");
-    const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
-    const orgTabsContainer = document.getElementById("org-list");
-
-    let selectedType = 'all';
-    let selectedOrgId = null;
-
-    // Fetch organization tabs dynamically
-    fetch('/api/cass/organizations')
-        .then(response => response.json())
-        .then(organizations => {
-            organizations.forEach(org => {
-                const orgTab = document.createElement("li");
-                orgTab.classList.add("org-tab");
-                orgTab.setAttribute("data-org-id", org.id);
-                orgTab.innerText = org.name;
-                orgTabsContainer.appendChild(orgTab);
-
-                orgTab.addEventListener("click", function () {
-                    document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
-                    orgTab.classList.add("active");
-                    loadProductsForOrg(org.id);
-                });
-            });
-
-            if (organizations.length > 0) {
-                const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
-                firstOrgTab.classList.add("active");
-                loadProductsForOrg(organizations[0].id);
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching organizations:", error);
-            productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
-        });
-
-    // Fetch products for an organization
-    function loadProductsForOrg(org_id) {
-        selectedOrgId = org_id;
-        productsContainer.innerHTML = "<p>Loading products...</p>";
-
-        fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
+    document.addEventListener("DOMContentLoaded", function () {
+        const productsContainer = document.getElementById("org-products");
+        const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
+        const orgTabsContainer = document.getElementById("org-list");
+    
+        let selectedType = 'all';
+        let selectedOrgId = null;
+    
+        // Fetch organization tabs dynamically
+        fetch('/api/cass/organizations')
             .then(response => response.json())
-            .then(products => {
-                if (!products || products.length === 0) {
-                    productsContainer.innerHTML = "<p>No products available for this organization.</p>";
-                    return;
-                }
-
-                productsContainer.innerHTML = ''; // Clear previous products
-                products.forEach(product => {
-                    const productCard = document.createElement("div");
-                    productCard.classList.add("product-card");
-                    productCard.setAttribute("data-product-id", product.id);
-
-                    const isFavorite = product.is_favorite; // Check if product is already in favorites
-                    const imgSrc = product.picture || "{{ url_for('static', filename='images/placeholder.jpg') }}"; // Fallback image
-                    productCard.innerHTML = `
-                        <a href="/product/${product.id}">
-                            <img src="${imgSrc}" alt="${product.name}">
-                            <h3>${product.name}</h3>
-                            <p>${product.description}</p>
-                        </a>
-                        <button class="favorite-btn ${isFavorite ? 'favorited' : ''}" data-product-id="${product.id}">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    `;
-                    productsContainer.appendChild(productCard);
+            .then(organizations => {
+                organizations.forEach(org => {
+                    const orgTab = document.createElement("li");
+                    orgTab.classList.add("org-tab");
+                    orgTab.setAttribute("data-org-id", org.id);
+                    orgTab.innerText = org.name;
+                    orgTabsContainer.appendChild(orgTab);
+    
+                    orgTab.addEventListener("click", function () {
+                        document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
+                        orgTab.classList.add("active");
+                        loadProductsForOrg(org.id);
+                    });
                 });
+    
+                if (organizations.length > 0) {
+                    const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
+                    firstOrgTab.classList.add("active");
+                    loadProductsForOrg(organizations[0].id);
+                }
             })
             .catch(error => {
-                console.error("Error fetching products:", error);
-                productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
+                console.error("Error fetching organizations:", error);
+                productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
             });
-    }
-
-    // Handle wishlist toggle functionality
-    productsContainer.addEventListener("click", function (event) {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const favoriteBtn = event.target.closest(".favorite-btn");
-        if (!favoriteBtn) return; // Exit if the click wasn't on a favorite button
-
-        const productId = favoriteBtn.getAttribute("data-product-id");
-
-        fetch('/favorite/submit', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json', // Correct Content-Type
-                'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (data.favorite_status) {
-                    favoriteBtn.classList.add("favorited");
-                    favoriteBtn.style.color = "red";
-                } else {
-                    favoriteBtn.classList.remove("favorited");
-                    favoriteBtn.style.color = "gray";
-                }
-            } else {
-                alert(data.message || "An error occurred.");
-            }
-        })
-        .catch(error => {
-            console.error("Error toggling favorite:", error);
-            alert("An unexpected error occurred. Please try again.");
+    
+        // Fetch products for an organization
+        function loadProductsForOrg(org_id) {
+            selectedOrgId = org_id;
+            productsContainer.innerHTML = "<p>Loading products...</p>";
+    
+            fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
+                .then(response => response.json())
+                .then(products => {
+                    if (!products || products.length === 0) {
+                        productsContainer.innerHTML = "<p>No products available for this organization.</p>";
+                        return;
+                    }
+    
+                    productsContainer.innerHTML = ''; // Clear previous products
+                    products.forEach(product => {
+                        const productCard = document.createElement("div");
+                        productCard.classList.add("product-card");
+                        productCard.setAttribute("data-product-id", product.id);
+    
+                        const isFavorite = product.is_favorite; // Check if product is already in favorites
+                        const imgSrc = product.picture || "{{ url_for('static', filename='images/placeholder.jpg') }}"; // Fallback image
+                        productCard.innerHTML = `
+                            <a href="/product/${product.id}">
+                                <img src="${imgSrc}" alt="${product.name}">
+                                <h3>${product.name}</h3>
+                                <p>${product.description}</p>
+                            </a>
+                            <button class="favorite-btn ${isFavorite ? 'favorited' : ''}" data-product-id="${product.id}">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        `;
+                        productsContainer.appendChild(productCard);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching products:", error);
+                    productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
+                });
+        }
+    
+        // Handle wishlist toggle functionality
+        productsContainer.addEventListener("click", function (event) {
+            const favoriteBtn = event.target.closest(".favorite-btn");
+            if (!favoriteBtn) return; // Exit if the click wasn't on a favorite button
+    
+            const productId = favoriteBtn.getAttribute("data-product-id");
+            console.log("Product ID clicked:", productId); // Debugging line to check if ID is being passed correctly
+    
+            fetch(`/favorite/${productId}`, {
+                method: 'POST',
+                credentials: 'same-origin',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response data:", data); // Debugging line to check the response data
+    
+                    if (data.success) {
+                        // Toggle favorite button color and state
+                        if (data.favorite_status) {
+                            favoriteBtn.classList.add("favorited");
+                            favoriteBtn.style.color = "red"; // Set color to red
+                            alert("Added to Wishlist");
+                        } else {
+                            favoriteBtn.classList.remove("favorited");
+                            favoriteBtn.style.color = "gray"; // Set color to gray
+                            alert("Removed from Wishlist");
+                        }
+                    } else {
+                        alert(data.message || "An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error toggling favorite:", error);
+                    alert("An unexpected error occurred. Please try again.");
+                });
         });
     });
-});
-</script>
+    </script>
+    
+    
 {% endblock %}
