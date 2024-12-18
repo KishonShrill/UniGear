@@ -5,6 +5,7 @@
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/product_page.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/product_page-crud.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_page-edit.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
 {% endblock %}
@@ -14,18 +15,19 @@
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
-  <form id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">
-    {{ form.csrf_token }}
-    <input type="date" id="submitPreorderDate" name="preorderDate" value="" required hidden>
-  </form>
+  <form id="product-form" method="POST" action="{{ url_for('seller.product_edit', product_id=product.product_id) }}" enctype="multipart/form-data">{{ form.csrf_token }}</form>
   <main class="product">
     <section class="product__image-wrapper">
 
       <div class="product__image-gallery">
         <div class="product__image-preview" id="slides-container">
-          <!-- Dynamic slides will be inserted here -->
+          {% for image in product_pictures %}
+            <div class="mySlides" style="{% if loop.index == 1 %}display: flex;{% else %}display: none;{% endif %}">
+              <div class="numbertext">{{ loop.index }} / {{ images|length }}</div>
+              <img src="{{ image }}" alt="Product Image" class="mySlides__image">
+            </div>
+          {% endfor %}
         </div>
-          
         <a class="prev" onclick="plusSlides(-1)">❮</a>
         <a class="next" onclick="plusSlides(1)">❯</a>
       </div>
@@ -48,12 +50,18 @@
       </div>
 
       <div class="product__image-thumbnails" id="thumbnails">
-        <!-- Thumbnails will be dynamically added here -->
+        {% for image in product_pictures %}
+          <div class="column">
+            <img src="{{ image }}" 
+                 class="demo cursor {% if loop.first %}active{% endif %}" 
+                 onclick="currentSlide({{ loop.index }})">
+          </div>
+        {% endfor %}
       </div>
 
       <div class="product__quantity-viewer">
-        <h1 id="product__quantity">0</h1>
-        <p id="product__quantity-subtitle">preorder count</p>
+        <h1>{{ total_quantity }}</h1>
+        <p>Preorder Count</p>
       </div>
     </section>
 
@@ -64,11 +72,11 @@
       </div>
 
       <div class="input-box">
-        <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="" form="product-form">
+        <input id="name" name="name" placeholder="Add product name..." required="" type="text" value="{{product.product_name}}" form="product-form">
         <label for="name" hidden>Please input a product name...</label>
       </div>
       <div class="input-box">
-        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="" inputmode="numeric" pattern="[0-9]+" form="product-form">
+        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="{{product.price}}" inputmode="numeric" pattern="[0-9]+" form="product-form">
         <label for="price" hidden>Please input a price for the product...</label>
       </div>
       
@@ -80,23 +88,23 @@
       <hr />
       
       <div class="input-box">
-        <textarea id="description" name="description" placeholder="Please add a product description..." required="" type="text" value="" form="product-form"></textarea>
+        <textarea id="description" name="description" placeholder="Please add a product description..." required="" type="text" form="product-form">{{ product.description }}</textarea>
         <label for="description" hidden>Please add a product description...</label>
       </div>
       <div class="input-box">
-        <input id="hook" name="hook" placeholder="[optional] Add product hook" type="text" value="" form="product-form">
+        <input id="hook" name="hook" placeholder="[optional] Add product hook" type="text" value="{{product.hook}}" form="product-form">
       </div>
       <div class="product__content-specs-box">
         <div>
           <p>PRODUCT TYPE</p>
           <div class="input-box">
             <select id="type" name="type" required="" form="product-form">
-              <option value="" selected>Choose a type...</option>
-              <option value="t-shirt">T-Shirt</option>
-              <option value="hoodie">Hoodie</option>
-              <option value="footwear">Footwear</option>
-              <option value="lanyard">Lanyard</option>
-              <option value="pin">Pin</option>
+              <option value="" {% if not product.type %}selected{% endif %}>Choose a type...</option>
+              <option value="t-shirt" {% if product.type == 't-shirt' %}selected{% endif %}>T-Shirt</option>
+              <option value="hoodie" {% if product.type == 'hoodie' %}selected{% endif %}>Hoodie</option>
+              <option value="footwear" {% if product.type == 'footwear' %}selected{% endif %}>Footwear</option>
+              <option value="lanyard" {% if product.type == 'lanyard' %}selected{% endif %}>Lanyard</option>
+              <option value="pin" {% if product.type == 'pin' %}selected{% endif %}>Pin</option>
             </select>
             <label for="type" hidden>Type needed: please choose a type...</label>
           </div>
@@ -121,9 +129,9 @@
           <p>ORDER TYPE</p>
           <div class="input-box">
             <select name="preorder" id="preorder" form="product-form" required>
-              <option value="" selected>Choose a type...</option>
-              <option value="0">Goal Based</option>
-              <option value="1">Time Based</option>
+              <option value="" {% if not product.order_type %}selected{% endif %}>Choose a type...</option>
+              <option value="0" {% if product.order_type == 0 %}selected{% endif %}>Goal Based</option>
+              <option value="1" {% if product.order_type == 1 %}selected{% endif %}>Time Based</option>
             </select>
             <label for="preorder" hidden>How many products will you sell?</label>
           </div>
@@ -131,10 +139,9 @@
         <!-- Remove for Product Details -->
         <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
-        <input id="number_of_days" name="number_of_days" type="number" value="" hidden form="product-form">
         <!-- Remove for Product Details -->
       </div>
-      <button id="create_product" data-open-modal>Create Product</button>
+      <button id="create_product" data-open-modal>Udate Product</button>
     </div>
   </main>
 
@@ -151,9 +158,6 @@
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
   <script>
-    let slideIndex = 1;
-    let slidesData = [];
-
     const openButton = document.querySelector("[data-open-modal]")
     const closeButton = document.querySelector("[data-close-modal]")
     const modal = document.querySelector("[data-modal]")
@@ -184,6 +188,46 @@
     });
     // REMOVE NING SCRIPT SA PRODUCT DETAILS
   </script>
+  <script>
+    let slidesData = [];
+    window.onload = function() {
+
+      {% for image in product_pictures %}
+        slidesData.push('{{ image }}')
+      {% endfor %}
+    };
+  </script>
+  <script>
+    // Image Slider Logic
+    let slideIndex = 1;
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+      showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+      const slides = document.getElementsByClassName("mySlides");
+      const dots = document.getElementsByClassName("demo");
+
+      if (n > slides.length) slideIndex = 1;
+      if (n < 1) slideIndex = slides.length;
+
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active", "");
+      }
+
+      slides[slideIndex - 1].style.display = "flex";
+      dots[slideIndex - 1].className += " active";
+    }
+  </script>
   <script src="{{ url_for('static', filename='js/product_page.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/preorder_time.js') }}"></script>
 {% endblock %}

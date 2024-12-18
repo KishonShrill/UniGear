@@ -10,6 +10,7 @@ import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 
 seller_bp = Blueprint('seller', __name__)
@@ -237,14 +238,12 @@ def product_new_submit():
       )
       product.save()
 
-      # Add the size to the product
       for size in sizes:
-        product.add_product_sizes(0, size)
+        product.add_product_sizes(size)
 
 
       # Handle file uploads
       for picture in picture_urls:
-        # Assuming you save the picture and generate a URL
         cloudinary_url = ""
 
         filename = secure_filename(picture.filename)
@@ -277,3 +276,83 @@ def product_new_submit():
     
   if request.method == 'GET':
     return abort(404)
+  
+@seller_bp.route('/product/edit/<int:product_id>', methods=['GET', 'POST'])
+@seller_required
+def product_edit(product_id):
+    product = Product.get_by_id(product_id)
+    if not product:
+        flash("Product not found!", "danger")
+        return redirect(url_for('seller.dashboard'))
+
+    form = ProductForm(obj=product)
+    product_pictures = product.get_product_pictures(product_id)  # List of existing picture URLs
+    product_sizes = product.get_product_sizes(product_id)  # List of existing sizes
+
+    if request.method == 'POST':
+        name = request.form.get("name")
+        price = request.form.get("price")
+        description = request.form.get("description")
+        hook = request.form.get("hook")
+        product_type = request.form.get("type")
+        preorder_type = request.form.get("preorder")
+        selected_sizes = request.form.get("selectedSizes")
+        picture_urls = request.files.getlist("picture_urls")  # New pictures to upload
+        slides_data = request.form.get("slidesData")
+
+        if not name or not price or not description:
+            flash("Name, price, and description are required.", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        new_pictures = picture_urls
+        current_picture_urls = product_pictures
+        pictures_to_keep = [pic for pic in current_picture_urls if pic in [pic.filename for pic in picture_urls]]
+        pictures_to_upload = pictures_to_keep + [pic for pic in new_pictures if pic not in pictures_to_keep]
+
+        try:
+            product.remove_product_picture(product_id)  # Remove previous pictures
+        except Exception as e:
+            flash(f"Error removing existing pictures: {str(e)}", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        # Upload new and kept pictures
+        for picture in pictures_to_upload:
+            try:
+                if isinstance(picture, FileStorage):
+                    filename = secure_filename(picture.filename)
+                    upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+                    cloudinary_url = upload_result.get('secure_url')
+                    product.add_product_pictures(cloudinary_url)
+                else:
+                    product.add_product_pictures(picture)
+
+            except Exception as e:
+                flash(f"Error uploading picture {picture.filename if isinstance(picture, FileStorage) else picture}: {str(e)}", "danger")
+                return redirect(url_for('seller.product_edit', product_id=product_id))
+
+        # Update product details
+        try:
+            Product.update(
+                product_id=product_id,
+                product_name=name,
+                description=description,
+                hook=hook,
+                type=product_type,
+                price=price,
+                order_type=preorder_type
+            )
+
+            sizes = selected_sizes.split(',') if selected_sizes else []
+            product.clear_sizes(product_id)
+            for size in sizes:
+                product.add_product_sizes(size)
+
+            flash("Product updated successfully!", "success")
+            return redirect(url_for('website.merch_details', product_id=product.product_id))
+
+        except Exception as e:
+            flash(f"Error updating product: {str(e)}", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
+
+    return render_template('crud_blueprint/product_page-edit.html', form=form, product=product,
+                           product_pictures=product_pictures, product_sizes=product_sizes)

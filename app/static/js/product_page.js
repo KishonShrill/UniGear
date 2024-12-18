@@ -24,8 +24,6 @@ function updateSelectedSizes() {
 }
 
 
-let slideIndex = 1;
-let slidesData = [];
 const dataTransfer = new DataTransfer();
 
 // Function to copy files from one input to another
@@ -96,6 +94,7 @@ document.getElementById("pictureUpload").addEventListener("change", function() {
     };
     reader.readAsDataURL(files[i]);
   }
+
   // Change the top of the upload button after images are uploaded
   document.querySelector(".product__image-wrapper").style.alignItems = "end";
   document.querySelector(".product__image-wrapper").style.justifyItems = "start";
@@ -113,9 +112,10 @@ function renderSlides() {
 
   slidesContainer.innerHTML = '';
   thumbnailsContainer.innerHTML = '';
-
   slidesData.forEach((slide, index) => {
     // Create slide
+    console.log("Pictures: " + slide)
+
     const slideDiv = document.createElement("div");
     slideDiv.className = "mySlides";
     if (index + 1 === slideIndex) slideDiv.style.display = "flex"; // Show current slide
@@ -126,7 +126,11 @@ function renderSlides() {
     slideDiv.appendChild(numberText);
 
     const img = document.createElement("img");
-    img.src = slide.src;
+    if (slide.src == undefined) {
+      img.src = slide;
+    } else {
+      img.src = slide.src;
+    }
     img.className = "mySlides__image";  // Added new class here
     slideDiv.appendChild(img);
 
@@ -136,7 +140,11 @@ function renderSlides() {
     const thumbDiv = document.createElement("div");
     thumbDiv.className = "column";
     const thumbImg = document.createElement("img");
-    thumbImg.src = slide.src;
+    if (slide .src == undefined) {
+      thumbImg.src = slide;
+    } else {
+      thumbImg.src = slide.src;
+    }
     thumbImg.className = "demo cursor";
     thumbImg.onclick = () => currentSlide(index + 1);
     thumbDiv.appendChild(thumbImg);
