@@ -27,3 +27,30 @@ class Order(object):
       return order_id
     except Exception as e:
       return None
+    
+
+  @staticmethod
+  def deletePreorder(orderId):
+    try:
+      cursor = mysql.connection.cursor()
+      cursor.execute(
+        """
+          DELETE FROM ordered_by
+          WHERE order_id = %s
+        """,
+        (order_id)
+      )
+      cursor.execute(
+        """
+          UPDATE product_sizes
+          SET product_quantity = product_quantity + %s 
+          WHERE product_id = %s and size_id = %s
+        """,
+        (quantity, productID, size)
+      )
+      mysql.connection.commit()
+      order_id = cursor.lastrowid
+      cursor.close()
+      return order_id
+    except Exception as e:
+      return None

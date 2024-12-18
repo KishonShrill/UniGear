@@ -103,11 +103,11 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 -- Below is the sample data
 INSERT INTO college (college_name) VALUES 
 ('College of Arts and Social Sciences'),
-('College of Computer Studies'),
 ('College of Business Administration'),
-('College of Health Sciences'),
-('College of Engineering'),
+('College of Computer Studies'),
 ('College of Education'),
+('College of Engineering'),
+('College of Health Sciences'),
 ('College of Science and Mathematics');
 
 -- CSM Organizations
@@ -263,11 +263,11 @@ INSERT INTO sizes (size_name) VALUES
 ('XL'), 
 ('2XL');
 
-INSERT INTO products (product_name, description, hook, type, price, seller_id, order_type) VALUES 
-('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 't-shirt', 15.99, 1, 1),
-('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 't-shirt', 29.99, 2, 0),
-('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'footwear', 49.99, 3, 1),
-('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'pin', 39.99, 4, 0);
+-- INSERT INTO products (product_name, description, hook, type, price, seller_id, order_type) VALUES 
+-- ('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 't-shirt', 15.99, 1, 1),
+-- ('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 't-shirt', 29.99, 2, 0),
+-- ('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'footwear', 49.99, 3, 1),
+-- ('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'pin', 39.99, 4, 0);
 
 INSERT INTO product_sizes (product_id, product_quantity, size_id) VALUES 
 (1, 50, 1),  -- Basic T-Shirt, 50 quantity in Size S
