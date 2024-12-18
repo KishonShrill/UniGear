@@ -56,7 +56,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}">
+              <tr value="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Product'] }}</td>
@@ -83,7 +83,7 @@
                   overflow: hidden;
                   text-overflow: clip;">{{ order['Order Date'] }}</p></td>
                 <td id="proofCell_{{ order['Order'] }}">
-                  {% if order['Proof of Payment'] %}a
+                  {% if order['Proof of Payment'] %}
                     <!-- Display the "View Proof" button if proof exists -->
                     <button onclick="viewUploadedProof('{{ order['Proof of Payment'] }}', '{{ order['Order'] }}')"> 
                       View Proof
@@ -132,8 +132,8 @@
 
   <!-- Dialog -->
   <dialog class="modal" data-modal>
-    <div></div>
-    <img src="#" alt="#">
+    <div id="previewID"></div>
+    <img id="preview" src="" alt="#" />
     <button data-close-modal >Close</button>
   </dialog>
 
@@ -145,7 +145,7 @@
   <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const editOneBtn = document.querySelector("#editOne")
-function setEditBtn(orderValue) {editOneBtn.value = orderValue}
+    function setEditBtn(orderValue) {editOneBtn.value = orderValue}
     // JavaScript for filtering table rows based on search input
     const searchBar = document.getElementById("searchBar");
     const tableRows = document.querySelectorAll("table tbody tr");
@@ -191,4 +191,5 @@ function setEditBtn(orderValue) {editOneBtn.value = orderValue}
     }
   </script>
   <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/payment_sender.js') }}"></script>
 {% endblock %}

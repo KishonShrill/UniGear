@@ -295,7 +295,8 @@ class Product(object):
                 p.order_type,
                 ob.order_status,
                 ob.order_date,
-                p.product_id
+                p.product_id,
+                ob.proof_of_payment
 
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id
@@ -324,7 +325,7 @@ class Product(object):
                     'Status': row[6],
                     'Order Date': row[7],
                     'Product ID': row[8],
-
+                    'Proof of Payment': row[9],
                 }
                 orders.append(order)
             print(orders)

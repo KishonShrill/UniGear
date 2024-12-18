@@ -18,9 +18,7 @@ CREATE TABLE if NOT EXISTS `organization` (
 	org_email VARCHAR(199),
 	college_id INT NOT NULL,
 	UNIQUE KEY unique_org_name (org_name),
-	CONSTRAINT `fk_org_college` FOREIGN KEY (college_id) REFERENCES `college` (college_id)
-		ON UPDATE CASCADE
-		ON DELETE CASCADE
+	CONSTRAINT `fk_org_college` FOREIGN KEY (college_id) REFERENCES `college` (college_id) ON DELETE CASCADE
 );
 
 
@@ -79,7 +77,7 @@ DROP TABLE if EXISTS `pictures`;
 CREATE TABLE if NOT EXISTS `pictures` (
 	picture_id INT,
 	picture_url TEXT,
-	CONSTRAINT `fk_picture_product` FOREIGN KEY (picture_id) REFERENCES `products` (product_id)
+	CONSTRAINT `fk_picture_product` FOREIGN KEY (picture_id) REFERENCES `products` (product_id) ON DELETE CASCADE
 );
 
 
@@ -95,7 +93,7 @@ CREATE TABLE IF NOT EXISTS ordered_by (
 	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	proof_of_payment VARCHAR(255), -- New column to store the file path
 	CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES user (user_id),
-	CONSTRAINT fk_order_product FOREIGN KEY (product_id) REFERENCES products (product_id),
+	CONSTRAINT fk_order_product FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
 	CONSTRAINT fk_order_size FOREIGN KEY (size_id) REFERENCES sizes (size_id)
 );
 
@@ -118,11 +116,11 @@ CREATE TABLE IF NOT EXISTS favorites (
 -- Below is the sample data
 INSERT INTO college (college_name) VALUES 
 ('College of Arts and Social Sciences'),
-('College of Computer Studies'),
 ('College of Business Administration'),
+('College of Computer Studies'),
 ('College of Health Sciences'),
-('College of Engineering'),
 ('College of Education'),
+('College of Engineering'),
 ('College of Science and Mathematics');
 
 -- CSM Organizations
