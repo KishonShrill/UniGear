@@ -375,7 +375,6 @@ class Product(object):
                     'Order-Type': row[4],
                     'Created At': row[5],
                     'Updated At': row[6],
-                    'Picture_URL': Picture_URL
                 }
                 products.append(product)
             cursor.close()
