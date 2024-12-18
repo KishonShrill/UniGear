@@ -69,7 +69,7 @@ CREATE TABLE if NOT EXISTS `product_sizes` (
 	product_id INT,
 	product_quantity INT,
 	size_id INT,
-   FOREIGN KEY (product_id) REFERENCES products (product_id),
+   FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
    FOREIGN KEY (size_id) REFERENCES sizes (size_id)
 );
 
@@ -93,7 +93,7 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 	order_status BOOLEAN NOT NULL,
 	order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `fk_order_user` FOREIGN KEY (user_id) REFERENCES `user` (user_id),
-	CONSTRAINT `fk_order_product` FOREIGN KEY (product_id) REFERENCES `products` (product_id),
+	CONSTRAINT `fk_order_product` FOREIGN KEY (product_id) REFERENCES `products` (product_id) ON DELETE CASCADE,
 	CONSTRAINT `fk_order_size` FOREIGN KEY (size_id) REFERENCES `sizes` (size_id)
 );
 
@@ -128,11 +128,11 @@ DELIMITER ;
 -- Below is the sample data
 INSERT INTO college (college_name) VALUES 
 ('College of Arts and Social Sciences'),
-('College of Business Administration'),
 ('College of Computer Studies'),
-('College of Education'),
-('College of Engineering'),
+('College of Business Administration'),
 ('College of Health Sciences'),
+('College of Engineering'),
+('College of Education'),
 ('College of Science and Mathematics');
 
 -- CSM Organizations
@@ -204,7 +204,14 @@ INSERT INTO `organization` (`org_name`, `org_id`, `org_email`, `college_id`) VAL
 ('CON Executive Council', 'CON-EC', 'con.ec@g.msuiit.edu.ph', 6),
 ('CSM Executive Council', 'CSM-EC', 'csm.ec@g.msuiit.edu.ph', 7);
 
-INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role, org_id) VALUES  
+INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role, org_id) VALUES 
+('Alice Thompson', 'alice.thompson@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '9876543210', '456 Forest St, Iligan City', 'user', 'CASS-EC'), 
+('Brian Lee', 'brian.lee@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '8765432109', '789 Hill St, Iligan City', 'user', 'CEBA-EC'), 
+('Catherine Kim', 'catherine.kim@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '7654321098', '321 River St, Iligan City', 'user', 'CCS-EC'), 
+('David Yang', 'david.yang@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '6543210987', '654 Lake St, Iligan City', 'user', 'CED-EC'), 
+('Ella Chen', 'ella.chen@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '5432109876', '987 Ocean St, Iligan City', 'user', 'COET-EC'), 
+('Frank Martinez', 'frank.martinez@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '4321098765', '135 Mountain St, Iligan City', 'user', 'CON-EC'), 
+('Grace Wong', 'grace.wong@example.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '3210987654', '246 Valley St, Iligan City', 'user', 'CON-EC'), 
 ('Unigear Admin', 'unigear@gmail.com', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', '2109876543', '357 Meadow St, Iligan City', 'seller', 'CCS-EC'),
 ('Emmanuel Fitz Ciano', 'emmanuelfitz.ciano@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CASS-EC'),
 ('Hussam Bansao', 'hussam.bansao@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CEBA-EC'),
@@ -285,30 +292,50 @@ INSERT INTO sizes (size_name) VALUES
 ('XL'), 
 ('2XL');
 
--- INSERT INTO products (product_name, description, hook, type, price, seller_id, order_type) VALUES 
--- ('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 't-shirt', 15.99, 1, 1),
--- ('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 't-shirt', 29.99, 2, 0),
--- ('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'footwear', 49.99, 3, 1),
--- ('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'pin', 39.99, 4, 0);
+INSERT INTO products (product_name, description, hook, type, price, seller_id, order_type) VALUES 
+('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 't-shirt', 15.99, 1, 1),
+('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 't-shirt', 29.99, 2, 0),
+('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'footwear', 49.99, 3, 1),
+('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'pin', 39.99, 4, 0);
 
 INSERT INTO product_sizes (product_id, product_quantity, size_id) VALUES 
 (1, 50, 1),  -- Basic T-Shirt, 50 quantity in Size S
-(1, 30, 2),  -- Basic T-Shirt, 30 quantity in Size M
-(1, 20, 3),  -- Basic T-Shirt, 20 quantity in Size L
-(2, 15, 1),  -- Hoodie, 15 quantity in Size S
 (2, 25, 2),  -- Hoodie, 25 quantity in Size M
-(2, 10, 3),  -- Hoodie, 10 quantity in Size L
-(3, 40, 1),  -- Running Shoes, 40 quantity in Size S
-(3, 30, 2),  -- Running Shoes, 30 quantity in Size M
-(4, 20, 1),  -- Jeans, 20 quantity in Size S
-(4, 15, 2),  -- Jeans, 15 quantity in Size M
-(4, 10, 3);  -- Jeans, 10 quantity in Size L
+(3, 30, 3),  -- Running Shoes, 30 quantity in Size M
+(4, 10, 4);  -- Jeans, 10 quantity in Size L
 
 INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, order_status) VALUES 
 (1, 1, 1, 1, 15.99, true),  -- John Doe orders 2 Engineering T-Shirts
 (1, 3, 3, 1, 15.99, false),  -- John Doe orders 1 Business Planner
 (3, 2, 2, 1, 15.99, false),  -- Mark Johnson orders 3 Art Supplies Kits
-(4, 4, 4, 1, 15.99, true);  -- Emily Davis orders 1 Teacher's Guide
+(4, 4, 4, 10, 15.99, true);  -- Emily Davis orders 1 Teacher's Guide
+
+
+
+DELIMITER //
+
+CREATE TRIGGER subtract_product_quantity_on_delete
+BEFORE DELETE ON ordered_by
+FOR EACH ROW
+BEGIN
+    -- Subtract the quantity from the products table
+    UPDATE product_sizes
+    SET product_quantity = product_quantity - OLD.quantity
+    WHERE product_id = OLD.product_id AND size_id = OLD.size_id;
+
+    -- Delete the product if product_quantity is now 0
+    DELETE FROM product_sizes
+    WHERE product_id = OLD.product_id AND size_id = OLD.size_id
+      AND product_quantity <= 0;
+END;
+//
+
+DELIMITER ;
+
+
+
+
+
 
 DROP TABLE IF EXISTS favorites;
 CREATE TABLE IF NOT EXISTS favorites (

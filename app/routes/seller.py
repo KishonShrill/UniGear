@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort
 from app.models.product import Product
-from app.forms import ProductForm
+from app.forms import *
 from app.routes.auth import seller_required
 from app.models.user import User
 
@@ -16,6 +16,15 @@ seller_bp = Blueprint('seller', __name__)
 # Seller Routes
 # Seller Routes
 # Seller Routes
+def login_is_required(function):
+  
+  def wrapper(*args, **kwargs):
+    if "id" not in session:
+      return abort(401)
+    return function(*args, **kwargs)
+  wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
+  return wrapper
+
 @seller_bp.route('/dashboard')
 @seller_required
 def dashboard():
@@ -24,14 +33,37 @@ def dashboard():
 @seller_bp.route('/seller/my-orders')
 @seller_required
 def my_orders():
-  orders = Product.getOrders()
+  form = LinkVerify()
+  orders = Product.getOrders(session['org_id'])
   print(orders)
   return render_template('/seller/my_orders.html', orders=orders)
 
-@seller_bp.route('/my-products')
+@seller_bp.route('/seller/my-products')
 @seller_required
 def my_products():
-  ...
+  products = Product.getProducts(session['org_id'])
+  return render_template('/seller/my_products.html', products=products)
+
+@seller_bp.route('/seller/my-products/delete', methods=['POST','GET'])
+@login_is_required
+def delete_product():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()  # Parse the JSON body
+            print(f"Received data: {data}")  # Log received data
+
+            product_id = data.get('product_id')  # Extract product_id
+            if not product_id:
+                return jsonify({"error": "Order ID is required"}), 400
+
+            print(f"\nOrder ID: {product_id}")
+            Product.delete(product_id)
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "Something went wrong"}), 500
+    if request.method == 'GET':
+          return abort(404)
 
 # Seller Profile Route
 @seller_bp.route('/seller/profile', methods=['GET', 'POST'])
@@ -75,7 +107,7 @@ def profile():
 
     # Render the profile page with the current user data
     return render_template('seller/seller_profile.html', user=user, zipcode_street=zipcode_street, barangay=barangay, city=city)
-  
+
   
 # Product Creation Form Route
 # Product Creation Form Route
