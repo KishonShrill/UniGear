@@ -175,9 +175,24 @@
                   },
                   body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
                 })
-                console.log("Sent")
-    
-                localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.favorite_status) {
+                            favoriteBtn.classList.add("favorited");
+                            favoriteBtn.style.color = "red";
+                        } else {
+                            favoriteBtn.classList.remove("favorited");
+                            favoriteBtn.style.color = "gray";
+                        }
+                    } else {
+                        alert(data.message || "An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error toggling favorite:", error);
+                    alert("An unexpected error occurred. Please try again.");
+                });
             })
             .catch(error => console.error("Error checking login status:", error));
         });
