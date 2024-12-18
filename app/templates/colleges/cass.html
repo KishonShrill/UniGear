@@ -2,11 +2,14 @@
 
 {% import "components/macros.html" as components %}
 
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/cass.css') }}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cass.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
 
+{% block content %}
 <main data-college-id="1">
     {{ components.render_header(user=session['name'], role=session['role']) }}
     <section id="college-cass-header-container">
@@ -146,35 +149,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle wishlist toggle functionality
     productsContainer.addEventListener("click", function (event) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         const favoriteBtn = event.target.closest(".favorite-btn");
         if (!favoriteBtn) return; // Exit if the click wasn't on a favorite button
 
         const productId = favoriteBtn.getAttribute("data-product-id");
 
-        fetch(`/favorite/${productId}`, {
+        fetch('/favorite/submit', {
             method: 'POST',
             credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json', // Correct Content-Type
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.favorite_status) {
-                        favoriteBtn.classList.add("favorited");
-                        favoriteBtn.style.color = "red";
-                        alert("Added to Wishlist");
-                    } else {
-                        favoriteBtn.classList.remove("favorited");
-                        favoriteBtn.style.color = "gray";
-                        alert("Removed from Wishlist");
-                    }
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.favorite_status) {
+                    favoriteBtn.classList.add("favorited");
+                    favoriteBtn.style.color = "red";
                 } else {
-                    alert(data.message || "An error occurred.");
+                    favoriteBtn.classList.remove("favorited");
+                    favoriteBtn.style.color = "gray";
                 }
-            })
-            .catch(error => {
-                console.error("Error toggling favorite:", error);
-                alert("An unexpected error occurred. Please try again.");
-            });
+            } else {
+                alert(data.message || "An error occurred.");
+            }
+        })
+        .catch(error => {
+            console.error("Error toggling favorite:", error);
+            alert("An unexpected error occurred. Please try again.");
+        });
     });
 });
 </script>
