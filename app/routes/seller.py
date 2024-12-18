@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort
+from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort, Response
+from decimal import Decimal
+from datetime import datetime
 from app.models.product import Product
 from app.forms import *
 from app.routes.auth import seller_required
@@ -37,6 +39,34 @@ def my_orders():
   orders = Product.getOrders(session['org_id'])
   print(orders)
   return render_template('/seller/my_orders.html', orders=orders)
+
+@seller_bp.route('/seller/my-orders/export')
+@seller_required
+def export_my_orders():
+  orders = Product.getOrders(session['org_id'])
+  
+  def generate():
+    # CSV header
+    header = ["Order", "Customer", "Total Cost", "Product", "Size", "Quantity", "Type", "Status", "Order Date"]
+    yield ','.join(header) + '\n'
+
+    # Convert each order to a row
+    for order in orders:
+        row = [
+            str(order['Order']),                               # Convert integer to string
+            order['Customer'],                                # String already
+            f"{order['Total Cost']:.2f}",                     # Format Decimal as string
+            order['Product'],                                 # String already
+            order['Size'],                                    # String already
+            str(order['Quantity']),                           # Convert integer to string
+            "Time" if order['Type'] == 1 else "Order",        # Convert integer type to label
+            "Paid" if order['Status'] == 1 else "Not Paid",        # Convert integer status to label
+            order['Order Date'].strftime('%Y-%m-%d %H:%M:%S') # Format datetime to string
+        ]
+        yield ','.join(row) + '\n'
+
+  # Return the CSV response
+  return Response(generate(), mimetype='text/csv', headers={"Content-Disposition": "attachment;filename=orders.csv"})
 
 @seller_bp.route('/seller/my-products')
 @seller_required

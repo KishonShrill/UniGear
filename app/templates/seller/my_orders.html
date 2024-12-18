@@ -21,7 +21,7 @@
       <div class="content-container content-header">
         <h1 class="content-title">Orders</h1>
         <div class="content-buttons">
-          <button class="btn export-btn">Export as CSV <img src="{{ url_for('static', filename='images/link-square-02-stroke-rounded.svg') }}" alt="Export Data"></button>
+          <a href="/seller/my-orders/export" class="btn export-btn">Export as CSV <img src="{{ url_for('static', filename='images/link-square-02-stroke-rounded.svg') }}" alt="Export Data"></a>
           <a class="btn new-product-btn" href="{{ url_for('seller.product_new') }}">New Product <img src="{{ url_for('static', filename='images/arrow-right-02-stroke-rounded.svg') }}" alt="Make new product"></a>
         </div>
       </div>
