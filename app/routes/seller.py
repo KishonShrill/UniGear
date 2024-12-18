@@ -5,6 +5,7 @@ from app.models.product import Product
 from app.forms import *
 from app.routes.auth import seller_required
 from app.models.user import User
+from app.models.order import Order
 
 import cloudinary.api
 import cloudinary.uploader
@@ -265,8 +266,6 @@ def product_new_submit():
         except Exception as e:
           flash(f"An error occurred during file upload: {str(e)}", "danger")
           return redirect(url_for('seller.product_new'))
-
-
       
       # TODO: Change return to redirect to dashboard page
       flash(f"Product created successfully!", "success")
@@ -278,83 +277,31 @@ def product_new_submit():
     
   if request.method == 'GET':
     return abort(404)
-  
-@seller_bp.route('/product/edit/<int:product_id>', methods=['GET', 'POST'])
+
+
+@seller_bp.route('/toggle_order_status', methods=['POST'])
 @seller_required
-def product_edit(product_id):
-    product = Product.get_by_id(product_id)
-    if not product:
-        flash("Product not found!", "danger")
-        return redirect(url_for('seller.dashboard'))
-
-    form = ProductForm(obj=product)
-    product_pictures = product.get_product_pictures(product_id)  # List of existing picture URLs
-    product_sizes = product.get_product_sizes(product_id)  # List of existing sizes
-
+def toggle_order_status():
     if request.method == 'POST':
-        name = request.form.get("name")
-        price = request.form.get("price")
-        description = request.form.get("description")
-        hook = request.form.get("hook")
-        product_type = request.form.get("type")
-        preorder_type = request.form.get("preorder")
-        selected_sizes = request.form.get("selectedSizes")
-        picture_urls = request.files.getlist("picture_urls")  # New pictures to upload
-        slides_data = request.form.get("slidesData")
-
-        if not name or not price or not description:
-            flash("Name, price, and description are required.", "danger")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
-
-        new_pictures = picture_urls
-        current_picture_urls = product_pictures
-        pictures_to_keep = [pic for pic in current_picture_urls if pic in [pic.filename for pic in picture_urls]]
-        pictures_to_upload = pictures_to_keep + [pic for pic in new_pictures if pic not in pictures_to_keep]
-
         try:
-            product.remove_product_picture(product_id)  # Remove previous pictures
-        except Exception as e:
-            flash(f"Error removing existing pictures: {str(e)}", "danger")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+            data = request.get_json()  # Parse the JSON body
+            print(f"Received data: {data}")  # Log received data
 
-        # Upload new and kept pictures
-        for picture in pictures_to_upload:
-            try:
-                if isinstance(picture, FileStorage):
-                    filename = secure_filename(picture.filename)
-                    upload_result = cloudinary.uploader.upload(picture, public_id=filename)
-                    cloudinary_url = upload_result.get('secure_url')
-                    product.add_product_pictures(cloudinary_url)
-                else:
-                    product.add_product_pictures(picture)
+            order_id = data.get('order_id')  # Extract order_id
+            if not order_id:
+                return jsonify({"error": "Order ID is required"}), 400
 
-            except Exception as e:
-                flash(f"Error uploading picture {picture.filename if isinstance(picture, FileStorage) else picture}: {str(e)}", "danger")
-                return redirect(url_for('seller.product_edit', product_id=product_id))
+            print(f"\nOrder ID: {order_id}")
 
-        # Update product details
-        try:
-            Product.update(
-                product_id=product_id,
-                product_name=name,
-                description=description,
-                hook=hook,
-                type=product_type,
-                price=price,
-                order_type=preorder_type
-            )
+            # Call the toggle_status method in the Order class to toggle the status in the database
+            success, new_status = Order.toggle_status(order_id)
 
-            sizes = selected_sizes.split(',') if selected_sizes else []
-            product.clear_sizes(product_id)
-            for size in sizes:
-                product.add_product_sizes(size)
-
-            flash("Product updated successfully!", "success")
-            return redirect(url_for('website.merch_details', product_id=product.product_id))
+            if success:
+                # Return success and the updated status
+                return jsonify({"success": True, "new_status": new_status}), 200
+            else:
+                return jsonify({"error": "Failed to update status"}), 500
 
         except Exception as e:
-            flash(f"Error updating product: {str(e)}", "danger")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
-
-    return render_template('crud_blueprint/product_page-edit.html', form=form, product=product,
-                           product_pictures=product_pictures, product_sizes=product_sizes)
+            print(f"Error: {e}")
+            return jsonify({"error": "Something went wrong"}), 500
