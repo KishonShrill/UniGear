@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -147,7 +147,8 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         const favoriteBtn = document.getElementById("favorite-btn");
-        const productId = document.querySelector("main").getAttribute("data-product-id");
+        const productId = {{ product.product_id }};
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
     
         if (favoriteProducts.includes(productId)) {
@@ -166,15 +167,32 @@
                     return;
                 }
     
-                if (favoriteProducts.includes(productId)) {
-                    favoriteProducts = favoriteProducts.filter(id => id !== productId);
-                    favoriteBtn.classList.remove("favorited");
-                } else {
-                    favoriteProducts.push(productId);
-                    favoriteBtn.classList.add("favorited");
-                }
-    
-                localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
+                fetch(`/favorite/submit`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json', // Correct Content-Type
+                    'X-CSRFToken': csrfToken,
+                  },
+                  body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.favorite_status) {
+                            favoriteBtn.classList.add("favorited");
+                            favoriteBtn.style.color = "red";
+                        } else {
+                            favoriteBtn.classList.remove("favorited");
+                            favoriteBtn.style.color = "gray";
+                        }
+                    } else {
+                        alert(data.message || "An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error toggling favorite:", error);
+                    alert("An unexpected error occurred. Please try again.");
+                });
             })
             .catch(error => console.error("Error checking login status:", error));
         });

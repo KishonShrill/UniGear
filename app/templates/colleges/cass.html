@@ -2,11 +2,14 @@
 
 {% import "components/macros.html" as components %}
 
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/cass.css') }}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cass.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+{% endblock %}
 
+{% block content %}
 <main data-college-id="1">
     {{ components.render_header(user=session['name'], role=session['role']) }}
     <section id="college-cass-header-container">
@@ -14,7 +17,7 @@
             <h1>COLLEGE OF ARTS AND SOCIAL SCIENCES</h1>
             <a href="explore" class="back-link">&larr; Go back</a>
         </div>
-    </section>    
+    </section>
 
     <section id="college-cass-content">
         <!-- Organization Tabs -->
@@ -25,37 +28,36 @@
                 </ul>
             </section>
         </aside>
-    
+
         <section id="content">
             <div id="college-cass-main">
                 <ul id="type-tabs">
                     <li class="type-tab">
-                        <img src="static/images/all.jpg" alt="all Icon" class="type-icon">
+                        <img src="{{ url_for('static', filename='images/all.jpg') }}" alt="All Icon" class="type-icon">
                         <span class="type-name">All</span>
                     </li>
                     <li class="type-tab">
-                        <img src="static/images/t-shirt.jpg" alt="hoodie Icon" class="type-icon">
+                        <img src="{{ url_for('static', filename='images/t-shirt.jpg') }}" alt="T-shirt Icon" class="type-icon">
                         <span class="type-name">T-Shirt</span>
                     </li>
                     <li class="type-tab">
-                        <img src="static/images/hoodie.jpg" alt="hoodie Icon" class="type-icon">
+                        <img src="{{ url_for('static', filename='images/hoodie.jpg') }}" alt="Hoodie Icon" class="type-icon">
                         <span class="type-name">Hoodie</span>
                     </li>
                     <li class="type-tab">
-                        <img src="static/images/footwear.jpg" alt="footwear Icon" class="type-icon">
+                        <img src="{{ url_for('static', filename='images/footwear.jpg') }}" alt="Footwear Icon" class="type-icon">
                         <span class="type-name">Footwear</span>
                     </li>
                     <li class="type-tab">
-                        <img src="static/images/lanyard.jpg" alt="lanyard Icon" class="type-icon">
+                        <img src="{{ url_for('static', filename='images/lanyard.jpg') }}" alt="Lanyard Icon" class="type-icon">
                         <span class="type-name">Lanyard</span>
                     </li>
                     <li class="type-tab">
-                        <img src="static/images/pin.jpg" alt="pin Icon" class="type-icon">
+                        <img src="{{ url_for('static', filename='images/pin.jpg') }}" alt="Pin Icon" class="type-icon">
                         <span class="type-name">Pin</span>
                     </li>
-                    <!-- Add more type tabs as needed -->
                 </ul>
-                
+            </div>
 
             <!-- Products Display -->
             <section id="org-products">
@@ -67,21 +69,16 @@
 
 {{ components.render_footer() }}
 
-
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const productsContainer = document.getElementById("org-products");
         const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
         const orgTabsContainer = document.getElementById("org-list");
-
     
-        let selectedType = 'all'; 
-        let selectedOrgId = null; 
+        let selectedType = 'all';
+        let selectedOrgId = null;
     
-        let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
-
-
+        // Fetch organization tabs dynamically
         fetch('/api/cass/organizations')
             .then(response => response.json())
             .then(organizations => {
@@ -95,13 +92,10 @@
                     orgTab.addEventListener("click", function () {
                         document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
                         orgTab.classList.add("active");
-
-                        // Load products for selected organization
                         loadProductsForOrg(org.id);
                     });
                 });
-
-                // Automatically load the first organization's products
+    
                 if (organizations.length > 0) {
                     const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
                     firstOrgTab.classList.add("active");
@@ -112,52 +106,12 @@
                 console.error("Error fetching organizations:", error);
                 productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
             });
-
-        // Add event listeners to type tabs
-        typeTabs.forEach(tab => {
-            tab.addEventListener("click", function () {
-                selectedType = tab.querySelector(".type-name").innerText.toLowerCase();
-                typeTabs.forEach(t => t.classList.remove("active")); 
-                tab.classList.add("active"); 
-                if (selectedOrgId) {
-                    loadProductsForOrg(selectedOrgId); 
-                }
-            });
-        });
-
-
-        productsContainer.addEventListener("click", function (event) {
-            const favoriteBtn = event.target.closest(".favorite-btn");
-            if (favoriteBtn) {
-                const productCard = favoriteBtn.closest(".product-card");
-                const productId = productCard.getAttribute("data-product-id");
     
-                // Check if the user is logged in
-                fetch('/api/check-login', {
-                    method: 'GET',
-                    credentials: 'same-origin', 
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.logged_in) {
-                            alert("You must log in to favorite products.");
-                            return;
-                        }
-    
-                        // If logged in, toggle favorite status
-                        toggleFavorite(productId, favoriteBtn);
-                    })
-                    .catch(error => {
-                        console.error("Error checking login status:", error);
-                    });
-            }
-        });
-
+        // Fetch products for an organization
         function loadProductsForOrg(org_id) {
             selectedOrgId = org_id;
             productsContainer.innerHTML = "<p>Loading products...</p>";
-
-            // Fetch products for the selected organization and type
+    
             fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
                 .then(response => response.json())
                 .then(products => {
@@ -166,16 +120,14 @@
                         return;
                     }
     
-                    productsContainer.innerHTML = ''; // Clear existing products
-    
+                    productsContainer.innerHTML = ''; // Clear previous products
                     products.forEach(product => {
                         const productCard = document.createElement("div");
                         productCard.classList.add("product-card");
                         productCard.setAttribute("data-product-id", product.id);
     
-                        const isFavorite = favoriteProducts.includes(product.id);
-
-                        const imgSrc = product.picture || "/static/images/placeholder.jpg"; // Fallback image
+                        const isFavorite = product.is_favorite; // Check if product is already in favorites
+                        const imgSrc = product.picture || "{{ url_for('static', filename='images/placeholder.jpg') }}"; // Fallback image
                         productCard.innerHTML = `
                             <a href="/product/${product.id}">
                                 <img src="${imgSrc}" alt="${product.name}">
@@ -194,24 +146,45 @@
                     productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
                 });
         }
-
-
-        function toggleFavorite(productId, button) {
-            if (favoriteProducts.includes(productId)) {
-                // Remove from favorites
-                favoriteProducts = favoriteProducts.filter(id => id !== productId);
-                button.classList.remove("favorited");
-            } else {
-                // Add to favorites
-                favoriteProducts.push(productId);
-                button.classList.add("favorited");
-            }
     
-            localStorage.setItem('favorites', JSON.stringify(favoriteProducts));
-        }
+        // Handle wishlist toggle functionality
+        productsContainer.addEventListener("click", function (event) {
+            const favoriteBtn = event.target.closest(".favorite-btn");
+            if (!favoriteBtn) return; // Exit if the click wasn't on a favorite button
+    
+            const productId = favoriteBtn.getAttribute("data-product-id");
+            console.log("Product ID clicked:", productId); // Debugging line to check if ID is being passed correctly
+    
+            fetch(`/favorite/${productId}`, {
+                method: 'POST',
+                credentials: 'same-origin',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response data:", data); // Debugging line to check the response data
+    
+                    if (data.success) {
+                        // Toggle favorite button color and state
+                        if (data.favorite_status) {
+                            favoriteBtn.classList.add("favorited");
+                            favoriteBtn.style.color = "red"; // Set color to red
+                            alert("Added to Wishlist");
+                        } else {
+                            favoriteBtn.classList.remove("favorited");
+                            favoriteBtn.style.color = "gray"; // Set color to gray
+                            alert("Removed from Wishlist");
+                        }
+                    } else {
+                        alert(data.message || "An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error toggling favorite:", error);
+                    alert("An unexpected error occurred. Please try again.");
+                });
+        });
     });
-</script>
+    </script>
     
-
     
 {% endblock %}

@@ -348,3 +348,11 @@ img.demo.cursor {
 .gray-btn:hover {
   color: red;
 }
+
+.favorite {
+  color: red; /* or your preferred color */
+}
+
+.not-favorite {
+  color: grey; /* or your preferred color */
+}

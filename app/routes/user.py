@@ -58,6 +58,7 @@ def delete_order():
         return abort(404)
 
 
+
 @user_bp.route('/user/profile', methods=['GET', 'POST'])
 @login_is_required 
 def profile():

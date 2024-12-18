@@ -284,6 +284,9 @@ INSERT INTO user (user_name, user_email, user_password, user_contact, user_addre
 ('CON Executive Council', 'con.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CON-EC'),
 ('CSM Executive Council', 'csm.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CSM-EC');
 
+
+
+
 INSERT INTO sizes (size_name) VALUES 
 ('XS'),
 ('S'), 
