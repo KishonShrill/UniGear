@@ -3,19 +3,18 @@ from app.models.product import Product
 from app.models.user import User
 from app.models.order import Order
 from app.forms import *
-
-
+from app.models.order import Order
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
 from werkzeug.utils import secure_filename
+from app import mysql
 
+import sys
 
 user_bp = Blueprint('user', __name__)
 
 
-# User Route
-# User Route
 # User Route
 def login_is_required(function):
   
@@ -100,3 +99,53 @@ def profile():
 
     # Render the profile page with the current user data
     return render_template('user/user_profile.html', user=user, zipcode_street=zipcode_street, barangay=barangay, city=city)
+
+@user_bp.route('/user/my-orders/upload', methods=['POST'])
+def upload_file():
+    try:
+        # Check if file is present in request
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
+        
+        file = request.files['file']
+        order_id = request.form.get('order_id')
+        
+        if not file or file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+            
+        if not order_id:
+            return jsonify({'error': 'No order ID provided'}), 400
+
+        # Upload to Cloudinary
+        upload_result = cloudinary.uploader.upload(file)
+        cloudinary_url = upload_result['secure_url']
+        
+        # Save the URL to database
+        save_proof_to_database(order_id, cloudinary_url)
+        
+        return jsonify({
+            'success': True,
+            'url': cloudinary_url
+        }), 200
+        
+    except Exception as e:
+        print(f"Upload error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+def save_proof_to_database(order_id, cloudinary_url):
+    cursor = None
+    try:
+        cursor = mysql.connection.cursor()
+        query = "UPDATE ordered_by SET proof_of_payment = %s WHERE order_id = %s"
+        cursor.execute(query, (cloudinary_url, order_id))
+        mysql.connection.commit()
+        print(f"Successfully saved proof of payment for order {order_id}")
+        return True
+    except Exception as e:
+        print(f"Database error: {str(e)}")
+        if cursor:
+            mysql.connection.rollback()
+        raise e
+    finally:
+        if cursor:
+            cursor.close()

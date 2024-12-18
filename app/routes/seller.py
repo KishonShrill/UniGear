@@ -90,11 +90,12 @@ def delete_product():
             print(f"\nOrder ID: {product_id}")
             Product.delete(product_id)
             
+            return None
         except Exception as e:
             print(f"Error: {e}")
             return jsonify({"error": "Something went wrong"}), 500
     if request.method == 'GET':
-          return abort(404)
+        return abort(404)
 
 # Seller Profile Route
 @seller_bp.route('/seller/profile', methods=['GET', 'POST'])
@@ -172,6 +173,7 @@ def product_new_submit():
       print(f"Date: {date}")
       print(f"Days: {number_of_days}")
 
+      if date == '': date = None
       sizes = selected_sizes.split(',')
       URLS = []
       
@@ -179,14 +181,14 @@ def product_new_submit():
       # Checks for a valid form \/ \/ \/
       # Checks for a valid form \/ \/ \/
       # Checks for a valid form \/ \/ \/
-
-      if int(preorder_type) == 1 and date == '':
-        flash (f"Select which date to release...","warning")
-        return redirect(url_for('seller.product_new'))
-      
-      if int(number_of_days) <= 6:
-        flash (f"Please give a deadline of 1 week or more...","warning")
-        return redirect(url_for('seller.product_new'))
+      if int(preorder_type) == 1:
+        if date == '':
+          flash (f"Select which date to release...","warning")
+          return redirect(url_for('seller.product_new'))
+        
+        if int(number_of_days) <= 6:
+          flash (f"Please give a deadline of 1 week or more...","warning")
+          return redirect(url_for('seller.product_new'))
       
       if len(name) == 0:
          flash (f"Enter a name for the product...","warning")
@@ -200,7 +202,7 @@ def product_new_submit():
         flash("Product should be affordable for students...", "warning")
         return redirect(url_for('seller.product_new'))
        
-      if len(description) <= 50:
+      if len(description) <= 10:
          flash(f"A minimum of 100 characters for description...","warning")
          flash(f"Chracter Length: {len(description)}","info")
          return redirect(url_for('seller.product_new'))

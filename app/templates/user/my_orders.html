@@ -30,6 +30,7 @@
         <div class="content-tools">
           <button class="btn deleteBtn" id="deleteAll">Delete All</button>
           <button class="btn deleteBtn" id="deleteOne" value="">Delete</button>
+          <button class="btn editBtn" style="display: none;" id="editOne" value="">Edit</button>
         </div>
 
         <div class="content-searchbar">
@@ -49,12 +50,13 @@
                 <th>Total costs</th>
                 <th>Type</th>
                 <th>Status</th>
-                <th>Order</th>
+                <th>Order Date</th>
+                <th>Proof of Payment</th>
               </tr>
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}">
+              <tr value="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Product'] }}</td>
@@ -80,8 +82,26 @@
                   white-space: nowrap;
                   overflow: hidden;
                   text-overflow: clip;">{{ order['Order Date'] }}</p></td>
+                <td id="proofCell_{{ order['Order'] }}">
+                  {% if order['Proof of Payment'] %}
+                    <!-- Display the "View Proof" button if proof exists -->
+                    <button onclick="viewUploadedProof('{{ order['Proof of Payment'] }}', '{{ order['Order'] }}')"> 
+                      View Proof
+                    </button>
+                  {% else %}
+                    <!-- Show the file input if proof is not uploaded -->
+                    <input 
+                      type="file" 
+                      name="paymentProof_{{ order['Order'] }}" 
+                      id="paymentProof_{{ order['Order'] }}" 
+                      accept="image/*,.pdf" 
+                      onchange="handleFileUpload(event, {{ order['Order'] }})">
+                  {% endif %}
+                </td>
+                                  
               </tr>
               {% endfor %}
+              
             </tbody>
           </table>
         </div>
@@ -89,10 +109,31 @@
     </section>
   </main>
 
+<!-- Proof of Payment Modal -->
+<dialog class="modal payment-modal" id="proofPaymentModal">
+  <div id="paymentModalContent">Preview your Proof of Payment:</div>
+  <img id="paymentModalImage" src="#" alt="Proof of Payment Preview" style="max-width: 100%; height: auto; display: none;">
+  <div id="paymentModalButtons">
+    <button id="paymentCancelBtn">Cancel</button>
+    <button id="paymentConfirmBtn">Confirm</button>
+  </div>
+</dialog>
+
+<!-- View Proof of Payment Modal -->
+<dialog class="modal payment-view-modal" id="proofPaymentViewModal">
+  <div>Uploaded Proof of Payment:</div>
+  <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 100%; height: auto;">
+  <div id="viewModalButtons">
+    <button id="viewCloseBtn">Close</button>
+    <!-- <button id="viewChangeBtn">Change File</button> -->
+  </div>
+</dialog>
+
+
   <!-- Dialog -->
   <dialog class="modal" data-modal>
-    <div></div>
-    <img src="#" alt="#">
+    <div id="previewID"></div>
+    <img id="preview" src="" alt="#" />
     <button data-close-modal >Close</button>
   </dialog>
 
@@ -102,6 +143,9 @@
 
   <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
   <script>
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const editOneBtn = document.querySelector("#editOne")
+    function setEditBtn(orderValue) {editOneBtn.value = orderValue}
     // JavaScript for filtering table rows based on search input
     const searchBar = document.getElementById("searchBar");
     const tableRows = document.querySelectorAll("table tbody tr");
@@ -147,4 +191,5 @@
     }
   </script>
   <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/payment_sender.js') }}"></script>
 {% endblock %}
