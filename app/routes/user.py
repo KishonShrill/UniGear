@@ -5,8 +5,6 @@ from app.models.order import Order
 from app.forms import *
 
 
-from app.forms import ProductForm
-from app import mysql
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
