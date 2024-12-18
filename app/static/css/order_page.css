@@ -44,6 +44,11 @@ main.orders {
     visibility: hidden;
     gap: 0.625rem;
   }
+  .editBtn {
+    border: 1px solid #DFDFDF;
+    color: white;
+    background-color: #2500EE;
+  }
   .deleteBtn {
     border: 1px solid #DFDFDF;
     color: white;

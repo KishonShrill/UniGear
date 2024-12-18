@@ -30,6 +30,7 @@
         <div class="content-tools">
           <button class="btn deleteBtn" id="deleteAll">Delete All</button>
           <button class="btn deleteBtn" id="deleteOne" value="">Delete</button>
+          <button class="btn editBtn" id="editOne" value="">Edit</button>
         </div>
         
         <div class="content-searchbar">
@@ -49,7 +50,6 @@
                 <th>Order-Type</th>
                 <th>Created At</th>
                 <th>Updated At</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -67,11 +67,7 @@
                 {% endif %}
                 <td>{{ product['Created At']}}</td>
                 <td>{{ product['Updated At'] }}</td>
-                <td>
-                  <a href="{{ url_for('seller.product_edit', product_id=product['Product_id']) }}" class="btn edit-btn">Edit</a>
-
-                </td>
-                </tr>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -92,7 +88,6 @@
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
 
-  <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
   <script>
     // JavaScript for filtering table rows based on search input
     const searchBar = document.getElementById("searchBar");
@@ -137,6 +132,47 @@
 
       modal.close(); // Close the modal after confirmation
     }
+    // Example deleteOrder function
+    const editOneBtn = document.querySelector("#editOne")
+    function setEditBtn(orderValue) {editOneBtn.value = orderValue}
+    function editOrder(productId) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      console.log(`Order #${productId} has been edited.`);
+      if (!productId) {
+        console.error("Product ID is missing!");
+        return;
+      }
+
+      // Construct the URL dynamically
+      const editUrl = `/product/edit/${productId}`;
+
+      // Redirect to the constructed URL
+      window.location.href = editUrl;
+
+      modal.close(); // Close the modal after confirmation
+    }
   </script>
   <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
+  <script>
+    editOneBtn.addEventListener("click", () => {
+    modal.querySelector("div").textContent = `Are you sure you want to edit product #${editOneBtn.value}`;
+
+    let confirmButton = document.createElement("button");
+    confirmButton.textContent = "Confirm";
+    confirmButton.setAttribute("onclick", `editOrder(${editOneBtn.value})`);
+
+    // Remove any existing confirm button to avoid duplicates
+    const existingConfirmButton = modal.querySelector("button[data-confirm]");
+    if (existingConfirmButton) {
+      existingConfirmButton.remove();
+    }
+
+    // Add the confirm button to the modal
+    confirmButton.setAttribute("data-confirm", "true");
+    modal.appendChild(confirmButton);
+    modal.showModal()
+  })
+  </script>
 {% endblock %}
