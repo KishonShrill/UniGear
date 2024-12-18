@@ -3,6 +3,7 @@ from app.models.product import Product
 from app.forms import *
 from app.routes.auth import seller_required
 from app.models.user import User
+from app.models.order import Order
 
 import cloudinary.api
 import cloudinary.uploader
@@ -233,3 +234,31 @@ def product_new_submit():
     
   if request.method == 'GET':
     return abort(404)
+
+
+@seller_bp.route('/toggle_order_status', methods=['POST'])
+@seller_required
+def toggle_order_status():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()  # Parse the JSON body
+            print(f"Received data: {data}")  # Log received data
+
+            order_id = data.get('order_id')  # Extract order_id
+            if not order_id:
+                return jsonify({"error": "Order ID is required"}), 400
+
+            print(f"\nOrder ID: {order_id}")
+
+            # Call the toggle_status method in the Order class to toggle the status in the database
+            success, new_status = Order.toggle_status(order_id)
+
+            if success:
+                # Return success and the updated status
+                return jsonify({"success": True, "new_status": new_status}), 200
+            else:
+                return jsonify({"error": "Failed to update status"}), 500
+
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "Something went wrong"}), 500

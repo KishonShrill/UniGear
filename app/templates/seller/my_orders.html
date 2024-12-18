@@ -55,7 +55,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}">
+              <tr value="{{ order['Order'] }}" data-order-id="{{ order['Order'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Customer'] }}</td>
@@ -96,6 +96,14 @@
     <div></div>
     <img src="#" alt="#">
     <button data-close-modal >Close</button>
+  </dialog>
+
+  <dialog id="confirmation-modal">
+    <div>
+      <p>Are you sure you want to mark this order as Paid?</p>
+      <button id="confirm-button">Yes</button>
+      <button id="cancel-button">No</button>
+    </div>
   </dialog>
 
   <!-- Footer -->
@@ -149,5 +157,5 @@
       modal.close(); // Close the modal after confirmation
     }
   </script>
-  <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modal_script_orders.js') }}"></script>
 {% endblock %}
