@@ -139,9 +139,6 @@
         <!-- Remove for Product Details -->
         <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
-        <input id="slidesDataInput" name="slidesData" type="hidden" value="" form="product-form">
-
-        <input type="text">
         <!-- Remove for Product Details -->
       </div>
       <button id="create_product" data-open-modal>Udate Product</button>
@@ -177,6 +174,7 @@
       const form = document.getElementById('product-form');
       form.submit(); // Submit the form manually
     });
+
   </script>
   <script>
     // REMOVE NING SCRIPT SA PRODUCT DETAILS
@@ -198,17 +196,6 @@
         slidesData.push('{{ image }}')
       {% endfor %}
     };
-
-    const createBtn = document.getElementById("create_product");
-    createBtn.addEventListener("click", () => {
-      const inputElement = document.getElementById("slidesDataInput");
-
-      // Filter items where src starts with "https://res.cloudinary.com"
-      const filteredData = slidesData.filter(src => typeof src === "string" && src.startsWith("https://res.cloudinary.com"));
-
-      // Convert the array to a JSON string and assign it to the input's value
-      inputElement.value = JSON.stringify(filteredData);
-    });
   </script>
   <script>
     // Image Slider Logic

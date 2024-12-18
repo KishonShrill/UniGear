@@ -10,6 +10,7 @@ import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 
 
 seller_bp = Blueprint('seller', __name__)
@@ -285,11 +286,9 @@ def product_edit(product_id):
         return redirect(url_for('seller.dashboard'))
 
     form = ProductForm(obj=product)
+    product_pictures = product.get_product_pictures(product_id)  # List of existing picture URLs
+    product_sizes = product.get_product_sizes(product_id)  # List of existing sizes
 
-    # Fetch the associated pictures and sizes to display in the form
-    product_pictures = product.get_product_pictures(product_id)  # Assuming this returns a list of picture URLs
-    product_sizes = product.get_product_sizes(product_id)  # Assuming this returns a list of sizes
-    
     if request.method == 'POST':
         name = request.form.get("name")
         price = request.form.get("price")
@@ -298,77 +297,62 @@ def product_edit(product_id):
         product_type = request.form.get("type")
         preorder_type = request.form.get("preorder")
         selected_sizes = request.form.get("selectedSizes")
-        picture_urls = request.files.getlist("picture_urls")
+        picture_urls = request.files.getlist("picture_urls")  # New pictures to upload
         slides_data = request.form.get("slidesData")
 
-        print(f"Pictures: {picture_urls}")
-        print(f"Slides: {slides_data}")
+        if not name or not price or not description:
+            flash("Name, price, and description are required.", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        # if len(name) == 0:
-        #     flash("Enter a name for the product", "warning")
-        #     return redirect(url_for('seller.product_edit', product_id=product_id))
+        new_pictures = picture_urls
+        current_picture_urls = product_pictures
+        pictures_to_keep = [pic for pic in current_picture_urls if pic in [pic.filename for pic in picture_urls]]
+        pictures_to_upload = pictures_to_keep + [pic for pic in new_pictures if pic not in pictures_to_keep]
 
-        # if not price.isdigit() or price.startswith("0"):
-        #     flash("Enter a valid price for the product", "warning")
-        #     return redirect(url_for('seller.product_edit', product_id=product_id))
+        try:
+            product.remove_product_picture(product_id)  # Remove previous pictures
+        except Exception as e:
+            flash(f"Error removing existing pictures: {str(e)}", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        # if int(price) > 10000:
-        #     flash("Product should be affordable for students", "warning")
-        #     return redirect(url_for('seller.product_edit', product_id=product_id))
+        # Upload new and kept pictures
+        for picture in pictures_to_upload:
+            try:
+                if isinstance(picture, FileStorage):
+                    filename = secure_filename(picture.filename)
+                    upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+                    cloudinary_url = upload_result.get('secure_url')
+                    product.add_product_pictures(cloudinary_url)
+                else:
+                    product.add_product_pictures(picture)
 
-        # if len(description) <= 50:
-        #     flash("Description should have at least 100 characters", "warning")
-        #     return redirect(url_for('seller.product_edit', product_id=product_id))
+            except Exception as e:
+                flash(f"Error uploading picture {picture.filename if isinstance(picture, FileStorage) else picture}: {str(e)}", "danger")
+                return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        # if not product_type:
-        #     flash("Pick at least one type for the product", "warning")
-        #     return redirect(url_for('seller.product_edit', product_id=product_id))
+        # Update product details
+        try:
+            Product.update(
+                product_id=product_id,
+                product_name=name,
+                description=description,
+                hook=hook,
+                type=product_type,
+                price=price,
+                order_type=preorder_type
+            )
 
-        # try:
-        #     print("Calling Product.update()...")
-        #     Product.update(
-        #         product_id=product_id,
-        #         product_name=name,
-        #         description=description,
-        #         hook=hook,
-        #         type=product_type,
-        #         price=price,
-        #         order_type=preorder_type
-        #     )
+            sizes = selected_sizes.split(',') if selected_sizes else []
+            product.clear_sizes(product_id)
+            for size in sizes:
+                product.add_product_sizes(size)
 
-        #     print("clearing sizes")
-        #     sizes = selected_sizes.split(',')
-        #     product.clear_sizes(product_id)  # Clear previous sizes before adding new ones
-        #     print("size cleared")
-        #     for size in sizes:
-        #         print(f"Adding size: {size}")  # Debugging each size being added
-        #         product.add_product_sizes(size)
+            flash("Product updated successfully!", "success")
+            return redirect(url_for('website.merch_details', product_id=product.product_id))
 
-        #     if picture_urls:
-        #         for picture in picture_urls:
-        #             if picture and picture.filename:
-        #                 filename = secure_filename(picture.filename)
-        #                 try:
-        #                     # Debugging: Check if file is being processed
-        #                     print(f"Uploading picture: {filename}")
-        #                     upload_result = cloudinary.uploader.upload(picture, public_id=filename)
-        #                     cloudinary_url = upload_result.get('secure_url')
+        except Exception as e:
+            flash(f"Error updating product: {str(e)}", "danger")
+            return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        #                     # Save the Cloudinary URL to the database for this product
-        #                     product.add_product_pictures(cloudinary_url)
-        #                     print(f"Picture uploaded successfully: {cloudinary_url}")
-
-        #                 except Exception as e:
-        #                     flash(f"An error occurred during file upload: {str(e)}", "danger")
-        #                     return redirect(url_for('seller.product_edit', product_id=product_id))
-
-        #     flash("Product updated successfully!", "success")
-        #     return redirect(url_for('website.merch_details', product_id=product.product_id))
-
-        # except Exception as e:
-        #     flash(f"Error updating product: {str(e)}", "danger")
-        #     return redirect(url_for('seller.product_edit', product_id=product_id))
-
-    # Pass product_pictures and product_sizes to the template
     return render_template('crud_blueprint/product_page-edit.html', form=form, product=product,
                            product_pictures=product_pictures, product_sizes=product_sizes)
