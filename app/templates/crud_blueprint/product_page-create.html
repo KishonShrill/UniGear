@@ -14,7 +14,10 @@
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
-  <form id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">{{ form.csrf_token }}</form>
+  <form id="product-form" method="POST" action="{{ url_for('seller.product_new_submit') }}" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <input type="date" id="submitPreorderDate" name="preorderDate" value="" required hidden>
+  </form>
   <main class="product">
     <section class="product__image-wrapper">
 
@@ -49,8 +52,8 @@
       </div>
 
       <div class="product__quantity-viewer">
-        <h1>0</h1>
-        <p>preorder count</p>
+        <h1 id="product__quantity">0</h1>
+        <p id="product__quantity-subtitle">preorder count</p>
       </div>
     </section>
 
@@ -128,6 +131,7 @@
         <!-- Remove for Product Details -->
         <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
+        <input id="number_of_days" name="number_of_days" type="number" value="" hidden form="product-form">
         <!-- Remove for Product Details -->
       </div>
       <button id="create_product" data-open-modal>Create Product</button>
@@ -178,4 +182,5 @@
     // REMOVE NING SCRIPT SA PRODUCT DETAILS
   </script>
   <script src="{{ url_for('static', filename='js/product_page.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/preorder_time.js') }}"></script>
 {% endblock %}

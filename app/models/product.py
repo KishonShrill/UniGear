@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import current_app
 
 class Product(object):
-    def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None, product_id=None):
+    def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None, product_id=None, release_date=None):
         self.product_id = product_id
         self.product_name = product_name
         self.description = description
@@ -12,16 +12,17 @@ class Product(object):
         self.price = price
         self.order_type = order_type
         self.seller_id = seller_id
+        self.release_date = release_date
 
     def save(self):
         """Save a new product to the database."""
         query = """
-        INSERT INTO products (product_name, description, hook, type, price, order_type, seller_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO products (product_name, description, hook, type, price, order_type, seller_id, release_date)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         
         cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_name, self.description, self.hook, self.type, self.price, self.order_type, self.seller_id))
+        cursor.execute(query, (self.product_name, self.description, self.hook, self.type, self.price, self.order_type, self.seller_id, self.release_date))
         mysql.connection.commit()
         self.product_id = cursor.lastrowid
         cursor.close()

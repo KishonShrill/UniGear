@@ -60,6 +60,7 @@ CREATE TABLE if NOT EXISTS `products` (
 	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`seller_id` INT,
+	release_date DATE, -- column to store date
 	CONSTRAINT `fk_product_user` FOREIGN KEY (seller_id) REFERENCES `user` (user_id)
 );
 
