@@ -367,6 +367,7 @@ def wishlist():
 
 
 @website_bp.route('/favorite/<int:product_id>', methods=['POST'])
+@login_is_required
 def toggle_favorite(product_id):
     if "id" not in session:
         return jsonify({"success": False, "message": "You must be logged in to toggle wishlist items."}), 401
@@ -381,6 +382,49 @@ def toggle_favorite(product_id):
 
         if favorite:
             # If already a favorite, remove it
+            cursor.execute("DELETE FROM favorites WHERE user_id = %s AND product_id = %s", (user_id, product_id))
+            mysql.connection.commit()
+            favorite_status = False
+        else:
+            # If not a favorite, add it
+            cursor.execute("INSERT INTO favorites (user_id, product_id) VALUES (%s, %s)", (user_id, product_id))
+            mysql.connection.commit()
+            favorite_status = True
+
+        cursor.close()
+        return jsonify({"success": True, "favorite_status": favorite_status})
+
+    except Exception as e:
+        # Log the error to understand the problem
+        print(f"Error toggling favorite for product_id {product_id}: {e}")
+        cursor.close()
+        return jsonify({"success": False, "message": "An error occurred while toggling the favorite."}), 500
+
+
+
+@website_bp.route('/favorite/submit', methods=['POST'])
+@login_is_required
+def toggle_favorite_details():
+
+    data = request.get_json()  
+    print(f"Received data: {data}") 
+
+    product_id = data.get('product_id')  
+    if not product_id:
+        return jsonify({"error": "Order ID is required"}), 400
+    
+    if "id" not in session:
+        return jsonify({"success": False, "message": "You must be logged in to toggle wishlist items."}), 401
+
+    
+    user_id = session.get("id")
+    cursor = mysql.connection.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM favorites WHERE user_id = %s AND product_id = %s", (user_id, product_id))
+        favorite = cursor.fetchone()
+
+        if favorite:
             cursor.execute("DELETE FROM favorites WHERE user_id = %s AND product_id = %s", (user_id, product_id))
             mysql.connection.commit()
             favorite_status = False
