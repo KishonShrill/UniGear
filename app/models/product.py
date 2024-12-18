@@ -251,11 +251,9 @@ class Product(object):
                 p.price,
                 p.order_type,
                 p.created_at,
-                p.updated_at,
-                pic.picture_url
+                p.updated_at
             FROM products p
             LEFT JOIN user u ON p.seller_id = u.user_id
-            LEFT JOIN pictures pic ON p.product_id = pic.picture_id
             WHERE u.org_id = %s
             ORDER BY p.product_id ASC;
             """
@@ -269,7 +267,6 @@ class Product(object):
 
             products = []
             for row in result:
-                Picture_URL = row[7] if row[7] else 'app/static/images/placeholder.jpg'
                 product = {
                     'Product_id': row[0],
                     'Product_Name': row[1],
@@ -278,7 +275,6 @@ class Product(object):
                     'Order-Type': row[4],
                     'Created At': row[5],
                     'Updated At': row[6],
-                    'Picture_URL': Picture_URL
                 }
                 products.append(product)
             cursor.close()
