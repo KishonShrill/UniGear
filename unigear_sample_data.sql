@@ -98,31 +98,17 @@ CREATE TABLE if NOT EXISTS `ordered_by` (
 	CONSTRAINT `fk_order_size` FOREIGN KEY (size_id) REFERENCES `sizes` (size_id)
 );
 
-DELIMITER //
 
-CREATE TRIGGER update_order_type
-AFTER INSERT ON ordered_by
-FOR EACH ROW
-BEGIN
-    DECLARE total_orders INT;
-
-    -- Count the total orders for the newly inserted product
-    SELECT SUM(quantity)
-    INTO total_orders
-    FROM ordered_by
-    WHERE product_id = NEW.product_id;
-
-    -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
-    IF total_orders >= 50 THEN
-        UPDATE products
-        SET order_type = 1
-        WHERE product_id = NEW.product_id AND order_type = 0;
-    END IF;
-END;
-//
-
-DELIMITER ;
-
+DROP TABLE IF EXISTS favorites;
+CREATE TABLE IF NOT EXISTS favorites (
+    favorite_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_favorite_user FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_favorite_product FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_favorite (user_id, product_id)
+);
 
 -- Below is the sample data
 -- Below is the sample data
@@ -286,8 +272,6 @@ INSERT INTO user (user_name, user_email, user_password, user_contact, user_addre
 ('CSM Executive Council', 'csm.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CSM-EC');
 
 
-
-
 INSERT INTO sizes (size_name) VALUES 
 ('XS'),
 ('S'), 
@@ -296,25 +280,31 @@ INSERT INTO sizes (size_name) VALUES
 ('XL'), 
 ('2XL');
 
-INSERT INTO products (product_name, description, hook, type, price, seller_id, order_type) VALUES 
-('Basic T-Shirt', 'A simple and comfortable t-shirt.', 'Great for everyday wear', 't-shirt', 15.99, 1, 1),
-('Hoodie', 'A warm and stylish hoodie for cool weather.', 'Stay cozy and fashionable', 't-shirt', 29.99, 2, 0),
-('Running Shoes', 'Lightweight shoes for all your running needs.', 'Perfect for athletes', 'footwear', 49.99, 3, 1),
-('Jeans', 'Classic fit jeans that never go out of style.', 'Dress them up or down', 'pin', 39.99, 4, 0);
 
-INSERT INTO product_sizes (product_id, product_quantity, size_id) VALUES 
-(1, 50, 1),  -- Basic T-Shirt, 50 quantity in Size S
-(2, 25, 2),  -- Hoodie, 25 quantity in Size M
-(3, 30, 3),  -- Running Shoes, 30 quantity in Size M
-(4, 10, 4);  -- Jeans, 10 quantity in Size L
+DELIMITER //
 
-INSERT INTO ordered_by (user_id, product_id, size_id, quantity, total_cost, order_status) VALUES 
-(1, 1, 1, 1, 15.99, true),  -- John Doe orders 2 Engineering T-Shirts
-(1, 3, 3, 1, 15.99, false),  -- John Doe orders 1 Business Planner
-(3, 2, 2, 1, 15.99, false),  -- Mark Johnson orders 3 Art Supplies Kits
-(4, 4, 4, 10, 15.99, true);  -- Emily Davis orders 1 Teacher's Guide
+CREATE TRIGGER update_order_type
+AFTER INSERT ON ordered_by
+FOR EACH ROW
+BEGIN
+    DECLARE total_orders INT;
 
+    -- Count the total orders for the newly inserted product
+    SELECT SUM(quantity)
+    INTO total_orders
+    FROM ordered_by
+    WHERE product_id = NEW.product_id;
 
+    -- If the total orders reach or exceed 50 and the order_type is 1, update it to 0
+    IF total_orders >= 50 THEN
+        UPDATE products
+        SET order_type = 1
+        WHERE product_id = NEW.product_id AND order_type = 0;
+    END IF;
+END;
+//
+
+DELIMITER ;
 
 DELIMITER //
 
@@ -335,19 +325,3 @@ END;
 //
 
 DELIMITER ;
-
-
-
-
-
-
-DROP TABLE IF EXISTS favorites;
-CREATE TABLE IF NOT EXISTS favorites (
-    favorite_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    product_id INT NOT NULL,
-    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_favorite_user FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE,
-    CONSTRAINT fk_favorite_product FOREIGN KEY (product_id) REFERENCES products (product_id) ON DELETE CASCADE,
-    UNIQUE KEY unique_favorite (user_id, product_id)
-);
