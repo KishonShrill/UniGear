@@ -49,7 +49,8 @@
                 <th>Total costs</th>
                 <th>Type</th>
                 <th>Status</th>
-                <th>Order</th>
+                <th>Order Date</th>
+                <th>Proof of Payment</th>
               </tr>
             </thead>
             <tbody>
@@ -80,14 +81,53 @@
                   white-space: nowrap;
                   overflow: hidden;
                   text-overflow: clip;">{{ order['Order Date'] }}</p></td>
+                <td id="proofCell_{{ order['Order'] }}">
+                  {% if order['Proof of Payment'] %}a
+                    <!-- Display the "View Proof" button if proof exists -->
+                    <button onclick="viewUploadedProof('{{ order['Proof of Payment'] }}', '{{ order['Order'] }}')"> 
+                      View Proof
+                    </button>
+                  {% else %}
+                    <!-- Show the file input if proof is not uploaded -->
+                    <input 
+                      type="file" 
+                      name="paymentProof_{{ order['Order'] }}" 
+                      id="paymentProof_{{ order['Order'] }}" 
+                      accept="image/*,.pdf" 
+                      onchange="handleFileUpload(event, {{ order['Order'] }})">
+                  {% endif %}
+                </td>
+                                  
               </tr>
               {% endfor %}
+              
             </tbody>
           </table>
         </div>
       </div>
     </section>
   </main>
+
+<!-- Proof of Payment Modal -->
+<dialog class="modal payment-modal" id="proofPaymentModal">
+  <div id="paymentModalContent">Preview your Proof of Payment:</div>
+  <img id="paymentModalImage" src="#" alt="Proof of Payment Preview" style="max-width: 100%; height: auto; display: none;">
+  <div id="paymentModalButtons">
+    <button id="paymentCancelBtn">Cancel</button>
+    <button id="paymentConfirmBtn">Confirm</button>
+  </div>
+</dialog>
+
+<!-- View Proof of Payment Modal -->
+<dialog class="modal payment-view-modal" id="proofPaymentViewModal">
+  <div>Uploaded Proof of Payment:</div>
+  <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 100%; height: auto;">
+  <div id="viewModalButtons">
+    <button id="viewCloseBtn">Close</button>
+    <button id="viewChangeBtn">Change File</button>
+  </div>
+</dialog>
+
 
   <!-- Dialog -->
   <dialog class="modal" data-modal>
@@ -102,6 +142,8 @@
 
   <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
   <script>
+
+
     // JavaScript for filtering table rows based on search input
     const searchBar = document.getElementById("searchBar");
     const tableRows = document.querySelectorAll("table tbody tr");
