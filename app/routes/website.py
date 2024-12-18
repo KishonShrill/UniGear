@@ -342,28 +342,40 @@ def wishlist():
 
     # Execute the query to get the favorite products and their details
     cursor.execute("""
+        WITH PictureSelection AS (
+            SELECT 
+                p.product_id,
+                pic.picture_url,
+                ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY pic.picture_url) AS row_num
+            FROM products p
+            LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+        )
         SELECT 
-            p.product_id, 
-            p.product_name, 
-            p.price, 
-            p.product_id AS picture_id  -- Use product_id as picture_id
-        FROM products p
-        JOIN favorites f ON p.product_id = f.product_id
-        WHERE f.user_id = %s
+            f.favorite_id AS 'Favorite ID',
+            f.user_id AS 'User ID',
+            p.product_id AS 'Product',
+            p.product_name AS 'Name',
+            p.description AS 'Description',
+            col.college_name AS 'College',
+            ps.picture_url AS 'Picture'
+        FROM favorites f
+        LEFT JOIN products p ON f.product_id = p.product_id
+        LEFT JOIN user u ON p.seller_id = u.user_id
+        LEFT JOIN organization org ON u.org_id = org.org_id
+        LEFT JOIN college col ON org.college_id = col.college_id
+        LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
+        WHERE f.user_id = %s  -- Replace ? with the specific user_id
+        GROUP BY f.favorite_id, f.user_id, p.product_id, p.product_name, p.description, col.college_name, ps.picture_url;
     """, (user_id,))
 
     # Fetch all the favorite products for the user
     favorites = cursor.fetchall()
 
     # Print the first row to check if it's a dictionary or tuple
-    print(type(favorites[0]))  # For debugging
-
-    # If DictCursor is working correctly, this should be a dictionary
-    favorites_ids = [row['product_id'] for row in favorites]  # Access product_id by column name
+    print(favorites)  # For debugging
 
     cursor.close()
-
-    return render_template('user/wishlist.html', favorites=favorites, favorites_ids=favorites_ids)
+    return render_template('user/wishlist.html', favorites=favorites)
 
 
 @website_bp.route('/favorite/submit', methods=['POST'])

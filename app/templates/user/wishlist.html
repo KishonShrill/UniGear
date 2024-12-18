@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/wishlist.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -23,7 +24,7 @@
 
       <div class="content-container content-data">
         <div class="content-tools">
-          <button class="btn deleteBtn">Clear Wishlist</button>
+          <button class="btn deleteBtn" style="visibility: hidden;">Clear Wishlist</button>
         </div>
 
         <div class="content-searchbar">
@@ -32,26 +33,24 @@
         </div>
 
         <div class="content-database">
-          <div id="wishlist-container">
-            {% if favorites %}
-              <ul>
-                {% for product in favorites %}
-                  <li class="product-card" data-product-id="{{ product['product_id'] }}">
-                    <a href="/product/{{ product['product_id'] }}">
-                      <img src="{{ url_for('static', filename='images/products/' ~ product['picture_id'] ~ '.jpg') }}" alt="{{ product['product_name'] }}">
-                      <h3>{{ product['product_name'] }}</h3>
-                      <p>{{ product['description'] }}</p>
-                    </a>
-                    <button class="favorite-btn {% if product['product_id'] in favorites_ids %}favorited{% endif %}" data-product-id="{{ product['product_id'] }}">
-                      <i class="fas fa-heart"></i> {% if product['product_id'] in favorites_ids %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}
-                    </button>
-                  </li>
-                {% endfor %}
-              </ul>
-            {% else %}
-              <p>No items in your wishlist yet.</p>
-            {% endif %}
-          </div>
+          {% if favorites %}
+            <div class="wishlist-list">
+              {% for product in favorites %}
+                <div class="product-card" data-product-id="{{ product['Product'] }}">
+                  <a href="/product/{{ product['Product'] }}">
+                    <img class="product_picture" src="{{ product['Picture'] }}" alt="{{ product['Name'] }}">
+                    <h3>{{ product['Name'] }}</h3>
+                    <p>{{ product['Description'] }}</p>
+                  </a>
+                  <button onclick="removeWishlist({{ product['Product'] }})" class="favorite-btn {% if product['Product'] in favorites_ids %}favorited{% endif %}" data-product-id="{{ product['Product'] }}">
+                    <span class="fas fa-heart">💔</span> Remove from Wishlist
+                  </button>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p>No items in your wishlist yet.</p>
+          {% endif %}
         </div>
       </div>
     </section>
@@ -85,23 +84,38 @@
       const favoriteBtn = event.target.closest(".favorite-btn");
       if (!favoriteBtn) return;
 
-      const productId = favoriteBtn.getAttribute("data-product-id");
+      
+    });
 
-      fetch(`/favorite/${productId}`, {
+    function removeWishlist(productId) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      fetch(`/favorite/submit`, {
         method: 'POST',
-        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json', // Correct Content-Type
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.favorite_status) {
-          favoriteBtn.classList.add('favorited');
-          favoriteBtn.textContent = "Remove from Wishlist";
+      .then(response => {
+        if (response.ok) {
+          // Find the div with the matching data-product-id and remove it
+          const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+          if (productCard) {
+            productCard.remove();
+          }
         } else {
-          favoriteBtn.classList.remove('favorited');
-          favoriteBtn.textContent = "Add to Wishlist";
+          return response.json().then(data => {
+            console.error("Failed to remove from wishlist:", data);
+            alert(data.message || "Unable to remove item from wishlist.");
+          });
         }
       })
-      .catch(error => console.error("Error toggling favorite:", error));
-    });
+      .catch(error => {
+          console.error("Error toggling favorite:", error);
+          alert("An unexpected error occurred. Please try again.");
+      });
+    }
   </script>
 {% endblock %}
