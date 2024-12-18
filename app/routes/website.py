@@ -139,6 +139,7 @@ def merch_details(product_id):
         'type': product_row[4],  
         'price': product_row[5],  
         'order_type': product_row[6],
+        'release_date': product_row[10],
     }
 
     # Fetch product images
