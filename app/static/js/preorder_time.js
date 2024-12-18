@@ -2,6 +2,7 @@
 const preorderSelect = document.getElementById('preorder');
 const quantity = document.getElementById('product__quantity');
 const quantity_subtitle = document.getElementById('product__quantity-subtitle');
+const number_of_days = document.getElementById('number_of_days')
 
 // Listen for change event on the preorder select element
 preorderSelect.addEventListener('change', function() {
@@ -84,4 +85,5 @@ function logDate(input) {
   console.log(differenceInDays); // Logs the difference in days
 
   quantity.innerText = differenceInDays;
+  number_of_days.value = differenceInDays;
 }
