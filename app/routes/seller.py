@@ -299,71 +299,75 @@ def product_edit(product_id):
         preorder_type = request.form.get("preorder")
         selected_sizes = request.form.get("selectedSizes")
         picture_urls = request.files.getlist("picture_urls")
+        slides_data = request.form.get("slidesData")
 
-        if len(name) == 0:
-            flash("Enter a name for the product", "warning")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+        print(f"Pictures: {picture_urls}")
+        print(f"Slides: {slides_data}")
 
-        if not price.isdigit() or price.startswith("0"):
-            flash("Enter a valid price for the product", "warning")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+        # if len(name) == 0:
+        #     flash("Enter a name for the product", "warning")
+        #     return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        if int(price) > 10000:
-            flash("Product should be affordable for students", "warning")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+        # if not price.isdigit() or price.startswith("0"):
+        #     flash("Enter a valid price for the product", "warning")
+        #     return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        if len(description) <= 50:
-            flash("Description should have at least 100 characters", "warning")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+        # if int(price) > 10000:
+        #     flash("Product should be affordable for students", "warning")
+        #     return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        if not product_type:
-            flash("Pick at least one type for the product", "warning")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+        # if len(description) <= 50:
+        #     flash("Description should have at least 100 characters", "warning")
+        #     return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        try:
-            print("Calling Product.update()...")
-            Product.update(
-                product_id=product_id,
-                product_name=name,
-                description=description,
-                hook=hook,
-                type=product_type,
-                price=price,
-                order_type=preorder_type
-            )
+        # if not product_type:
+        #     flash("Pick at least one type for the product", "warning")
+        #     return redirect(url_for('seller.product_edit', product_id=product_id))
 
-            print("clearing sizes")
-            sizes = selected_sizes.split(',')
-            product.clear_sizes(product_id)  # Clear previous sizes before adding new ones
-            print("size cleared")
-            for size in sizes:
-                print(f"Adding size: {size}")  # Debugging each size being added
-                product.add_product_sizes(size)
+        # try:
+        #     print("Calling Product.update()...")
+        #     Product.update(
+        #         product_id=product_id,
+        #         product_name=name,
+        #         description=description,
+        #         hook=hook,
+        #         type=product_type,
+        #         price=price,
+        #         order_type=preorder_type
+        #     )
 
-            if picture_urls:
-                for picture in picture_urls:
-                    if picture and picture.filename:
-                        filename = secure_filename(picture.filename)
-                        try:
-                            # Debugging: Check if file is being processed
-                            print(f"Uploading picture: {filename}")
-                            upload_result = cloudinary.uploader.upload(picture, public_id=filename)
-                            cloudinary_url = upload_result.get('secure_url')
+        #     print("clearing sizes")
+        #     sizes = selected_sizes.split(',')
+        #     product.clear_sizes(product_id)  # Clear previous sizes before adding new ones
+        #     print("size cleared")
+        #     for size in sizes:
+        #         print(f"Adding size: {size}")  # Debugging each size being added
+        #         product.add_product_sizes(size)
 
-                            # Save the Cloudinary URL to the database for this product
-                            product.add_product_pictures(cloudinary_url)
-                            print(f"Picture uploaded successfully: {cloudinary_url}")
+        #     if picture_urls:
+        #         for picture in picture_urls:
+        #             if picture and picture.filename:
+        #                 filename = secure_filename(picture.filename)
+        #                 try:
+        #                     # Debugging: Check if file is being processed
+        #                     print(f"Uploading picture: {filename}")
+        #                     upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+        #                     cloudinary_url = upload_result.get('secure_url')
 
-                        except Exception as e:
-                            flash(f"An error occurred during file upload: {str(e)}", "danger")
-                            return redirect(url_for('seller.product_edit', product_id=product_id))
+        #                     # Save the Cloudinary URL to the database for this product
+        #                     product.add_product_pictures(cloudinary_url)
+        #                     print(f"Picture uploaded successfully: {cloudinary_url}")
 
-            flash("Product updated successfully!", "success")
-            return redirect(url_for('website.merch_details', product_id=product.product_id))
+        #                 except Exception as e:
+        #                     flash(f"An error occurred during file upload: {str(e)}", "danger")
+        #                     return redirect(url_for('seller.product_edit', product_id=product_id))
 
-        except Exception as e:
-            flash(f"Error updating product: {str(e)}", "danger")
-            return redirect(url_for('seller.product_edit', product_id=product_id))
+        #     flash("Product updated successfully!", "success")
+        #     return redirect(url_for('website.merch_details', product_id=product.product_id))
+
+        # except Exception as e:
+        #     flash(f"Error updating product: {str(e)}", "danger")
+        #     return redirect(url_for('seller.product_edit', product_id=product_id))
 
     # Pass product_pictures and product_sizes to the template
     return render_template('crud_blueprint/product_page-edit.html', form=form, product=product,
