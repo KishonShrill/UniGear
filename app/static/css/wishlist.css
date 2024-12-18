@@ -1,0 +1,140 @@
+.favorite-btn {
+    background-color: grey;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .favorite-btn.favorited {
+    background-color: red;
+  }
+  
+  .favorite-btn i {
+    margin-right: 5px;
+  }
+  
+
+  /* Layout */
+main.wishlist {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+  }
+  
+  .content {
+    width: 100%;
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f7f7f7;
+  }
+  
+  .content-header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .content-title {
+    font-weight: bold;
+    font-size: 39px;
+  }
+  
+  /* Searchbar */
+  .content-searchbar {
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-radius: 4px;
+    border: 1px solid #DFDFDF;
+    background-color: #F5F5F0;
+  }
+  .content-searchbar input {
+    width: 100%;
+    border: none;
+    font-size: 16px;
+    background-color: #F5F5F0;
+  }
+  .content-searchbar input:focus {
+    border: 1px solid black; 
+    outline: none;
+  }
+  
+  /* Wishlist Cards */
+  #wishlist-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-card {
+    background-color: white;
+    border: 1px solid #DFDFDF;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  
+  .product-card h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .product-card p {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .favorite-btn {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #ff6363;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .favorite-btn:hover {
+    background-color: #ff4141;
+  }
+  
+  .favorite-btn.favorited {
+    background-color: #69aef9;
+  }
+  .favorite-btn.favorited:hover {
+    background-color: #57a5e1;
+  }
+  
+  /* Clear Wishlist Button */
+  .content-tools .deleteBtn {
+    margin-bottom: 15px;
+    border: 1px solid #DFDFDF;
+    color: white;
+    background-color: red;
+  }
+  
+  .content-tools .deleteBtn:hover {
+    cursor: pointer;
+    color: red;
+    background-color: white;
+  }
+  

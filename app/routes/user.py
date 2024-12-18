@@ -5,6 +5,8 @@ from app.models.order import Order
 from app.forms import *
 
 
+from app.forms import ProductForm
+from app import mysql
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
@@ -56,6 +58,7 @@ def delete_order():
             return jsonify({"error": "Something went wrong"}), 500
     if request.method == 'GET':
         return abort(404)
+
 
 
 @user_bp.route('/user/profile', methods=['GET', 'POST'])

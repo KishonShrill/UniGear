@@ -11,7 +11,7 @@
 
 {% block content %}
   <!-- Header -->
-  {{ components.render_header(user=session['name'], role=session['role']) }}
+  {{ components.render_header(user=session.get('name', 'Guest'), role=session.get('role', 'User')) }}
 
   <!-- Content -->
   <main class="orders">
