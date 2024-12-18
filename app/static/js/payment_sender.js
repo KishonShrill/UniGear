@@ -137,10 +137,19 @@ function viewUploadedProof(imageURL, orderId) {
     const proofCell = document.getElementById(`proofCell_${orderId}`);
     
     // Show the original file input
-    const fileInput = document.getElementById(`paymentProof_${orderId}`);
-    if (fileInput) {
-      fileInput.style.display = "block"; // Show input field again
-    }
+    // const fileInput = document.getElementById(`paymentProof_${orderId}`);
+    // if (fileInput) {
+    //   fileInput.style.display = "block"; // Show input field again
+    // }
+
+    proofCell.innerHTML = `
+      <input 
+        type="file" 
+        name="paymentProof_{{ order['Order'] }}" 
+        id="paymentProof_{{ order['Order'] }}" 
+        accept="image/*,.pdf" 
+        onchange="handleFileUpload(event, {{ order['Order'] }})">
+    `;
   
     // Remove the "View Proof" button
     proofCell.querySelector('button').remove();

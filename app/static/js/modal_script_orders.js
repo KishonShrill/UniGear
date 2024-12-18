@@ -7,19 +7,20 @@ closeButton.addEventListener("click", () => {
   modal.close();
 });
 
-function openModal(orderId, orderValue, currentStatus) {
-  const modal = document.querySelector("dialog[data-modal]");
-  modal.querySelector("div").textContent = `Order: ${orderValue}`;
+function openModal(orderId, orderValue, imgSource, currentStatus) {
+  const modal_btns = document.getElementById("modal-btns")
+  modal.querySelector("#order_number").textContent = `Order: ${orderValue}`;
+  modal.querySelector("img").src = `${imgSource}`;
 
   toggleStatusBtn.setAttribute('data-order-id', orderId);  
-
+  toggleStatusBtn.classList.add("btn");
   if (currentStatus === 1) {
-    toggleStatusBtn.textContent = "Mark as Unpaid";  
+    // toggleStatusBtn.textContent = "Mark as Unpaid";  
   } else {
     toggleStatusBtn.textContent = "Mark as Paid";  
   }
 
-  modal.appendChild(toggleStatusBtn);
+  modal_btns.appendChild(toggleStatusBtn);
   
   modal.showModal();
 }
@@ -53,8 +54,8 @@ function toggleOrderStatus(orderId) {
         statusCell.innerHTML = '<b>Paid</b>';
         statusCell.style.color = 'green';
       } else {
-        statusCell.innerHTML = '<b>Unpaid</b>';
-        statusCell.style.color = 'red';
+        statusCell.innerHTML = '<b>Pending</b>';
+        statusCell.style.color = "#d3d300";
       }
 
       toggleStatusBtn.textContent = data.new_status === 1 ? "Mark as Unpaid" : "Mark as Paid";
@@ -69,15 +70,15 @@ function toggleOrderStatus(orderId) {
 }
 
 
-document.querySelectorAll("table tbody tr").forEach(row => {
-  row.addEventListener("dblclick", () => {
-    const orderId = row.dataset.orderId;  
-    const orderValue = row.children[1].textContent;  
-    const currentStatus = row.querySelector('td:nth-child(9)').textContent === "Paid" ? 1 : 0;  
+// document.querySelectorAll("table tbody tr").forEach(row => {
+//   row.addEventListener("dblclick", () => {
+//     const orderId = row.dataset.orderId;  
+//     const orderValue = row.children[1].textContent;  
+//     const currentStatus = row.querySelector('td:nth-child(9)').textContent === "Paid" ? 1 : 0;  
 
-    openModal(orderId, orderValue, currentStatus);
-  });
-});
+//     openModal(orderId, orderValue, currentStatus);
+//   });
+// });
 
 // Delete order functionality
 deleteOneBtn.addEventListener("click", () => {
@@ -104,15 +105,15 @@ function setDeleteBtn(orderValue) {
   deleteOneBtn.value = orderValue;
 }
 
-// Function to open modal for product details
-function openProductModal(productImageURL, productName) {
-  const modal = document.querySelector("dialog[data-modal]");
+// // Function to open modal for product details
+// function openProductModal(productImageURL, productName) {
+//   const modal = document.querySelector("dialog[data-modal]");
 
-  const imageSrc = productImageURL ? productImageURL : '/static/images/placeholder.jpg';
+//   const imageSrc = productImageURL ? productImageURL : '/static/images/placeholder.jpg';
 
-  modal.querySelector("div").textContent = productName; 
-  modal.querySelector("img").src = imageSrc; 
-  modal.querySelector("img").alt = `${productName} image`; 
+//   modal.querySelector("div").textContent = productName; 
+//   modal.querySelector("img").src = imageSrc; 
+//   modal.querySelector("img").alt = `${productName} image`; 
 
-  modal.showModal();
-}
+//   modal.showModal();
+// }

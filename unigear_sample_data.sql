@@ -243,14 +243,14 @@ INSERT INTO user (user_name, user_email, user_password, user_contact, user_addre
 ('COET Junior Industrial Automation @ Mechatronics Society', 'societyofjiams@gmail.com', NULL, NULL, NULL, 'seller', 'JIAMS'),
 
 -- CASS Organizations
-('Katastaasang Sanggunian ng mga Mag-aaral', 'kasama@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'KASAMA'),
-('CASS Historical society', 'cass.histsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'HISTORYSOC'),
-('CASS Junior Philosophers Guild', 'cass.jpg@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPG'),
-('CASS Kabataang Pilipinong Aakay sa Bayan', 'cass.kapilasbayan@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'KAPILAS BAYAN'),
-('CASS Political Science Society', 'cass.pss.@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'PSS'),
-('CASS Psychology Society', 'cass.psychsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'PSHCH-SOC'),
-('CASS Sociology Society', 'cass.sociosoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'SOCIO'),
-('CASS Literature, Language, and Culture Society', 'cass.abeo@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'LILACS'),
+('Katastaasang Sanggunian ng mga Mag-aaral', 'kasama@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'KASAMA'),
+('CASS Historical society', 'cass.histsoc@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'HISTORYSOC'),
+('CASS Junior Philosophers Guild', 'cass.jpg@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'JPG'),
+('CASS Kabataang Pilipinong Aakay sa Bayan', 'cass.kapilasbayan@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'KAPILAS BAYAN'),
+('CASS Political Science Society', 'cass.pss.@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'PSS'),
+('CASS Psychology Society', 'cass.psychsoc@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'PSHCH-SOC'),
+('CASS Sociology Society', 'cass.sociosoc@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'SOCIO'),
+('CASS Literature, Language, and Culture Society', 'cass.abeo@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'LILACS'),
 
 -- CEBA Organizations
 ('CEBA Junior Economics Society', 'cbaa.jes@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JES'),
@@ -259,18 +259,18 @@ INSERT INTO user (user_name, user_email, user_password, user_contact, user_addre
 ('CEBA Junior Philippine Institute of Accountants', 'cbaa.jpia@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JPIA'),
 
 -- CCS Organizations
-('CCS Computer Application Officers', 'ccs.cao@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'COM-APPS'),
-('CCS Computer Science Society', 'ccs.comsoc@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'COM-SOC'),
-('CCS Junior Information Technology Society', 'ccs.jits@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'JITS'),
+('CCS Computer Application Officers', 'ccs.cao@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'COM-APPS'),
+('CCS Computer Science Society', 'ccs.comsoc@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'COM-SOC'),
+('CCS Junior Information Technology Society', 'ccs.jits@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'JITS'),
 
 -- Executive Councils
-('CASS Executive Council', 'cass.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CASS-EC'),
-('CEBA Executive Council', 'cbaa.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CEBA-EC'),
-('CCS Executive Council', 'ccs.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CCS-EC'),
-('CED Executive Council', 'ced.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CED-EC'),
-('COET Executive Council', 'coet.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'COET-EC'),
-('CON Executive Council', 'con.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CON-EC'),
-('CSM Executive Council', 'csm.ec@g.msuiit.edu.ph', NULL, NULL, NULL, 'seller', 'CSM-EC');
+('CASS Executive Council', 'cass.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'CASS-EC'),
+('CEBA Executive Council', 'cbaa.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'CEBA-EC'),
+('CCS Executive Council', 'ccs.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'CCS-EC'),
+('CED Executive Council', 'ced.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'CED-EC'),
+('COET Executive Council', 'coet.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'COET-EC'),
+('CON Executive Council', 'con.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'CON-EC'),
+('CSM Executive Council', 'csm.ec@g.msuiit.edu.ph', 'scrypt:32768:8:1$7G5Ws6expNwz74Nk$e73858dc060d0d43fd22a3ae6e2a65dafbedbad6b30c5bde59652a4e98631826fdfa89d7bdc30f94fc4f99df85d74bafeacb7eec5a1bb2805afbcbc554131dac', NULL, NULL, 'seller', 'CSM-EC');
 
 
 INSERT INTO sizes (size_name) VALUES 
