@@ -48,9 +48,14 @@
 
     <!-- Product Details -->
     <section class="product__content-wrapper">
-      <div class="product__content-back-wrapper">
-        <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
-        <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
+      <div style="display: flex; justify-content: space-between;">
+        <div class="product__content-back-wrapper">
+          <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
+          <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
+        </div>
+        {% if product.release_date %}
+        <p style="text-align: end;">🕛 <b style="color: red;"><span id="release_counter"></span> Days Left...</b></p>
+        {% endif %}
       </div>
 
       <!-- Product Name and Price -->
@@ -97,20 +102,23 @@
         </div>
         
 
-        <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
-          {% for size in sizes %}
-            <button type="button" 
-                    class="size-btn" 
-                    data-size="{{ size[0] }}" 
-            >
-              {% if size[0] == 1 %}XS{% endif %}
-              {% if size[0] == 2 %}S{% endif %}
-              {% if size[0] == 3 %}M{% endif %}
-              {% if size[0] == 4 %}L{% endif %}
-              {% if size[0] == 5 %}XL{% endif %}
-              {% if size[0] == 6 %}2XL{% endif %}
-            </button>
-          {% endfor %}
+        <div>
+          <p>SIZE</p>
+          <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
+            {% for size in sizes %}
+              <button type="button" 
+                      class="size-btn" 
+                      data-size="{{ size[0] }}" 
+              >
+                {% if size[0] == 1 %}XS{% endif %}
+                {% if size[0] == 2 %}S{% endif %}
+                {% if size[0] == 3 %}M{% endif %}
+                {% if size[0] == 4 %}L{% endif %}
+                {% if size[0] == 5 %}XL{% endif %}
+                {% if size[0] == 6 %}2XL{% endif %}
+              </button>
+            {% endfor %}
+          </div>
         </div>
       </div>
 
@@ -261,5 +269,29 @@
         console.log("Value: " + selectedSize.value)
       });
     });
+  </script>
+  <script>
+    window.onload = function() {
+      const release_counter = document.getElementById('release_counter');
+      const today = new Date();
+      const releaseDate = new Date('{{ product.release_date }}')
+
+      const formattedDate = today.toISOString().split('T')[0];
+      const formattedReleaseDate = releaseDate.toISOString().split('T')[0];
+      
+      console.log("Today's Date: ",formattedDate); // Logs the date in 'YYYY-MM-DD' format
+      console.log("Selected: ",formattedReleaseDate);
+
+      // Get the difference in milliseconds
+      const differenceInMillis = releaseDate - today;
+
+      // Convert the difference from milliseconds to days
+      const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24));
+
+      console.log(differenceInDays); // Logs the difference in days
+
+      quantity.innerText = differenceInDays;
+      release_counter.innerText = differenceInDays;
+    };
   </script>
 {% endblock %}
