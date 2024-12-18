@@ -1,28 +1,11 @@
-.favorite-btn {
-    background-color: grey;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .favorite-btn.favorited {
-    background-color: red;
-  }
-  
-  .favorite-btn i {
-    margin-right: 5px;
-  }
-  
-
   /* Layout */
-main.wishlist {
+  main.wishlist {
     display: grid;
     grid-template-columns: 260px 1fr;
   }
   
   .content {
+    height: calc(100vh - 60px - 57px);
     width: 100%;
     padding-top: 1.5rem;
     display: flex;
@@ -62,16 +45,18 @@ main.wishlist {
     border: 1px solid black; 
     outline: none;
   }
-  
-  /* Wishlist Cards */
-  #wishlist-container {
-    width: 100%;
+
+  .wishlist-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.5rem;
   }
   
   .product-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 1em;
     background-color: white;
     border: 1px solid #DFDFDF;
     border-radius: 8px;
@@ -86,7 +71,8 @@ main.wishlist {
   
   .product-card img {
     width: 100%;
-    height: auto;
+    height: 300px;
+    object-fit: cover;
     border-radius: 4px;
   }
   
@@ -98,30 +84,32 @@ main.wishlist {
   
   .product-card p {
     font-size: 14px;
+    text-align: center;
     color: #555;
+
+    width: 27ch;
+    height: 3rem;
+    overflow: hidden;
   }
   
   .favorite-btn {
     display: block;
     margin-top: 10px;
     padding: 10px;
-    background-color: #ff6363;
-    color: white;
-    border: none;
+    font-weight: bold;
+    background-color: White;
+    color: #ff6363;
+    border: 1px solid #ff6363;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    align-self: center;
   }
   
   .favorite-btn:hover {
+    color: white;
     background-color: #ff4141;
-  }
-  
-  .favorite-btn.favorited {
-    background-color: #69aef9;
-  }
-  .favorite-btn.favorited:hover {
-    background-color: #57a5e1;
+    border: 1px solid white;
   }
   
   /* Clear Wishlist Button */
