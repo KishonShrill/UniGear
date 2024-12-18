@@ -133,16 +133,29 @@ def product_new_submit():
       preorder_type = request.form.get("preorder")
       selected_sizes = request.form.get("selectedSizes")
       picture_urls = request.files.getlist("picture_urls")
+      date = request.form.get("preorderDate")
+      number_of_days = request.form.get('number_of_days')
   
       print(f"Picture URLs: {picture_urls}")
       print(f"Number of files selected: {len(picture_urls)}")  # Debug the number of files selected
+      print(f"Date: {date}")
+      print(f"Days: {number_of_days}")
 
       sizes = selected_sizes.split(',')
       URLS = []
       
+      
       # Checks for a valid form \/ \/ \/
       # Checks for a valid form \/ \/ \/
       # Checks for a valid form \/ \/ \/
+
+      if int(preorder_type) == 1 and date == '':
+        flash (f"Select which date to release...","warning")
+        return redirect(url_for('seller.product_new'))
+      
+      if int(number_of_days) <= 6:
+        flash (f"Please give a deadline of 1 week or more...","warning")
+        return redirect(url_for('seller.product_new'))
       
       if len(name) == 0:
          flash (f"Enter a name for the product...","warning")
@@ -189,7 +202,8 @@ def product_new_submit():
                         type=product_type,
                         price=price,
                         order_type=preorder_type,
-                        seller_id=session.get('id')
+                        seller_id=session.get('id'),
+                        release_date=date
       )
       product.save()
 

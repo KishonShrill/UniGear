@@ -53,7 +53,7 @@ width: 100%;
   position: absolute;
   top: 0;
   right: 0;
-  width: 175px;
+  padding-inline: 1.5rem;
   height: 175px;
   display: flex;
   flex-direction: column;
@@ -193,7 +193,7 @@ img.demo.cursor {
   gap: 24px;
 }
 .product__content-specs-box > div {
-  height: 40px;
+  /* height: 40px; */
   display: grid;
   grid-template-columns: 200px 1fr;
   align-items: center;
