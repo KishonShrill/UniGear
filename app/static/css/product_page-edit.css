@@ -1,0 +1,16 @@
+.product__image-wrapper {
+  align-items: end !important;
+  justify-items: start !important;
+}
+
+#upload-button {
+  transform: scale(0.4) !important;
+}
+
+#upload-button__description {
+  display: none !important;
+}
+
+#delete-image-button {
+  display: grid !important;
+}

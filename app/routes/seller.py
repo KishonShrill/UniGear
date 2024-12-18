@@ -238,8 +238,10 @@ def product_new_submit():
       product.save()
 
       for size in sizes:
-        product.add_product_sizes(0, size)
-        
+        product.add_product_sizes(size)
+
+
+      # Handle file uploads
       for picture in picture_urls:
         cloudinary_url = ""
 

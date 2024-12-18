@@ -151,6 +151,9 @@
   {{ components.render_alerts() }}
   {{ components.render_footer() }}
   <script>
+    let slideIndex = 1;
+    let slidesData = [];
+
     const openButton = document.querySelector("[data-open-modal]")
     const closeButton = document.querySelector("[data-close-modal]")
     const modal = document.querySelector("[data-modal]")
