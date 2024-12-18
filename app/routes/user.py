@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, flash, redirect,
 from app.models.product import Product
 from app.models.user import User
 from app.forms import ProductForm
-
+from app import mysql
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
@@ -32,6 +32,7 @@ def my_orders():
   print(f"User: {user.user_email}")
   print(f"Orders: {orders}")
   return render_template('/user/my_orders.html', orders=orders)
+
 
 
 @user_bp.route('/user/profile', methods=['GET', 'POST'])

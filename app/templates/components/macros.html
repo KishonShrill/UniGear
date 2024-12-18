@@ -86,10 +86,11 @@
                 <img src="{{ url_for('static', filename='images/container-truck-02-stroke-rounded.svg') }}" alt="Orders Logo">
                 <p>My Orders</p>
             </a>
-            <a class="aside__links" href="#" visit>
-                <img src="#" alt="Add Logo for wishlist diri">
+            <a class="aside__links" href="{{ url_for('website.wishlist') }}" visit>
+                <img src="{{ url_for('static', filename='images/heart-add.svg') }}" alt="Wishlist Logo">
                 <p>My Wishlist</p>
             </a>
+            
         {% endif %}
     </div>
     <div class="aside__account">
