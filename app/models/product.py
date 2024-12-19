@@ -97,7 +97,7 @@ class Product(object):
         cursor.execute(query, (self.product_id, picture_url))
         mysql.connection.commit()
         cursor.close()
-    
+        
     def remove_product_picture(self, picture_id):
         """remove pictures"""
         query = """
@@ -125,27 +125,19 @@ class Product(object):
 
 
     @staticmethod
-    def update_pictures(self, picture_urls):
-        """Update pictures for the product."""
+    def fetch_product_pictures(product_id):
+        """Fetch pictures for the product."""
         cursor = mysql.connection.cursor()
-
-        # Fetch existing pictures for the product
+        
         query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
-        cursor.execute(query_fetch, (self.product_id,))
-        existing_pictures = {row[0] for row in cursor.fetchall()}
-
-        # Add new pictures or ignore duplicates
-        for picture_url in picture_urls:
-            if picture_url not in existing_pictures:
-                query_insert = """
-                INSERT INTO pictures (picture_id, picture_url)
-                VALUES (%s, %s)
-                """
-                cursor.execute(query_insert, (self.product_id, picture_url))
-
+        cursor.execute(query_fetch, (product_id,))
+        fetched_pictures = {row[0] for row in cursor.fetchall()}
         mysql.connection.commit()
         cursor.close()
+        
+        return fetched_pictures
     
+
     @staticmethod
     def update_pictures(self, picture_urls):
         """Update pictures for the product."""
