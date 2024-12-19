@@ -7,6 +7,7 @@ from app.routes.auth import seller_required
 from app.models.user import User
 from app.models.order import Order
 
+import os
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
@@ -251,10 +252,18 @@ def product_new_submit():
         cloudinary_url = ""
 
         filename = secure_filename(picture.filename)
-        print(f"Filename of Photo: {filename}")
+        print(f"Filename: {filename}")
+
+        max_size = 25 * 1024 * 1024  # Example: 25MB
+        if len(picture.read()) > max_size:
+          flash("File size exceeds the limit of 25MB.", "warning")
+          return redirect(url_for('seller.product_new'))
+        
+        picture.seek(0)  # Reset file pointer after reading
 
         # Upload to Cloudinary
         try:
+          filename = os.path.splitext(filename)[0]
           upload_result = cloudinary.uploader.upload(picture, public_id=filename)
           cloudinary_url = upload_result.get('secure_url')  # Get the URL of the uploaded image
 
@@ -386,79 +395,67 @@ def product_edit_submit(product_id):
     unmatched = [item for item in existing_pictures if item not in slides_data]   
     print(f"\nNo Match: {unmatched}")
 
-    return "No bugs were found"
-
-
-    # print("\n")
-    # for picture in picture_urls:
-    #   print (f"Picture Name: {picture.filename}")
-    # print("\n\n")
+    # Extract the public_id from the URL and delete the image
+    for image in unmatched:
+      Product.delete_product_pictures(image)
+      
+      old_public_id = image.split('/')[-1]  # Get the filename
+      old_public_id = '.'.join(old_public_id.split('.')[:-1])  # Remove the last extension
+      cloudinary.api.delete_resources(old_public_id, resource_type="image", type="upload")
     
-    # print (f"Preorder Type: {preorder_type}")
+    if picture_urls:
+      for picture in picture_urls:
+        filename = secure_filename(picture.filename)
+        print(f"Filename: {filename}")
+        
+        # Break Loop if nothing is to be uploaded
+        if filename == '':
+          break
+        
+        max_size = 25 * 1024 * 1024  # Example: 25MB
+        if len(picture.read()) > max_size:
+          flash("File size exceeds the limit of 25MB.", "warning")
+          return redirect(url_for('seller.product_edit', product_id=product_id))
+        
+        picture.seek(0)  # Reset file pointer after reading
+        
+        
+        # Upload to Cloudinary
+        try:
+          filename = os.path.splitext(filename)[0]
+          print(f"Final Name: {filename}")
+          upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+          cloudinary_url = upload_result.get('secure_url')  # Get the URL of the uploaded image
+
+          # Save the Cloudinary URL to the database for this product
+          Product.add_product_pictures(product_id, cloudinary_url)
+          print(f"cloudinary_url: {cloudinary_url}")
+        
+        except Exception as e:
+          flash(f"An error occurred during file upload: {str(e)}", "danger")
+          return redirect(url_for('seller.product_edit', product_id=product_id))
+      
     # Put product in the Database and get ID
-    # product = Product(
-    #   product_id=product_id,
-    #   product_name=name,
-    #   description=description,
-    #   hook=hook,
-    #   type=product_type,
-    #   price=price,
-    #   order_type=preorder_type,
-    #   seller_id=session.get('id'),
-    #   release_date=date
-    # )
-    # product.update()
-
-
-    # print(f"\nPictures Keep: {pictures_to_keep}")
-    # print(f"Pictures Upload: {pictures_to_upload}")
-
-
-    # try:
-    #     product.remove_product_picture(product_id)  # Remove previous pictures
-    # except Exception as e:
-    #     flash(f"Error removing existing pictures: {str(e)}", "danger")
-    #     return redirect(url_for('seller.product_edit', product_id=product_id))
-
-    # # Upload new and kept pictures
-    # for picture in pictures_to_upload:
-    #     try:
-    #         if isinstance(picture, FileStorage):
-    #             filename = secure_filename(picture.filename)
-    #             upload_result = cloudinary.uploader.upload(picture, public_id=filename)
-    #             cloudinary_url = upload_result.get('secure_url')
-    #             product.add_product_pictures(cloudinary_url)
-    #         else:
-    #             product.add_product_pictures(picture)
-
-    #     except Exception as e:
-    #         flash(f"Error uploading picture {picture.filename if isinstance(picture, FileStorage) else picture}: {str(e)}", "danger")
-    #         return redirect(url_for('seller.product_edit', product_id=product_id))
-
-    # # Update product details
-    # try:
-    #     Product.update(
-    #         product_id=product_id,
-    #         product_name=name,
-    #         description=description,
-    #         hook=hook,
-    #         type=product_type,
-    #         price=price,
-    #         order_type=preorder_type
-    #     )
-
-    #     sizes = selected_sizes.split(',') if selected_sizes else []
-    #     product.clear_sizes(product_id)
-    #     for size in sizes:
-    #         product.add_product_sizes(size)
-
-    #     flash("Product updated successfully!", "success")
-    #     return redirect(url_for('website.merch_details', product_id=product.product_id))
-
-    # except Exception as e:
-    #     flash(f"Error updating product: {str(e)}", "danger")
-    #     return redirect(url_for('seller.product_edit', product_id=product_id))
-
+    product = Product(
+      product_name=name,
+      description=description,
+      hook=hook,
+      type=product_type,
+      price=price,
+      order_type=preorder_type,
+      seller_id=session.get('id'),
+      release_date=date,
+      product_id=product_id
+    )
+    product.update()
+    product.delete_product_sizes()
+    
+    for size in sizes:
+      product.add_product_sizes(size)
+    
+    return redirect(url_for('website.merch_details', product_id=product_id))
+  if request.method == 'GET':
+    return abort(404)
 
 @seller_bp.route('/toggle_order_status', methods=['POST'])
 @seller_required

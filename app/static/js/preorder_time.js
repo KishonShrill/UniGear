@@ -59,6 +59,7 @@ preorderSelect.addEventListener('change', function() {
         const differenceInMillis = releaseDate - today;
         const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24));
         quantity.innerText = differenceInDays;
+        number_of_days.value = differenceInDays;
     }
   } else {
     console.log("PANGET KO")
