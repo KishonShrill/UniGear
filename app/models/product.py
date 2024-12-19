@@ -27,8 +27,36 @@ class Product(object):
         mysql.connection.commit()
         self.product_id = cursor.lastrowid
         cursor.close()
+        
+    def update(self):
+        """Save a new product to the database."""
+        query = """
+        UPDATE products
+        SET 
+            product_name = %s,
+            description = %s,
+            hook = %s,
+            type = %s,
+            price = %s,
+            order_type = %s,
+            seller_id = %s,
+            release_date = %s
+        WHERE user_id = %s;
+        """
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute(query, (self.product_name, self.description, self.hook, self.type, self.price, self.order_type, self.seller_id, self.release_date))
+        mysql.connection.commit()
+        cursor.close()
 
-
+    def countPreorder(self):
+        cursor = mysql.connection.cursor()
+        print(f"Product ID: {self.product_id}")
+        cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (self.product_id,))
+        mysql.connection.commit()
+        count = cursor.fetchone()[0]
+        cursor.close()
+        return count
 
     def getID(self):
         return self.product_id

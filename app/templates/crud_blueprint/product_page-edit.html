@@ -15,7 +15,10 @@
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
-  <form id="product-form" method="POST" action="{{ url_for('seller.product_edit', product_id=product.product_id) }}" enctype="multipart/form-data">{{ form.csrf_token }}</form>
+  <form id="product-form" method="POST" action="{{ url_for('seller.product_edit', product_id=product.product_id) }}" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    <input type="date" id="submitPreorderDate" name="preorderDate" value="" required hidden>
+  </form>
   <main class="product">
     <section class="product__image-wrapper">
 
@@ -60,8 +63,8 @@
       </div>
 
       <div class="product__quantity-viewer">
-        <h1>{{ total_quantity }}</h1>
-        <p>Preorder Count</p>
+        <h1 id="product__quantity">{{ count }}</h1>
+        <p id="product__quantity-subtitle">Preorder Count</p>
       </div>
     </section>
 
@@ -76,7 +79,7 @@
         <label for="name" hidden>Please input a product name...</label>
       </div>
       <div class="input-box">
-        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="{{product.price}}" inputmode="numeric" pattern="[0-9]+" form="product-form">
+        <input id="price" name="price" placeholder="₱: Set Price..." required="" type="text" value="{{ product.price | int }}" inputmode="numeric" pattern="[0-9]+" form="product-form">
         <label for="price" hidden>Please input a price for the product...</label>
       </div>
       
@@ -113,15 +116,16 @@
         <div>
           <p>SIZE</p>
           <div class="product__size-selector">
-            <button type="button" class="size-btn" data-size="1">XS</button>
-            <button type="button" class="size-btn" data-size="2">S</button>
-            <button type="button" class="size-btn" data-size="3">M</button>
-            <button type="button" class="size-btn" data-size="4">L</button>
-            <button type="button" class="size-btn" data-size="5">XL</button>
-            <button type="button" class="size-btn" data-size="6">2XL</button>
+            {% if 1 in product_sizes %}<button type="button" class="size-btn active" data-size="1">XS</button>{% else %}<button type="button" class="size-btn" data-size="1">XS</button>{% endif %}
+            {% if 2 in product_sizes %}<button type="button" class="size-btn active" data-size="2">S</button>{% else %}<button type="button" class="size-btn" data-size="2">S</button>{% endif %}
+            {% if 3 in product_sizes %}<button type="button" class="size-btn active" data-size="3">M</button>{% else %}<button type="button" class="size-btn" data-size="3">M</button>{% endif %}
+            {% if 4 in product_sizes %}<button type="button" class="size-btn active" data-size="4">L</button>{% else %}<button type="button" class="size-btn" data-size="4">L</button>{% endif %}
+            {% if 5 in product_sizes %}<button type="button" class="size-btn active" data-size="5">XL</button>{% else %}<button type="button" class="size-btn" data-size="5">XL</button>{% endif %}
+            {% if 6 in product_sizes %}<button type="button" class="size-btn active" data-size="6">2XL</button>{% else %}<button type="button" class="size-btn" data-size="6">2XL</button>{% endif %}
 
             <!-- Hidden input to store selected sizes -->
-            <input type="hidden" name="selectedSizes" id="selectedSizes" form="product-form">
+            <input type="hidden" name="selectedSizes" id="selectedSizes" value="{{ formatted_sizes }}" form="product-form">
+            <input type="hidden" name="product_id" id="product_id" value="{{ product.product_id }}" form="product-form">
           </div>
         </div>
 
@@ -129,9 +133,9 @@
           <p>ORDER TYPE</p>
           <div class="input-box">
             <select name="preorder" id="preorder" form="product-form" required>
-              <option value="" {% if not product.order_type %}selected{% endif %}>Choose a type...</option>
-              <option value="0" {% if product.order_type == 0 %}selected{% endif %}>Goal Based</option>
-              <option value="1" {% if product.order_type == 1 %}selected{% endif %}>Time Based</option>
+              {% if product.order_type is none %}<option value="" selected>Choose a type...</option>{% else %}<option value="">Choose a type...</option>{% endif %}
+              {% if product.order_type == 0 %}<option value="0" selected>Goal Based</option>{% else %}<option value="0">Goal Based</option>{% endif %}
+              {% if product.order_type == 1 %}<option value="1" selected>Time Based</option>{% else %}<option value="1">Time Based</option>{% endif %}
             </select>
             <label for="preorder" hidden>How many products will you sell?</label>
           </div>
@@ -139,9 +143,10 @@
         <!-- Remove for Product Details -->
         <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
+        <input id="number_of_days" name="number_of_days" type="number" value="" hidden form="product-form">
         <!-- Remove for Product Details -->
       </div>
-      <button id="create_product" data-open-modal>Udate Product</button>
+      <button id="create_product" data-open-modal>Update Product</button>
     </div>
   </main>
 
@@ -230,4 +235,5 @@
     }
   </script>
   <script src="{{ url_for('static', filename='js/product_page.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/preorder_time.js') }}"></script>
 {% endblock %}
