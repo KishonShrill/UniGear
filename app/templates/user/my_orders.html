@@ -72,8 +72,10 @@
 
                 {% if order['Status'] == 1 %}
                 <td style="color: green;"><b>Paid</b></td>
+                {% elif order['Status'] == 0 and order['Proof of Payment'] is not none %}
+                <td style="color: rgb(211, 211, 0);"><b>Pending</b></td>
                 {% else %}
-                <td style="color: red;"><b>N/A</b></td>
+                <td style="color: red;"><b>Unpaid</b></td>
                 {% endif %}
 
                 <td><p style="
@@ -125,7 +127,7 @@
   <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 100%; height: auto;">
   <div id="viewModalButtons">
     <button id="viewCloseBtn">Close</button>
-    <!-- <button id="viewChangeBtn">Change File</button> -->
+    <button id="viewChangeBtn">Change File</button>
   </div>
 </dialog>
 

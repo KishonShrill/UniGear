@@ -55,7 +55,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}">
+              <tr value="{{ order['Order'] }}" data-order-id="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Customer'] }}</td>
@@ -72,8 +72,10 @@
 
                 {% if order['Status'] == 1 %}
                 <td style="color: green;"><b>Paid</b></td>
+                {% elif order['Status'] == 0 and order['Proof of Payment'] is not none %}
+                <td style="color: rgb(211, 211, 0);"><b>Pending</b></td>
                 {% else %}
-                <td style="color: red;"><b>N/A</b></td>
+                <td style="color: red;"><b>Unpaid</b></td>
                 {% endif %}
 
                 <td><p style="
@@ -92,10 +94,19 @@
   </main>
 
   <!-- Dialog -->
-  <dialog class="modal" data-modal>
-    <div></div>
-    <img src="#" alt="#">
+  <!-- <dialog class="modal" data-modal>
+    <div id="previewID"></div>
+    <img id="preview" src="#" alt="#">
     <button data-close-modal >Close</button>
+  </dialog> -->
+
+  <dialog class="modal" id="confirmation-modal" data-modal>
+    <p>Are you sure you want to mark <span id="order_number"></span> as Paid?</p>
+    <img style="width: 100%;" src="" alt="">
+    <div id="modal-btns" style="width: 100%; display: flex; justify-content: space-between;">
+      <button class="btn" id="cancel-button" data-close-modal>No</button>
+      <!-- <button class="btn" id="confirm-button">Yes</button> -->
+    </div>
   </dialog>
 
   <!-- Footer -->
@@ -149,5 +160,5 @@
       modal.close(); // Close the modal after confirmation
     }
   </script>
-  <script src="{{ url_for('static', filename='js/modal_script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/modal_script_orders.js') }}"></script>
 {% endblock %}

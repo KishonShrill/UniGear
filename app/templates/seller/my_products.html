@@ -79,8 +79,10 @@
   <!-- Dialog -->
   <!-- Dialog for Product Image and Name -->
   <dialog class="modal" data-modal>
-    <div></div> <!-- This will hold the product name -->
-    <button data-close-modal>Close</button>
+    <div style="margin-bottom: 1rem;"></div> <!-- This will hold the product name -->
+    <div id="modal-btns" style="display: flex; justify-content: space-between;">
+      <button class="btn deleteBtn" data-close-modal>Close</button>
+    </div>
   </dialog>  
   
 
@@ -157,22 +159,25 @@
   <script src="{{ url_for('static', filename='js/table_tools.js') }}"></script>
   <script>
     editOneBtn.addEventListener("click", () => {
-    modal.querySelector("div").textContent = `Are you sure you want to edit product #${editOneBtn.value}`;
+      const modal_btns = document.getElementById("modal-btns")
+      modal.querySelector("div").textContent = `Are you sure you want to edit product #${editOneBtn.value}`;
 
-    let confirmButton = document.createElement("button");
-    confirmButton.textContent = "Confirm";
-    confirmButton.setAttribute("onclick", `editOrder(${editOneBtn.value})`);
+      let confirmButton = document.createElement("button");
+      confirmButton.textContent = "Confirm";
+      confirmButton.classList.add("btn");
+      confirmButton.classList.add("editBtn");
+      confirmButton.setAttribute("onclick", `editOrder(${editOneBtn.value})`);
 
-    // Remove any existing confirm button to avoid duplicates
-    const existingConfirmButton = modal.querySelector("button[data-confirm]");
-    if (existingConfirmButton) {
-      existingConfirmButton.remove();
-    }
+      // Remove any existing confirm button to avoid duplicates
+      const existingConfirmButton = modal.querySelector("button[data-confirm]");
+      if (existingConfirmButton) {
+        existingConfirmButton.remove();
+      }
 
-    // Add the confirm button to the modal
-    confirmButton.setAttribute("data-confirm", "true");
-    modal.appendChild(confirmButton);
-    modal.showModal()
-  })
+      // Add the confirm button to the modal
+      confirmButton.setAttribute("data-confirm", "true");
+      modal_btns.appendChild(confirmButton);
+      modal.showModal()
+    })
   </script>
 {% endblock %}
