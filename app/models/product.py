@@ -70,15 +70,20 @@ class Product(object):
     def countPreorder(self):
         cursor = mysql.connection.cursor()
         print(f"Product ID: {self.product_id}")
+        
         cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (self.product_id,))
         mysql.connection.commit()
         count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT preorder_goal FROM products WHERE product_id = %s", (self.product_id,))
+        mysql.connection.commit()
+        goal = cursor.fetchone()[0]
+        
         cursor.close()
-        return count
+        return count, goal
 
     def getID(self):
         return self.product_id
-
 
     def clear_sizes(self, product_id):
         """Deleting the sizes that the product had"""
@@ -91,8 +96,6 @@ class Product(object):
         cursor.execute(query, (product_id,))  # Wrap product_id in a tuple
         mysql.connection.commit()
         cursor.close()
-
-
 
     def add_product_sizes(self, size_id):
         """Add sizes to the product."""
@@ -138,8 +141,6 @@ class Product(object):
         mysql.connection.commit()
         cursor.close()
 
-
-
     def update_details(self, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
         """Update product details."""
         Product.update(
@@ -151,6 +152,24 @@ class Product(object):
             price=price,
             order_type=order_type
         )
+        
+    def goal_to_time(self, release_date):
+        try:
+            query = """
+                UPDATE products
+                SET 
+                    order_type = 1,
+                    release_date = %s
+                WHERE product_id = %s;
+            """
+            
+            cursor = mysql.connection.cursor()
+            cursor.execute(query, (release_date, self.product_id))
+            mysql.connection.commit()
+            cursor.close()
+        except Exception as e:
+            print(f"Something went wrong with transitioning from goal to time:\n{e}")
+
 
 
     @staticmethod
@@ -209,7 +228,6 @@ class Product(object):
 
         mysql.connection.commit()
         cursor.close()
-
 
     @staticmethod
     def get_by_name(product_name):
@@ -274,7 +292,6 @@ class Product(object):
     #         print(f"AttributeError: {str(e)}")
     #     except Exception as e:
     #         print(f"Error updating product: {str(e)}")
-
 
 
     @staticmethod

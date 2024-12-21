@@ -64,6 +64,16 @@ main.products {
     color: red;
     background-color: white;
   }
+  .confirmBtn {
+    border: 1px solid #DFDFDF;
+    color: white;
+    background-color: rgb(0, 218, 4);
+  }
+  .confirmBtn:hover {
+    cursor: pointer;
+    color: rgb(0, 218, 4);
+    background-color: white;
+  }
 
   .content-searchbar {
     margin-bottom: 10px;
