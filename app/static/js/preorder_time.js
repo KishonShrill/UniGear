@@ -27,6 +27,15 @@ preorderSelect.addEventListener('change', function() {
         dateInput.placeholder = 'Select preorder end date...'; // Placeholder text
         quantity_subtitle.innerText = 'Days to go...'
 
+        // Calculate one week from today
+        const today = new Date();
+        const oneWeekFromToday = new Date(today);
+        oneWeekFromToday.setDate(today.getDate() + 8); // Add 7 days to the current date
+        const formattedDate = oneWeekFromToday.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+
+        // Set the default value to one week from today
+        dateInput.value = formattedDate;
+
         // Add the onchange attribute inline
         dateInput.setAttribute('onchange', 'logDate(this)');
 
@@ -42,8 +51,15 @@ preorderSelect.addEventListener('change', function() {
         dateInputSubmit.required = true; // Make the input required
         dateInputSubmit.placeholder = 'Select preorder end date...'; // Placeholder text
         dateInputSubmit.hidden = true;
-        
+        dateInputSubmit.value = formattedDate;
+
         form.appendChild(dateInputSubmit);
+        
+        const releaseDate = new Date(formattedDate)
+        const differenceInMillis = releaseDate - today;
+        const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24));
+        quantity.innerText = differenceInDays;
+        number_of_days.value = differenceInDays;
     }
   } else {
     console.log("PANGET KO")
@@ -54,15 +70,23 @@ preorderSelect.addEventListener('change', function() {
     if (existingDateInput) {existingDateInput.remove();}
     if (existingDateInputSubmit) {existingDateInputSubmit.remove();}
     quantity_subtitle.innerText = 'preorder count'
-    quantity.innerText = 0;
+    quantity.innerText = quantity.getAttribute("data");
   }
 });
 
 const create_product = document.getElementById("create_product");
 create_product.addEventListener("click", () => {
-  const submitDate = document.getElementById("submitPreorderDate")
-  submitDate.value = document.getElementById("preorderDate").value
-  console.log(submitDate.value)
+  const selectedPreorderType = document.getElementById('preorder')
+
+  if (selectedPreorderType.value == 1) {
+    const submitDate = document.getElementById("submitPreorderDate");
+    console.log(submitDate.value);
+    submitDate.value = document.getElementById("preorderDate").value;
+  }
+  
+  const slides_data = document.getElementById("slides_data");
+  slides_data.value = slidesData;
+  console.log(slides_data.value);
 })
 
 

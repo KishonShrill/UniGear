@@ -7,6 +7,7 @@ from app.routes.auth import seller_required
 from app.models.user import User
 from app.models.order import Order
 
+import os
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
@@ -251,10 +252,18 @@ def product_new_submit():
         cloudinary_url = ""
 
         filename = secure_filename(picture.filename)
-        print(f"Filename of Photo: {filename}")
+        print(f"Filename: {filename}")
+
+        max_size = 25 * 1024 * 1024  # Example: 25MB
+        if len(picture.read()) > max_size:
+          flash("File size exceeds the limit of 25MB.", "warning")
+          return redirect(url_for('seller.product_new'))
+        
+        picture.seek(0)  # Reset file pointer after reading
 
         # Upload to Cloudinary
         try:
+          filename = os.path.splitext(filename)[0]
           upload_result = cloudinary.uploader.upload(picture, public_id=filename)
           cloudinary_url = upload_result.get('secure_url')  # Get the URL of the uploaded image
 
@@ -283,161 +292,170 @@ def product_new_submit():
 @seller_bp.route('/product/edit/<int:product_id>', methods=['GET', 'POST'])
 @seller_required
 def product_edit(product_id):
-    product = Product.get_by_id(product_id)
-    if not product:
-      flash("Product not found!", "danger")
-      return redirect(url_for('seller.dashboard'))
+  product = Product.get_by_id(product_id)
+  
+  if not product:
+    flash("Product not found!", "danger")
+    return redirect(url_for('seller.dashboard'))
 
-    form = ProductForm(obj=product)
-    product_pictures = product.get_product_pictures(product_id)  # List of existing picture URLs
-    product_sizes = product.get_product_sizes(product_id)  # List of existing sizes
-    formatted_sizes = ','.join(map(str, product_sizes))  # Convert list to "2,3,4"
-    count = product.countPreorder()
+  form = ProductForm(obj=product)
+  product_pictures = product.get_product_pictures(product_id)  # List of existing picture URLs
+  product_sizes = product.get_product_sizes(product_id)  # List of existing sizes
+  formatted_sizes = ','.join(map(str, product_sizes))  # Convert list to "2,3,4"
+  count = product.countPreorder()
+
+  return render_template('crud_blueprint/product_page-edit.html', form=form, product=product, count=count,
+                          product_pictures=product_pictures, product_sizes=product_sizes, formatted_sizes=formatted_sizes)
+
+@seller_bp.route('/product/edit/<int:product_id>/submit', methods=['GET','POST'])
+@seller_required
+def product_edit_submit(product_id):
+  if request.method == 'POST':
+    name = request.form.get("name")
+    price = request.form.get("price")
+    description = request.form.get("description")
+    hook = request.form.get("hook")
+    product_type = request.form.get("type")
+    preorder_type = request.form.get("preorder")
+    selected_sizes = request.form.get("selectedSizes")
+    picture_urls = request.files.getlist("picture_urls")  # New pictures to upload
+    slides_data = request.form.get("slides_data")
+    date = request.form.get("preorderDate")
+    number_of_days = request.form.get('number_of_days')
+    product_id = request.form.get('product_id')
+
+    slides_data = slides_data.split(',')
+    slides_data = [slide for slide in slides_data if slide.startswith('https://res.cloudinary.com')]
+
+    if date == '': date = None
+    sizes = selected_sizes.split(',')
+    URLS = []
     
 
-    if request.method == 'POST':
-      name = request.form.get("name")
-      price = request.form.get("price")
-      description = request.form.get("description")
-      hook = request.form.get("hook")
-      product_type = request.form.get("type")
-      preorder_type = request.form.get("preorder")
-      selected_sizes = request.form.get("selectedSizes")
-      picture_urls = request.files.getlist("picture_urls")  # New pictures to upload
-      slides_data = request.form.get("slidesData")
-      date = request.form.get("preorderDate")
-      number_of_days = request.form.get('number_of_days')
-      product_id = request.form.get('product_id')
-
-      print(f"Picture URLs: {picture_urls}")
-      print(f"Number of files selected: {len(picture_urls)}")  # Debug the number of files selected
-      print(f"Date: {date}")
-      print(f"Days: {number_of_days}")
-      print(f"Slides: {slides_data}")
-      
-      
-      if date == '': date = None
-      sizes = selected_sizes.split(',')
-      URLS = []
-          
-
-      # Checks for a valid form \/ \/ \/
-      # Checks for a valid form \/ \/ \/
-      # Checks for a valid form \/ \/ \/
-      print(f"Type: {preorder_type}")
-      
-      if preorder_type == '':
-        flash (f"Pick atleast one size for product...","warning")
-        return redirect(url_for('seller.product_edit', product_id=product_id))
-      
-      if preorder_type == 1:
-        if date == '' or date == None:
-          flash (f"Select which date to release...","warning")
-          return redirect(url_for('seller.product_edit', product_id=product_id))
+    print(f"\n\nname: {name}")
+    print(f"price: {price}")
+    print(f"description: {description}")
+    print(f"hook: {hook}")
+    print(f"product_type: {product_type}")
+    print(f"selected_sizes: {selected_sizes}")
+    print(f"preorder_type: {preorder_type}")
+    print(f"picture_urls: {picture_urls}")
+    print(f"slides_data: {slides_data}")
+    print(f"date: {date}")
+    print(f"number_of_days: {number_of_days}")
+    print(f"product_id: {product_id}")
+    
+    
+    
         
-        if int(number_of_days) <= 6:
-          flash (f"Please give a deadline of 1 week or more...","warning")
-          return redirect(url_for('seller.product_edit', product_id=product_id))
-      
-      if len(name) == 0:
-        flash (f"Enter a name for the product...","warning")
-        return redirect(url_for('seller.product_edit', product_id=product_id))
-      
-      if not price.isdigit() or price.startswith("0"):
-        flash("Enter a valid price for the product. Must not start with 0.", "warning")
-        return redirect(url_for('seller.product_edit', product_id=product_id))
-      
-      if float(price) > 10000:
-        flash("Product should be affordable for students...", "warning")
-        return redirect(url_for('seller.product_edit', product_id=product_id))
-      
-      if len(description) <= 10:
-        flash(f"A minimum of 100 characters for description...","warning")
-        flash(f"Chracter Length: {len(description)}","info")
-        return redirect(url_for('seller.product_edit', product_id=product_id))
 
+    # Checks for a valid form \/ \/ \/
+    # Checks for a valid form \/ \/ \/
+    # Checks for a valid form \/ \/ \/
+    if len(name) == 0:
+      flash (f"Enter a name for the product...","warning")
+      return redirect(url_for('seller.product_edit', product_id=product_id))
+    
+    if preorder_type == '':
+      flash (f"Please select an order type...","warning")
+      return redirect(url_for('seller.product_edit', product_id=product_id))
+    if not price.isdigit() or price.startswith("0"):
+      flash("Enter a valid price for the product. Must not start with 0.", "warning")
+      return redirect(url_for('seller.product_edit', product_id=product_id))
+    
+    if float(price) > 10000:
+      flash("Product should be affordable for students...", "warning")
+      return redirect(url_for('seller.product_edit', product_id=product_id))
+    
+    if len(description) <= 10:
+      flash(f"A minimum of 100 characters for description...","warning")
+      flash(f"Chracter Length: {len(description)}","info")
+      return redirect(url_for('seller.product_edit', product_id=product_id))
+    
+    if product_type == '':
+      flash(f"Please select what kind of product you have...","warning")
+      return redirect(url_for('seller.product_edit', product_id=product_id))
+    
+    if preorder_type == 1:
+      if date == '' or date == None:
+        flash (f"Select which date to release...","warning")
+        return redirect(url_for('seller.product_edit', product_id=product_id))
+      
+      if int(number_of_days) <= 6:
+        flash (f"Please give a deadline of 1 week or more...","warning")
+        return redirect(url_for('seller.product_edit', product_id=product_id))
+    # Checks for a valid form /\ /\ /\
+    # Checks for a valid form /\ /\ /\
+    # Checks for a valid form /\ /\ /\
+      
+    existing_pictures = Product.fetch_product_pictures(product_id=product_id)
+    print(f"Existing: {existing_pictures}")
+    
+    # Get items in `slides_data` that are not in `existing_pictures`
+    unmatched = [item for item in existing_pictures if item not in slides_data]   
+    print(f"\nNo Match: {unmatched}")
+
+    # Extract the public_id from the URL and delete the image
+    for image in unmatched:
+      Product.delete_product_pictures(image)
+      
+      old_public_id = image.split('/')[-1]  # Get the filename
+      old_public_id = '.'.join(old_public_id.split('.')[:-1])  # Remove the last extension
+      cloudinary.api.delete_resources(old_public_id, resource_type="image", type="upload")
+    
+    if picture_urls:
       for picture in picture_urls:
-        print (f"Picture Name: {picture.filename}")
-          
-      # Checks for a valid form /\ /\ /\
-      # Checks for a valid form /\ /\ /\
-      # Checks for a valid form /\ /\ /\
+        filename = secure_filename(picture.filename)
+        print(f"Filename: {filename}")
         
+        # Break Loop if nothing is to be uploaded
+        if filename == '':
+          break
+        
+        max_size = 25 * 1024 * 1024  # Example: 25MB
+        if len(picture.read()) > max_size:
+          flash("File size exceeds the limit of 25MB.", "warning")
+          return redirect(url_for('seller.product_edit', product_id=product_id))
+        
+        picture.seek(0)  # Reset file pointer after reading
+        
+        
+        # Upload to Cloudinary
+        try:
+          filename = os.path.splitext(filename)[0]
+          print(f"Final Name: {filename}")
+          upload_result = cloudinary.uploader.upload(picture, public_id=filename)
+          cloudinary_url = upload_result.get('secure_url')  # Get the URL of the uploaded image
+
+          # Save the Cloudinary URL to the database for this product
+          Product.add_product_pictures(product_id, cloudinary_url)
+          print(f"cloudinary_url: {cloudinary_url}")
+        
+        except Exception as e:
+          flash(f"An error occurred during file upload: {str(e)}", "danger")
+          return redirect(url_for('seller.product_edit', product_id=product_id))
       
-      new_pictures = picture_urls
-      current_picture_urls = product_pictures
-      pictures_to_keep = [pic for pic in current_picture_urls if pic in [pic.filename for pic in picture_urls]]
-      pictures_to_upload = pictures_to_keep + [pic for pic in new_pictures if pic not in pictures_to_keep]
-
-
-      print (f"Preorder Type: {preorder_type}")
-      # Put product in the Database and get ID
-      product = Product(
-        product_id=product_id,
-        product_name=name,
-        description=description,
-        hook=hook,
-        type=product_type,
-        price=price,
-        order_type=preorder_type,
-        seller_id=session.get('id'),
-        release_date=date
-      )
-      # product.update()
-
-
-      print(f"\nPictures Keep: {pictures_to_keep}")
-      print(f"Pictures Upload: {pictures_to_upload}")
-
-
-      # try:
-      #     product.remove_product_picture(product_id)  # Remove previous pictures
-      # except Exception as e:
-      #     flash(f"Error removing existing pictures: {str(e)}", "danger")
-      #     return redirect(url_for('seller.product_edit', product_id=product_id))
-
-      # # Upload new and kept pictures
-      # for picture in pictures_to_upload:
-      #     try:
-      #         if isinstance(picture, FileStorage):
-      #             filename = secure_filename(picture.filename)
-      #             upload_result = cloudinary.uploader.upload(picture, public_id=filename)
-      #             cloudinary_url = upload_result.get('secure_url')
-      #             product.add_product_pictures(cloudinary_url)
-      #         else:
-      #             product.add_product_pictures(picture)
-
-      #     except Exception as e:
-      #         flash(f"Error uploading picture {picture.filename if isinstance(picture, FileStorage) else picture}: {str(e)}", "danger")
-      #         return redirect(url_for('seller.product_edit', product_id=product_id))
-
-      # # Update product details
-      # try:
-      #     Product.update(
-      #         product_id=product_id,
-      #         product_name=name,
-      #         description=description,
-      #         hook=hook,
-      #         type=product_type,
-      #         price=price,
-      #         order_type=preorder_type
-      #     )
-
-      #     sizes = selected_sizes.split(',') if selected_sizes else []
-      #     product.clear_sizes(product_id)
-      #     for size in sizes:
-      #         product.add_product_sizes(size)
-
-      #     flash("Product updated successfully!", "success")
-      #     return redirect(url_for('website.merch_details', product_id=product.product_id))
-
-      # except Exception as e:
-      #     flash(f"Error updating product: {str(e)}", "danger")
-      #     return redirect(url_for('seller.product_edit', product_id=product_id))
-
-    return render_template('crud_blueprint/product_page-edit.html', form=form, product=product, count=count,
-                           product_pictures=product_pictures, product_sizes=product_sizes, formatted_sizes=formatted_sizes)
-
+    # Put product in the Database and get ID
+    product = Product(
+      product_name=name,
+      description=description,
+      hook=hook,
+      type=product_type,
+      price=price,
+      order_type=preorder_type,
+      seller_id=session.get('id'),
+      release_date=date,
+      product_id=product_id
+    )
+    product.update()
+    product.delete_product_sizes()
+    
+    for size in sizes:
+      product.add_product_sizes(size)
+    
+    return redirect(url_for('website.merch_details', product_id=product_id))
+  if request.method == 'GET':
+    return abort(404)
 
 @seller_bp.route('/toggle_order_status', methods=['POST'])
 @seller_required
