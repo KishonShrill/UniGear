@@ -14,9 +14,13 @@ function openModal(orderValue, imgSource) {
 }
 
 deleteOneBtn.addEventListener("click", () => {
+  const modal_btns = document.getElementById("modal-btns")
   modal.querySelector("div").textContent = `Are you sure you want to cancel order #${deleteOneBtn.value}`;
 
   let confirmButton = document.createElement("button");
+  confirmButton.textContent = "Confirm";
+  confirmButton.classList.add("btn");
+  confirmButton.classList.add("confirmBtn");
   confirmButton.textContent = "Confirm";
   confirmButton.setAttribute("onclick", `deleteOrder(${deleteOneBtn.value})`);
 
@@ -28,7 +32,7 @@ deleteOneBtn.addEventListener("click", () => {
 
   // Add the confirm button to the modal
   confirmButton.setAttribute("data-confirm", "true");
-  modal.appendChild(confirmButton);
+  modal_btns.appendChild(confirmButton);
   modal.showModal()
 })
 

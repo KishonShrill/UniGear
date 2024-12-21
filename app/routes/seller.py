@@ -1,6 +1,4 @@
 from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort, Response
-from decimal import Decimal
-from datetime import datetime
 from app.models.product import Product
 from app.forms import *
 from app.routes.auth import seller_required
@@ -302,7 +300,7 @@ def product_edit(product_id):
   product_pictures = product.get_product_pictures(product_id)  # List of existing picture URLs
   product_sizes = product.get_product_sizes(product_id)  # List of existing sizes
   formatted_sizes = ','.join(map(str, product_sizes))  # Convert list to "2,3,4"
-  count = product.countPreorder()
+  count, _ = product.countPreorder()
 
   return render_template('crud_blueprint/product_page-edit.html', form=form, product=product, count=count,
                           product_pictures=product_pictures, product_sizes=product_sizes, formatted_sizes=formatted_sizes)
@@ -453,6 +451,7 @@ def product_edit_submit(product_id):
     for size in sizes:
       product.add_product_sizes(size)
     
+    flash(f"Successfully edited product #{product_id}", "success")  
     return redirect(url_for('website.merch_details', product_id=product_id))
   if request.method == 'GET':
     return abort(404)

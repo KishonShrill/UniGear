@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort,jsonify
+from datetime import datetime, timedelta
 from config import MAILTRAP_SERVER,MAILTRAP_PORT,MAILTRAP_USERNAME,MAILTRAP_PASSWORD
 from app.models.product import Product
 from app.models.user import User
@@ -127,7 +128,7 @@ def merch_details(product_id):
         flash("Product not found.", "danger")
         return redirect(url_for('website.explore'))
 
-# Convert product row to dictionary
+    # Convert product row to dictionary
     product = {
         'product_id': product_row[0],
         'name': product_row[1],
@@ -228,6 +229,25 @@ def preorder(product_id):
 
     try:
         order_number = Order.preorderProduct(user.user_id, product.product_id, size, quantity, product.price)
+        preorder_count, goal = product.countPreorder()
+        
+        if preorder_count >= goal:
+            # Get the current date
+            current_date = datetime.now()
+
+            # Add 8 days
+            new_date = current_date + timedelta(days=8)
+
+            # Format the date as YYYY-MM-DD
+            formatted_date = new_date.strftime('%Y-%m-%d')
+
+            print(formatted_date)
+            
+            product.goal_to_time(formatted_date)
+            
+            # TODO: GET ALL USERS
+            # TODO: INFORM ALL USERS AS A GROUP THAT THE PRODUCT THEY PREORDERED HAS NOW STARTED PRESELLING
+        
     except Exception as e:
       print(f"Error occurred: {e}")
       flash("Something went wrong while pre-ordering the product. Please order again later...", "danger")
