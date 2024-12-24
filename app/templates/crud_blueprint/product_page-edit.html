@@ -15,7 +15,7 @@
   {{ components.render_header(user=session['name'], role=session['role']) }}
 
   <!-- Content -->
-  <form id="product-form" method="POST" action="{{ url_for('seller.product_edit', product_id=product.product_id) }}" enctype="multipart/form-data">
+  <form id="product-form" method="POST" action="{{ url_for('seller.product_edit_submit', product_id=product.product_id) }}" enctype="multipart/form-data">
     {{ form.csrf_token }}
     <input type="date" id="submitPreorderDate" name="preorderDate" value="" required hidden>
   </form>
@@ -57,13 +57,13 @@
           <div class="column">
             <img src="{{ image }}" 
                  class="demo cursor {% if loop.first %}active{% endif %}" 
-                 onclick="currentSlide({{ loop.index }})">
+                 onclick="currentSlide('{{ loop.index }}')">
           </div>
         {% endfor %}
       </div>
 
       <div class="product__quantity-viewer">
-        <h1 id="product__quantity">{{ count }}</h1>
+        <h1 id="product__quantity" data="{{ count }}">{{ count }}</h1>
         <p id="product__quantity-subtitle">Preorder Count</p>
       </div>
     </section>
@@ -144,6 +144,7 @@
         <input id="pictureUpload" name="pictureUpload" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <input id="picture_urls" name="picture_urls" type="file" style="display: none;" multiple accept="image/*" form="product-form">
         <input id="number_of_days" name="number_of_days" type="number" value="" hidden form="product-form">
+        <input id="slides_data" name="slides_data" type="text" value="" hidden form="product-form">
         <!-- Remove for Product Details -->
       </div>
       <button id="create_product" data-open-modal>Update Product</button>
@@ -196,10 +197,11 @@
   <script>
     let slidesData = [];
     window.onload = function() {
-
       {% for image in product_pictures %}
         slidesData.push('{{ image }}')
       {% endfor %}
+
+      console.log(slidesData)
     };
   </script>
   <script>

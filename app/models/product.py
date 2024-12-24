@@ -30,24 +30,42 @@ class Product(object):
         
     def update(self):
         """Save a new product to the database."""
-        query = """
-        UPDATE products
-        SET 
-            product_name = %s,
-            description = %s,
-            hook = %s,
-            type = %s,
-            price = %s,
-            order_type = %s,
-            seller_id = %s,
-            release_date = %s
-        WHERE user_id = %s;
-        """
-        
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_name, self.description, self.hook, self.type, self.price, self.order_type, self.seller_id, self.release_date))
-        mysql.connection.commit()
-        cursor.close()
+        try:
+            query = """
+            UPDATE products
+            SET 
+                product_name = %s,
+                description = %s,
+                hook = %s,
+                type = %s,
+                price = %s,
+                order_type = %s,
+                seller_id = %s,
+                release_date = %s,
+                updated_at = %s
+            WHERE product_id = %s;
+            """
+            
+            if self.release_date == '':
+                self.release_date = None
+            
+            cursor = mysql.connection.cursor()
+            cursor.execute(query, (self.product_name, 
+                                   self.description, 
+                                   self.hook, 
+                                   self.type, 
+                                   self.price, 
+                                   self.order_type, 
+                                   self.seller_id, 
+                                   self.release_date, 
+                                   datetime.now(),
+                                   self.product_id))
+            mysql.connection.commit()
+            cursor.close()
+        except AttributeError as e:
+            print(f"AttributeError: {str(e)}")
+        except Exception as e:
+            print(f"Something went wrong when updating product_id...\n{e}")
 
     def countPreorder(self):
         cursor = mysql.connection.cursor()
@@ -86,6 +104,17 @@ class Product(object):
         cursor.execute(query, (self.product_id, size_id))
         mysql.connection.commit()
         cursor.close()
+        
+    def delete_product_sizes(self):
+        """Delete all product sizes that match the product_id and size_id."""
+        query = """
+        DELETE FROM product_sizes
+        WHERE product_id = %s
+        """
+        cursor = mysql.connection.cursor()
+        cursor.execute(query, (self.product_id))
+        mysql.connection.commit()
+        cursor.close()
 
     def add_product_pictures(self, picture_url):
         """Add sizes to the product."""
@@ -97,7 +126,7 @@ class Product(object):
         cursor.execute(query, (self.product_id, picture_url))
         mysql.connection.commit()
         cursor.close()
-    
+        
     def remove_product_picture(self, picture_id):
         """remove pictures"""
         query = """
@@ -125,27 +154,40 @@ class Product(object):
 
 
     @staticmethod
-    def update_pictures(self, picture_urls):
-        """Update pictures for the product."""
+    def add_product_pictures(product_id, picture_url):
+        """Add sizes to the product."""
+        query = """
+        INSERT INTO pictures (picture_id, picture_url)
+        VALUES (%s, %s)
+        """
         cursor = mysql.connection.cursor()
-
-        # Fetch existing pictures for the product
-        query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
-        cursor.execute(query_fetch, (self.product_id,))
-        existing_pictures = {row[0] for row in cursor.fetchall()}
-
-        # Add new pictures or ignore duplicates
-        for picture_url in picture_urls:
-            if picture_url not in existing_pictures:
-                query_insert = """
-                INSERT INTO pictures (picture_id, picture_url)
-                VALUES (%s, %s)
-                """
-                cursor.execute(query_insert, (self.product_id, picture_url))
-
+        cursor.execute(query, (product_id, picture_url))
         mysql.connection.commit()
         cursor.close()
+
+    @staticmethod
+    def fetch_product_pictures(product_id):
+        """Fetch pictures for the product."""
+        cursor = mysql.connection.cursor()
+        
+        query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
+        cursor.execute(query_fetch, (product_id,))
+        fetched_pictures = {row[0] for row in cursor.fetchall()}
+        mysql.connection.commit()
+        cursor.close()
+        
+        return fetched_pictures
     
+    @staticmethod
+    def delete_product_pictures(product_url):
+        """Delete pictures of the product."""
+        cursor = mysql.connection.cursor()
+
+        query_fetch = "DELETE FROM pictures WHERE picture_url = %s;"
+        cursor.execute(query_fetch, (product_url,))
+        mysql.connection.commit()
+        cursor.close()
+
     @staticmethod
     def update_pictures(self, picture_urls):
         """Update pictures for the product."""
@@ -207,34 +249,31 @@ class Product(object):
 
     from datetime import datetime
 
-    @staticmethod
-    def update(product_id, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
-        """Update product details."""
-        try:
-            query = """
-            UPDATE products
-            SET 
-                product_name = COALESCE(%s, product_name),
-                description = COALESCE(%s, description),
-                hook = COALESCE(%s, hook),
-                type = COALESCE(%s, type),
-                price = COALESCE(%s, price),
-                order_type = COALESCE(%s, order_type),
-                updated_at = %s
-            WHERE product_id = %s
-            """
-            print("Creating cursor...")
-            cursor = mysql.connection.cursor()
-            print(f"Cursor created: {cursor}")
-            print("Executing query...")
-            cursor.execute(query, (product_name, description, hook, type, price, order_type, datetime.now(), product_id))
-            mysql.connection.commit()
-            cursor.close()
-            print("Product updated successfully!")
-        except AttributeError as e:
-            print(f"AttributeError: {str(e)}")
-        except Exception as e:
-            print(f"Error updating product: {str(e)}")
+    # @staticmethod
+    # def update(product_id, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
+    #     """Update product details."""
+    #     try:
+    #         query = """
+    #         UPDATE products
+    #         SET 
+    #             product_name = COALESCE(%s, product_name),
+    #             description = COALESCE(%s, description),
+    #             hook = COALESCE(%s, hook),
+    #             type = COALESCE(%s, type),
+    #             price = COALESCE(%s, price),
+    #             order_type = COALESCE(%s, order_type),
+    #             updated_at = %s
+    #         WHERE product_id = %s
+    #         """
+    #         cursor = mysql.connection.cursor()
+    #         cursor.execute(query, (product_name, description, hook, type, price, order_type, datetime.now(), product_id))
+    #         mysql.connection.commit()
+    #         cursor.close()
+    #         print("Product updated successfully!")
+    #     except AttributeError as e:
+    #         print(f"AttributeError: {str(e)}")
+    #     except Exception as e:
+    #         print(f"Error updating product: {str(e)}")
 
 
 
