@@ -1,6 +1,6 @@
 /* Header Section */
 #college-csm-header-container {
-    background-color: #934F50;
+    background-color: #598181;
     padding: 20px;
     color: white;
     border-bottom: 1px solid black;
@@ -8,8 +8,8 @@
 
 #college-csm-header {
     display: flex;
-    justify-content: space-between; /* Spacing out title and go back link */
-    align-items: center; /* Vertically centers the items */
+    justify-content: space-between;
+    align-items: center; 
 }
 
 #college-csm-header h1 {
@@ -36,11 +36,11 @@
 main {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Full viewport height */
+    min-height: 100vh;
 }
 
 #college-csm-content {
-    flex: 1; /* Allow content section to grow dynamically */
+    flex: 1;
     display: flex;
     flex-direction: row;
     background-color: #F9F8FB;
@@ -48,16 +48,16 @@ main {
 }
 
 #org-tabs-section {
-    background-color: #934F50;
+    background-color: #598181;
     width: 250px;
-    flex-grow: 0; /* Prevent it from shrinking */
-    flex-shrink: 0; /* Prevent it from shrinking */
-    height: 100vh; /* Ensure it takes the full height of the page */
-    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 100vh;
+    overflow-y: auto;
     box-sizing: border-box;
     border-right: 1px solid black;
-    position: sticky; /* Keep it fixed at the side */
-    top: 0; /* Stay at the top */
+    position: sticky;
+    top: 0;
 }
 
 #org-tabs {
@@ -65,8 +65,7 @@ main {
     flex-direction: column;
     margin: 0;
     padding: 0;
-    width: 250;
-    
+    width: 250px;
 }
 
 #org-tabs ul {
@@ -81,14 +80,13 @@ main {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 24px;
     cursor: pointer;
-    background-color: #E88183;
+    background-color: #96DDDD;
     color: #000000;
     border: none;
     text-align: left;
     margin: 10px;
     border-radius: 5px;
     transition: background-color 0.3s ease, color 0.3s ease;
-    
 }
 
 #org-tabs .org-tab:hover {
@@ -101,20 +99,20 @@ main {
     font-weight: bold;
 }
 
-
-#content{
-    width:100%;
+#content {
+    width: 100%;
 }
+
 /* Type Tabs Section */
 #type-tabs {
     list-style: none;
     display: flex;
-    justify-content: center; /* Center horizontally */
-    gap: 20px; /* Adjust space between tabs */
+    justify-content: center;
+    gap: 20px;
     padding: 0;
     align-items: center;
     width: 100%;
-    margin-bottom:25px;
+    margin-bottom: 25px;
 }
 
 .type-tab {
@@ -126,8 +124,8 @@ main {
     background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 10px;
-    width: 90px; /* Set the width of each tab */
-    height: 130px; /* Set the height of each tab */
+    width: 90px;
+    height: 130px;
     transition: background-color 0.3s ease;
     margin-top: 10px;
     text-align: center;
@@ -138,15 +136,15 @@ main {
 }
 
 .type-tab.active {
-    background-color: #E88183; /* Optional: highlight active tab */
+    background-color: #96DDDD;
     color: #ffffff;
 }
 
 .type-icon {
-    width: 50px; /* Set the width of the icons */
-    height: 50px; /* Set the height of the icons */
-    object-fit: cover; /* Ensure the image covers the area without distortion */
-    margin-bottom: 10px; /* Space between image and type name */
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-bottom: 10px;
 }
 
 .type-name {
@@ -157,54 +155,104 @@ main {
 
 /* Products Section */
 #org-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Dynamic columns */
-    gap: 20px;
-    padding: 50px;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: flex-start; 
+    gap: 15px; 
+    padding: 20px; 
     background-color: #FFFFFF;
-    margin: auto; /* Center horizontally and vertically */
-    justify-content: left;
+    margin: auto;
 }
 
 /* Product Cards */
 .product-card {
-    width: 200px; /* Ensure cards stretch across their container */
-    height: 300px; /* Fixed height for each product card */
-    text-decoration: none;
-    background-color: #F9F8FB;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 270px;
+    height: 325px;
+    background-color: #ededed;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Ensures content doesn't overflow outside the card */
+    overflow: clip;
+    position: relative;
+    padding: 0;
+    margin-left: 25px;
+    margin-bottom: 15px;
+    text-decoration: none;
 }
 
 .product-card img {
-    width: 200px;
-    height: 200px;
-    object-fit:fill;
-    margin-bottom: 1px;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    border-radius: 12px 12px 0 0;
 }
 
+
 .product-card h3 {
-    font-family: 'Lato';
-    font-size: 22px;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
     color: #000000;
-    margin-left: 12px;
+    margin-left: 10px;
     text-align: left;
+    line-height: 1.4;
+    transition: color 0.3s ease;
 }
 
 .product-card p {
-    font-size: 12x;
-    color: #555555;
-    margin-left: 12px;
+    font-size: 12px !important;
+    color: #91949a;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 0; 
+    margin-bottom: 0;
+    padding-bottom: 10px; 
     text-align: left;
+    line-height: 1.4;
 }
 
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+
+.product-card a {
+    text-decoration: none;
+    color: inherit;
+    font-size: 12px;
+
+}
+
+
+
+
+
+.favorite-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #cbd5e0;
+    font-size: 1.5rem;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.favorite-btn.favorited {
+    color: #e53e3e;
 }
 
 /* Loading State */
@@ -234,35 +282,3 @@ main {
         margin-left: 0;
     }
 }
-
-
-
-
-
-
-.favorite-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #888;
-    font-size: 2rem;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.favorite-btn.favorited {
-    color: red;
-}
-
-.product-card {
-    position: relative;
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin: 10px;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-
