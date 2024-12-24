@@ -163,6 +163,9 @@ def google_callback():
     
     # Check if user exists or create new one
     user = User.get_by_email(idinfo.get('email'))
+    if not user:
+      user = User.create_from_website(idinfo.get('name'), idinfo.get('email'))
+    
     print(f"Role: {user.user_role}")
     session['id'] = user.user_id
     print(f"User ID: {user.user_id}")

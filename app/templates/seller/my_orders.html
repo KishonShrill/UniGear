@@ -94,18 +94,11 @@
   </main>
 
   <!-- Dialog -->
-  <!-- <dialog class="modal" data-modal>
-    <div id="previewID"></div>
-    <img id="preview" src="#" alt="#">
-    <button data-close-modal >Close</button>
-  </dialog> -->
-
   <dialog class="modal" id="confirmation-modal" data-modal>
-    <p>Are you sure you want to mark <span id="order_number"></span> as Paid?</p>
+    <p style="margin-bottom: 1rem;" id="modal-text">Are you sure you want to mark as Paid?</p><span style="display: block; width: 100%; text-align: center;" id="order_number"></span>
     <img style="width: 100%;" src="" alt="">
     <div id="modal-btns" style="width: 100%; display: flex; justify-content: space-between;">
-      <button class="btn" id="cancel-button" data-close-modal>No</button>
-      <!-- <button class="btn" id="confirm-button">Yes</button> -->
+      <button class="btn deleteBtn" id="cancel-button" data-close-modal>No</button>
     </div>
   </dialog>
 
@@ -147,7 +140,7 @@
         return;
       }
 
-      fetch('/user/my-orders/delete', {
+      fetch('/seller/my-orders/delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', // Correct Content-Type

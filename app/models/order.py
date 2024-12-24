@@ -30,40 +30,57 @@ class Order(object):
     
 
   def toggle_status(order_id):
-        try:
-            cursor = mysql.connection.cursor()
-            cursor.execute(
-               """
-               SELECT order_status 
-               FROM ordered_by 
-               WHERE order_id = %s
-               """,
-                (order_id,))
-            current_status = cursor.fetchone()
+    try:
+      cursor = mysql.connection.cursor()
+      cursor.execute(
+          """
+          SELECT order_status 
+          FROM ordered_by 
+          WHERE order_id = %s
+          """,
+          (order_id,))
+      current_status = cursor.fetchone()
 
-            if not current_status:
-                cursor.close()
-                return False, None  # If the order doesn't exist, return False
+      if not current_status:
+          cursor.close()
+          return False, None  # If the order doesn't exist, return False
 
-            current_status = current_status[0]
+      current_status = current_status[0]
 
-            # Toggle status: If it's 1 (paid), set it to 0 (unpaid), and vice versa
-            new_status = 0 if current_status == 1 else 1
+      # Toggle status: If it's 1 (paid), set it to 0 (unpaid), and vice versa
+      new_status = 0 if current_status == 1 else 1
 
-            cursor.execute(
-                """
-                UPDATE ordered_by 
-                SET order_status = %s 
-                WHERE order_id = %s
-                """, (new_status, order_id)
-            )
+      cursor.execute(
+          """
+          UPDATE ordered_by 
+          SET order_status = %s 
+          WHERE order_id = %s
+          """, (new_status, order_id)
+      )
 
-            # Commit the transaction
-            mysql.connection.commit()
-            cursor.close()
+      # Commit the transaction
+      mysql.connection.commit()
+      cursor.close()
 
-            return True, new_status  # Return success and the new status
+      return True, new_status  # Return success and the new status
 
-        except Exception as e:
-            print(f"Error: {e}")
-            return False, None  # Return failure if any exception occurs
+    except Exception as e:
+      print(f"Error: {e}")
+      return False, None  # Return failure if any exception occurs
+          
+          
+  @staticmethod
+  def deleteOrder(order_id):
+    try:
+      cursor = mysql.connection.cursor()
+      cursor.execute(
+        """
+          DELETE FROM ordered_by 
+          WHERE order_id = %s
+        """,
+        (order_id,)
+      )
+      mysql.connection.commit()
+      cursor.close()
+    except Exception as e:
+      return f"Error: {e}"

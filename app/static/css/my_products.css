@@ -44,26 +44,6 @@ main.products {
     visibility: hidden;
     gap: 0.625rem;
   }
-  .editBtn {
-    border: 1px solid #DFDFDF;
-    color: white;
-    background-color: #2500EE;
-  }
-  .editBtn:hover {
-    border: 1px solid #DFDFDF;
-    color: #2500EE;
-    background-color: white;
-  }
-  .deleteBtn {
-    border: 1px solid #DFDFDF;
-    color: white;
-    background-color: red;
-  }
-  .deleteBtn:hover {
-    cursor: pointer;
-    color: red;
-    background-color: white;
-  }
 
   .content-searchbar {
     margin-bottom: 10px;
@@ -122,3 +102,34 @@ main.products {
     color: white;
     background-color: #69aef9; 
   }
+  
+.editBtn {
+  border: 1px solid #DFDFDF;
+  color: white;
+  background-color: #2500EE;
+}
+.editBtn:hover {
+  border: 1px solid #DFDFDF;
+  color: #2500EE;
+  background-color: white;
+}
+.deleteBtn {
+  border: 1px solid #DFDFDF;
+  color: white;
+  background-color: red;
+}
+.deleteBtn:hover {
+  cursor: pointer;
+  color: red;
+  background-color: white;
+}
+.confirmBtn {
+  border: 1px solid #DFDFDF;
+  color: white;
+  background-color: rgb(0, 218, 4);
+}
+.confirmBtn:hover {
+  cursor: pointer;
+  color: rgb(0, 218, 4);
+  background-color: white;
+}

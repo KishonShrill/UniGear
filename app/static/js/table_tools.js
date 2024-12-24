@@ -82,10 +82,10 @@ rows.forEach(row => {
           console.log(window.location.pathname == '/seller/my-orders')
           if (window.location.pathname == '/seller/my-orders') {
             const orderId = row.dataset.orderId;  
-            const orderValue = row.children[1].textContent;  
+            // const orderValue = row.children[1].textContent;  
             const currentStatus = row.querySelector('td:nth-child(9)').textContent === "Paid" ? 1 : 0;  
         
-            console.log("HI?")
+            console.log("HI? - " + orderValue)
             openModal(orderId, orderValue, imgSource, currentStatus);
           } else {
             openModal(orderValue, imgSource); // Open modal on the second click
