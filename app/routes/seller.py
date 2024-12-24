@@ -96,6 +96,30 @@ def delete_product():
             return jsonify({"error": "Something went wrong"}), 500
     if request.method == 'GET':
         return abort(404)
+      
+      
+@seller_bp.route('/seller/my-orders/delete', methods=['POST','GET'])
+@login_is_required
+def delete_order():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()  # Parse the JSON body
+            print(f"Received data: {data}")  # Log received data
+
+            order_id = data.get('order_id')  # Extract product_id
+            if not order_id:
+                return jsonify({"error": "Order ID is required"}), 400
+
+            print(f"\nOrder ID: {order_id}")
+            Order.deleteOrder(order_id)
+            
+            return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "Something went wrong"}), 500
+    if request.method == 'GET':
+        return abort(404)      
+
 
 # Seller Profile Route
 @seller_bp.route('/seller/profile', methods=['GET', 'POST'])

@@ -91,19 +91,24 @@ class User(object):
         return cls(user_id=user_id, user_name=google_name, user_email=google_email, user_role="seller")
     
     @classmethod
-    def create_from_website(cls, name, email, password, contact, address):
-        """Create a new user from Google OAuth data."""
-        generated_password = generate_password_hash(password)
-        
-        # Create the user in the database
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (name, email, generated_password, contact, address, "user"))
+    def create_from_website(cls, name, email, password=None, contact=None, address=None):
+        generated_password = None
+        try:
+            """Create a new user from Google OAuth data."""
+            if password:
+                generated_password = generate_password_hash(password)
+            
+            # Create the user in the database
+            cursor = mysql.connection.cursor()
+            cursor.execute("""
+                INSERT INTO user (user_name, user_email, user_password, user_contact, user_address, user_role)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (name, email, generated_password, contact, address, "user"))
 
-        mysql.connection.commit()
-        user_id = cursor.lastrowid  # Get the user_id of the newly inserted user
-        cursor.close()
+            mysql.connection.commit()
+            user_id = cursor.lastrowid  # Get the user_id of the newly inserted user
+            cursor.close()
 
-        return cls(user_id=user_id, user_name=name, user_email=email, user_role="user")
+            return cls(user_id=user_id, user_name=name, user_email=email, user_role="user")
+        except Exception as e:
+            print(f"Google Acc Err: {e}")

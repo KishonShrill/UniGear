@@ -1,6 +1,7 @@
 const deleteOneBtn = document.querySelector("#deleteOne");
 const closeButton = document.querySelector("[data-close-modal]");
 const modal = document.querySelector("dialog[data-modal]");
+const modal_btns = document.getElementById("modal-btns")
 const toggleStatusBtn = document.createElement("button");  
 
 closeButton.addEventListener("click", () => {
@@ -8,18 +9,24 @@ closeButton.addEventListener("click", () => {
 });
 
 function openModal(orderId, orderValue, imgSource, currentStatus) {
-  const modal_btns = document.getElementById("modal-btns")
+  modal.querySelector("#modal-text").textContent = "Are you sure you want to mark as Paid?";
   modal.querySelector("#order_number").textContent = `Order: ${orderValue}`;
   modal.querySelector("img").src = `${imgSource}`;
-
+  
   toggleStatusBtn.setAttribute('data-order-id', orderId);  
   toggleStatusBtn.classList.add("btn");
+  toggleStatusBtn.classList.add("confirmBtn");
   if (currentStatus === 1) {
-    // toggleStatusBtn.textContent = "Mark as Unpaid";  
+    toggleStatusBtn.textContent = "Mark as Unpaid";  
   } else {
     toggleStatusBtn.textContent = "Mark as Paid";  
   }
-
+  const existingConfirmButton = modal.querySelector("button[data-confirm]");
+  if (existingConfirmButton) {
+    existingConfirmButton.remove();
+  }
+  toggleStatusBtn.setAttribute("data-confirm", "true");
+  
   modal_btns.appendChild(toggleStatusBtn);
   
   modal.showModal();
@@ -82,10 +89,13 @@ function toggleOrderStatus(orderId) {
 
 // Delete order functionality
 deleteOneBtn.addEventListener("click", () => {
-  modal.querySelector("div").textContent = `Are you sure you want to cancel order #${deleteOneBtn.value}`;
+  modal.querySelector("#modal-text").textContent = `Are you sure you want to cancel your order?`;
+  modal.querySelector("#order_number").textContent = `Order: ${deleteOneBtn.value}`;
 
   let confirmButton = document.createElement("button");
   confirmButton.textContent = "Confirm";
+  confirmButton.classList.add("btn");
+  confirmButton.classList.add("confirmBtn");
   confirmButton.setAttribute("onclick", `deleteOrder(${deleteOneBtn.value})`);
 
   // Remove any existing confirm button to avoid duplicates
@@ -96,7 +106,7 @@ deleteOneBtn.addEventListener("click", () => {
 
   // Add the confirm button to the modal
   confirmButton.setAttribute("data-confirm", "true");
-  modal.appendChild(confirmButton);
+  modal_btns.appendChild(confirmButton);
   modal.showModal();
 });
 
