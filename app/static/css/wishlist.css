@@ -1,128 +1,148 @@
-  /* Layout */
-  main.wishlist {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-  }
-  
-  .content {
-    height: calc(100vh - 60px - 57px);
-    width: 100%;
-    padding-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f7f7f7;
-  }
-  
-  .content-header {
-    margin-bottom: 2rem;
-    display: flex;
-    justify-content: space-between;
-  }
-  .content-title {
-    font-weight: bold;
-    font-size: 39px;
-  }
-  
-  /* Searchbar */
-  .content-searchbar {
-    margin-bottom: 10px;
-    padding: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    border-radius: 4px;
-    border: 1px solid #DFDFDF;
-    background-color: #F5F5F0;
-  }
-  .content-searchbar input {
-    width: 100%;
-    border: none;
-    font-size: 16px;
-    background-color: #F5F5F0;
-  }
-  .content-searchbar input:focus {
-    border: 1px solid black; 
-    outline: none;
-  }
+body {
+  font-family: 'Lato', sans-serif;
+  margin: 0;
+  padding: 0;
+}
 
-  .wishlist-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 0.5rem;
-  }
-  
-  .product-card {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 1em;
-    background-color: white;
-    border: 1px solid #DFDFDF;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .product-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .product-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
-  
-  .product-card h3 {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 10px 0;
-  }
-  
-  .product-card p {
-    font-size: 14px;
-    text-align: center;
-    color: #555;
+main.wishlist {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  padding: 1rem;
+}
 
-    width: 27ch;
-    height: 3rem;
-    overflow: hidden;
-  }
-  
-  .favorite-btn {
-    display: block;
-    margin-top: 10px;
-    padding: 10px;
-    font-weight: bold;
-    background-color: White;
-    color: #ff6363;
-    border: 1px solid #ff6363;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    align-self: center;
-  }
-  
-  .favorite-btn:hover {
-    color: white;
-    background-color: #ff4141;
-    border: 1px solid white;
-  }
-  
-  /* Clear Wishlist Button */
-  .content-tools .deleteBtn {
-    margin-bottom: 15px;
-    border: 1px solid #DFDFDF;
-    color: white;
-    background-color: red;
-  }
-  
-  .content-tools .deleteBtn:hover {
-    cursor: pointer;
-    color: red;
-    background-color: white;
-  }
-  
+.content {
+  height: calc(100vh - 60px - 57px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f7f7f7;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
+.content-header {
+  margin-bottom: -10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.content-title {
+  margin-top: 5px;
+  font-size: 40px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.content-searchbar {
+  margin-bottom: 10px;
+  margin-top: 5px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-radius: 4px;
+  border: 1px solid #DFDFDF;
+  background-color: #F5F5F0;
+  width: 100%;
+}
+
+.content-searchbar input {
+  width: 100%;
+  border: none;
+  font-size: 16px;
+  background-color: transparent;
+  padding: 6px;
+  color: #333;
+}
+
+.content-searchbar input:focus {
+  border: 1px solid black;
+  outline: none;
+}
+
+.wishlist-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #DFDFDF;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+
+
+.product-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 4px; 
+}
+
+.product-card h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #000000;
+}
+
+.product-card p {
+  font-size: 14px;
+  text-align: center;
+  color: #555;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.favorite-btn {
+  display: block;
+  margin-top: 10px;
+  padding: 10px;
+  font-weight: bold;
+  background-color: white;
+  color: #ff6363;
+  border: 1px solid #ff6363;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  align-self: center;
+  text-decoration: none;
+}
+
+.favorite-btn:hover {
+  color: white;
+  background-color: #ff4141;
+  border: 1px solid white;
+}
+
+.content-tools .deleteBtn {
+  margin-bottom: 15px;
+  border: 1px solid #DFDFDF;
+  color: white;
+  background-color: red;
+}
+
+.content-tools .deleteBtn:hover {
+  cursor: pointer;
+  color: red;
+  background-color: white;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
