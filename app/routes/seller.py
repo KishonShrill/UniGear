@@ -4,6 +4,7 @@ from app.forms import *
 from app.routes.auth import seller_required
 from app.models.user import User
 from app.models.order import Order
+import math
 
 import os
 import cloudinary.api
@@ -28,18 +29,18 @@ def login_is_required(function):
   wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
   return wrapper
 
-@seller_bp.route('/dashboard')
-@seller_required
-def dashboard():
-  ...
 
 @seller_bp.route('/seller/my-orders')
 @seller_required
 def my_orders():
-  form = LinkVerify()
-  orders = Product.getOrders(session['org_id'])
-  print(orders)
-  return render_template('/seller/my_orders.html', orders=orders)
+  total_items = Product.countOrders(session['org_id'])
+  items_per_page = 10
+  total_pages = math.ceil(total_items / items_per_page)
+  
+  current_page  = int(request.args.get('page', 1))
+  orders = Product.getOrdersInPage(session['org_id'], current_page)
+  return render_template('/seller/my_orders.html', orders=orders, current_page=current_page, total_pages=total_pages)
+  
 
 @seller_bp.route('/seller/my-orders/export')
 @seller_required
@@ -69,11 +70,40 @@ def export_my_orders():
   # Return the CSV response
   return Response(generate(), mimetype='text/csv', headers={"Content-Disposition": "attachment;filename=orders.csv"})
 
+@seller_bp.route('/seller/my-orders/delete', methods=['POST','GET'])
+@login_is_required
+def delete_order():
+    if request.method == 'POST':
+        try:
+            data = request.get_json()  # Parse the JSON body
+            print(f"Received data: {data}")  # Log received data
+
+            order_id = data.get('order_id')  # Extract product_id
+            if not order_id:
+                return jsonify({"error": "Order ID is required"}), 400
+
+            print(f"\nOrder ID: {order_id}")
+            Order.deleteOrder(order_id)
+            
+            return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": "Something went wrong"}), 500
+    if request.method == 'GET':
+        return abort(404) 
+
+
+
 @seller_bp.route('/seller/my-products')
 @seller_required
 def my_products():
+  total_items = Product.countProducts(session['org_id'])
+  items_per_page = 10
+  total_pages = math.ceil(total_items / items_per_page)
+  
+  current_page  = int(request.args.get('page', 1))
   products = Product.getProducts(session['org_id'])
-  return render_template('/seller/my_products.html', products=products)
+  return render_template('/seller/my_products.html', products=products, current_page=current_page, total_pages=total_pages)
 
 @seller_bp.route('/seller/my-products/delete', methods=['POST','GET'])
 @login_is_required
@@ -95,30 +125,8 @@ def delete_product():
             print(f"Error: {e}")
             return jsonify({"error": "Something went wrong"}), 500
     if request.method == 'GET':
-        return abort(404)
-      
-      
-@seller_bp.route('/seller/my-orders/delete', methods=['POST','GET'])
-@login_is_required
-def delete_order():
-    if request.method == 'POST':
-        try:
-            data = request.get_json()  # Parse the JSON body
-            print(f"Received data: {data}")  # Log received data
+        return abort(404)     
 
-            order_id = data.get('order_id')  # Extract product_id
-            if not order_id:
-                return jsonify({"error": "Order ID is required"}), 400
-
-            print(f"\nOrder ID: {order_id}")
-            Order.deleteOrder(order_id)
-            
-            return None
-        except Exception as e:
-            print(f"Error: {e}")
-            return jsonify({"error": "Something went wrong"}), 500
-    if request.method == 'GET':
-        return abort(404)      
 
 
 # Seller Profile Route
@@ -165,6 +173,7 @@ def profile():
     return render_template('seller/seller_profile.html', user=user, zipcode_street=zipcode_street, barangay=barangay, city=city)
 
   
+  
 # Product Creation Form Route
 # Product Creation Form Route
 # Product Creation Form Route
@@ -173,7 +182,6 @@ def profile():
 def product_new():
   form = ProductForm()
   return render_template('/crud_blueprint/product_page-create.html', form=form)
-
 
 @seller_bp.route('/product/new/submit', methods=['POST', 'GET'])
 @seller_required
@@ -310,7 +318,8 @@ def product_new_submit():
   if request.method == 'GET':
     return abort(404)
   
-  
+
+
 @seller_bp.route('/product/edit/<int:product_id>', methods=['GET', 'POST'])
 @seller_required
 def product_edit(product_id):
@@ -368,9 +377,6 @@ def product_edit_submit(product_id):
     print(f"product_id: {product_id}")
     
     
-    
-        
-
     # Checks for a valid form \/ \/ \/
     # Checks for a valid form \/ \/ \/
     # Checks for a valid form \/ \/ \/

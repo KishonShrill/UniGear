@@ -304,6 +304,23 @@ class Product(object):
         cursor.close()
         
     @staticmethod
+    def countProducts(org_id):
+        try:
+            cursor = mysql.connection.cursor()
+            query = """
+            SELECT COUNT(*) AS row_count
+            FROM products p
+            LEFT JOIN user u ON p.seller_id = u.user_id
+            WHERE u.org_id = %s;
+            """
+            cursor.execute(query, (org_id,))
+            
+            row_count = cursor.fetchone()[0]
+            return row_count
+        except Exception as e:
+            return f"Order Count ERR: {e}"
+        
+    @staticmethod
     def getOrders(org_id):
         try:
             # Create a connection object
@@ -328,11 +345,77 @@ class Product(object):
             JOIN sizes s ON ob.size_id = s.size_id
             JOIN user seller ON p.seller_id = seller.user_id
             WHERE seller.org_id = %s
-            ORDER BY ob.order_id ASC;
+            ORDER BY ob.order_id DESC
+            LIMIT 10;
             """
 
             # Execute the query
             cursor.execute(query, (org_id,))
+
+            # Fetch all results
+            result = cursor.fetchall()
+
+            # Process the results into a list of dictionaries
+            orders = []
+            for row in result:
+                order = {
+                    'Order': row[0],
+                    'Customer': row[1],
+                    'Total Cost': row[2],
+                    'Product': row[3],
+                    'Size': row[4],
+                    'Quantity': row[5],
+                    'Type': row[6],
+                    'Status': row[7],
+                    'Order Date': row[8],
+                    'Proof of Payment': row[9]
+                }
+                orders.append(order)
+
+            # Close the cursor and connection
+            cursor.close()
+
+            return orders  # Return the orders list
+
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            return None
+        
+    @staticmethod
+    def getOrdersInPage(org_id, page):
+        try:
+            # Create a connection object
+            cursor = mysql.connection.cursor()
+            
+            offset = 10 * (page - 1)
+            print(f"Offset: {offset}")
+
+            # Define the SQL query
+            query = """
+            SELECT 
+                ob.order_id,
+                u.user_name,
+                ob.total_cost,
+                p.product_name,
+                s.size_name,
+                ob.quantity,
+                p.order_type,
+                ob.order_status,
+                ob.order_date,
+                ob.proof_of_payment
+            FROM ordered_by ob
+            JOIN user u ON ob.user_id = u.user_id
+            JOIN products p ON ob.product_id = p.product_id
+            JOIN sizes s ON ob.size_id = s.size_id
+            JOIN user seller ON p.seller_id = seller.user_id
+            WHERE seller.org_id = %s
+            ORDER BY ob.order_id DESC
+            LIMIT 10
+            OFFSET %s;
+            """
+
+            # Execute the query
+            cursor.execute(query, (org_id, offset))
 
             # Fetch all results
             result = cursor.fetchall()
@@ -469,6 +552,27 @@ class Product(object):
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
+        
+    @staticmethod
+    def countOrders(org_id):
+        try:
+            cursor = mysql.connection.cursor()
+
+            query = """
+            SELECT COUNT(*) AS row_count
+            FROM ordered_by ob
+            JOIN user u ON ob.user_id = u.user_id
+            JOIN products p ON ob.product_id = p.product_id
+            JOIN sizes s ON ob.size_id = s.size_id
+            JOIN user seller ON p.seller_id = seller.user_id
+            WHERE seller.org_id = %s;
+            """
+            print(f"Executing query: {query} with org_id: {org_id}")
+            cursor.execute(query, (org_id,))
+            count = cursor.fetchone()[0]
+            return count
+        except Exception as e:
+            print(f"Products Count ERR: {e}")
         
     @staticmethod
     def get_product_pictures(product_id):
