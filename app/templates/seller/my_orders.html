@@ -89,6 +89,30 @@
             </tbody>
           </table>
         </div>
+
+        <div class="content-pagination">
+          <ul class="pagination-container">
+            {% if current_page > 1 %}
+            <li>
+                <a class="pagination-numbers" href="/seller/my-orders?page={{ current_page - 1 }}">Prev</a>
+            </li>
+            {% endif %}
+    
+            {# Render pagination numbers dynamically #}
+            {% for page in range(1, total_pages + 1) %}
+                <li>
+                    <a class="pagination-numbers {% if page == current_page %}active{% endif %}" 
+                       href="/seller/my-orders?page={{ page }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+    
+            {% if current_page < total_pages %}
+            <li>
+                <a class="pagination-numbers" href="/seller/my-orders?page={{ current_page + 1 }}">Next</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
       </div>
     </section>
   </main>

@@ -49,13 +49,15 @@ aside {
   justify-content: space-between;
   background: #E0E0D7;
 }
+
 .aside__tools,
 .aside__account {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  
+
 }
+
 .aside__links {
   width: 100%;
   padding: 1rem;
@@ -64,12 +66,13 @@ aside {
   align-items: center;
   border-radius: 5px;
   text-decoration: none;
-  font-family: "Inter", sans-serif; 
+  font-family: "Inter", sans-serif;
   color: black;
   overflow: hidden;
 
   background-color: #E0E0D7;
 }
+
 .aside__links[visit] {
   width: 100%;
   padding: 1rem;
@@ -78,28 +81,32 @@ aside {
   align-items: center;
   border-radius: 5px;
   text-decoration: none;
-  font-family: "Inter", sans-serif; 
+  font-family: "Inter", sans-serif;
   color: black;
   overflow: hidden;
 
   background-color: white;
 }
+
 .aside__links:hover {
   cursor: pointer;
   background-color: #bbbbb6;
 }
+
 .aside__account-info {
   display: flex;
   flex-direction: column;
 }
+
 .aside__account-info-title {
   color: #29AB51;
 }
+
 .aside__account-info-email {
   width: 16ch;
-  white-space: nowrap; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #6d7071;
 }
 
@@ -127,8 +134,8 @@ dialog:-internal-dialog-in-top-layer::backdrop {
 }
 
 .modal-texts {
-  width: 100%; 
-  text-align: center; 
+  width: 100%;
+  text-align: center;
   font-size: 1.25rem;
 }
 
@@ -142,4 +149,25 @@ dialog:-internal-dialog-in-top-layer::backdrop {
   border: 1px solid black;
   color: white;
   background: red;
+}
+
+.pagination-container {
+  width: 100%;
+  margin-top: 2rem;
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.pagination-numbers {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+  color: black;
+  background-color: white;
+  border: 1px solid #DFDFDF;
+  border-radius: 4px;
 }
