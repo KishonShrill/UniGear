@@ -4,6 +4,7 @@ from app.models.user import User
 from app.models.order import Order
 from app.forms import *
 from app.models.order import Order
+import math
 import cloudinary.api
 import cloudinary.uploader
 from cloudinary.utils import cloudinary_url
@@ -30,10 +31,14 @@ def login_is_required(function):
 def my_orders():
   form = LinkVerify()
   user = User.get_by_email(session['email'])
+  
+  total_items = Product.countOrdersWithEmail(user.user_email)
+  items_per_page = 10
+  total_pages = math.ceil(total_items / items_per_page)
+  
+  current_page  = int(request.args.get('page', 1))
   orders = Product.getOrdersWithEmail(user.user_email)
-  print(f"User: {user.user_email}")
-  print(f"Orders: {orders}")
-  return render_template('/user/my_orders.html', orders=orders, form=form)
+  return render_template('/user/my_orders.html', orders=orders, form=form, current_page=current_page, total_pages=total_pages   )
 
 @user_bp.route('/user/my-orders/delete', methods=['POST','GET'])
 @login_is_required

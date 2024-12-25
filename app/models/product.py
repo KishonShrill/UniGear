@@ -446,6 +446,35 @@ class Product(object):
             print(f"Error occurred: {e}")
             return None
         
+    @staticmethod
+    def countOrdersWithEmail(email):
+        try:
+            # Create a connection object
+            cursor = mysql.connection.cursor()
+
+            # Define the SQL query
+            query = """
+            SELECT COUNT(*) as row_count
+            FROM ordered_by ob
+            JOIN user u ON ob.user_id = u.user_id
+            JOIN products p ON ob.product_id = p.product_id
+            JOIN sizes s ON ob.size_id = s.size_id
+            WHERE user_email = %s;
+            """
+
+            # Execute the query
+            cursor.execute(query, (email,))
+
+            # Fetch all results
+            count = cursor.fetchone()[0]
+
+            # Close the cursor and connection
+            cursor.close()
+
+            return count  # Return the count of orders
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            return None
         
     @staticmethod
     def getOrdersWithEmail(email):

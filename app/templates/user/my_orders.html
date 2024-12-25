@@ -107,6 +107,30 @@
             </tbody>
           </table>
         </div>
+
+        <div class="content-pagination">
+          <ul class="pagination-container">
+            {% if current_page > 1 %}
+            <li>
+                <a class="pagination-numbers" href="/user/my-orders?page={{ current_page - 1 }}">Prev</a>
+            </li>
+            {% endif %}
+    
+            {# Render pagination numbers dynamically #}
+            {% for page in range(1, total_pages + 1) %}
+                <li>
+                    <a class="pagination-numbers {% if page == current_page %}active{% endif %}" 
+                       href="/user/my-orders?page={{ page }}">{{ page }}</a>
+                </li>
+            {% endfor %}
+    
+            {% if current_page < total_pages %}
+            <li>
+                <a class="pagination-numbers" href="/user/my-orders?page={{ current_page + 1 }}">Next</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
       </div>
     </section>
   </main>
@@ -114,7 +138,7 @@
 <!-- Proof of Payment Modal -->
 <dialog class="modal payment-modal" id="proofPaymentModal">
   <div id="paymentModalContent">Preview your Proof of Payment:</div>
-  <img id="paymentModalImage" src="#" alt="Proof of Payment Preview" style="max-width: 100%; height: auto; display: none;">
+  <img id="paymentModalImage" src="#" alt="Proof of Payment Preview" style="max-width: 500px; height: auto; display: none;">
   <div id="paymentModalButtons">
     <button id="paymentCancelBtn">Cancel</button>
     <button id="paymentConfirmBtn">Confirm</button>
@@ -124,7 +148,7 @@
 <!-- View Proof of Payment Modal -->
 <dialog class="modal payment-view-modal" id="proofPaymentViewModal">
   <div>Uploaded Proof of Payment:</div>
-  <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 100%; height: auto;">
+  <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 500px; height: auto;">
   <div id="viewModalButtons">
     <button id="viewCloseBtn">Close</button>
     <button id="viewChangeBtn">Change File</button>
@@ -135,7 +159,7 @@
   <!-- Dialog -->
   <dialog class="modal" data-modal>
     <div id="previewID"></div>
-    <img id="preview" src="" alt="#" />
+    <img id="preview" src="" alt="#" style="max-width: 500px;"/>
     <button data-close-modal >Close</button>
   </dialog>
 
