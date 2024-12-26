@@ -73,6 +73,7 @@ rows.forEach(row => {
     if (e.target !== checkbox && !e.target.closest("input[type='checkbox']")) {
       const orderValue = row.getAttribute("value"); // Get the 'value' attribute from the <tr>
       const imgSource = row.getAttribute("data"); // Get the 'value' attribute from the <tr>
+      const paymentStatus = row.getAttribute("status"); // Get the 'value' attribute from the <tr>
 
       // Check if the same row was clicked twice consecutively
       if (lastClickedRow === row) {
@@ -88,7 +89,9 @@ rows.forEach(row => {
             console.log("HI? - " + orderValue)
             openModal(orderId, orderValue, imgSource, currentStatus);
           } else {
-            openModal(orderValue, imgSource); // Open modal on the second click
+            if (window.location.pathname != '/user/my-orders') {
+              openModal(orderValue, imgSource); // Open modal on the second click
+            }
           }
 
           clickCount = 0; // Reset click count after opening the modal
@@ -97,7 +100,7 @@ rows.forEach(row => {
         // Reset the click count and set the new last clicked row
         lastClickedRow = row;
         clickCount = 1;
-        setDeleteBtn(orderValue);
+        setDeleteBtn(orderValue, imgSource, paymentStatus);
         if (window.location.pathname !== '/seller/my-orders') {
           setEditBtn(orderValue)
         }

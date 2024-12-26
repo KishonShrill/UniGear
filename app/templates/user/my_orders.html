@@ -28,8 +28,8 @@
 
       <div class="content-container content-data">
         <div class="content-tools">
-          <button class="btn deleteBtn" id="deleteAll">Delete All</button>
-          <button class="btn deleteBtn" id="deleteOne" value="">Delete</button>
+          <button class="btn deleteBtn" id="deleteAll">Cancel All Orders</button>
+          <button class="btn deleteBtn" id="deleteOne" value="">Cancel Order</button>
           <button class="btn editBtn" style="display: none;" id="editOne" value="">Edit</button>
         </div>
 
@@ -56,7 +56,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}">
+              <tr value="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}" status="{{ order['Status'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Product'] }}</td>
@@ -71,11 +71,11 @@
                 {% endif %}
 
                 {% if order['Status'] == 1 %}
-                <td style="color: green;"><b>Paid</b></td>
+                <td style="color: green;"><b id="status-{{ order['Order'] }}">Paid</b></td>
                 {% elif order['Status'] == 0 and order['Proof of Payment'] is not none %}
-                <td style="color: rgb(211, 211, 0);"><b>Pending</b></td>
+                <td style="color: rgb(211, 211, 0);"><b id="status-{{ order['Order'] }}">Pending</b></td>
                 {% else %}
-                <td style="color: red;"><b>Unpaid</b></td>
+                <td style="color: red;"><b id="status-{{ order['Order'] }}">Unpaid</b></td>
                 {% endif %}
 
                 <td><p style="
@@ -87,7 +87,7 @@
                 <td id="proofCell_{{ order['Order'] }}">
                   {% if order['Proof of Payment'] %}
                     <!-- Display the "View Proof" button if proof exists -->
-                    <button onclick="viewUploadedProof('{{ order['Proof of Payment'] }}', '{{ order['Order'] }}')"> 
+                    <button data-order-id="{{ order['Order'] }}" onclick="viewUploadedProof('{{ order['Proof of Payment'] }}', '{{ order['Order'] }}')"> 
                       View Proof
                     </button>
                   {% else %}
@@ -138,20 +138,20 @@
 <!-- Proof of Payment Modal -->
 <dialog class="modal payment-modal" id="proofPaymentModal">
   <div id="paymentModalContent">Preview your Proof of Payment:</div>
-  <img id="paymentModalImage" src="#" alt="Proof of Payment Preview" style="max-width: 500px; height: auto; display: none;">
-  <div id="paymentModalButtons">
-    <button id="paymentCancelBtn">Cancel</button>
-    <button id="paymentConfirmBtn">Confirm</button>
+  <img id="paymentModalImage" src="#" alt="Proof of Payment Preview" style="width: 350px;">
+  <div id="paymentModalButtons" style="display: flex; justify-content: space-between;">
+    <button class="btn deleteBtn" id="paymentCancelBtn">Cancel</button>
+    <button class="btn confirmBtn" id="paymentConfirmBtn">Confirm</button>
   </div>
 </dialog>
 
 <!-- View Proof of Payment Modal -->
 <dialog class="modal payment-view-modal" id="proofPaymentViewModal">
   <div>Uploaded Proof of Payment:</div>
-  <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="max-width: 500px; height: auto;">
-  <div id="viewModalButtons">
-    <button id="viewCloseBtn">Close</button>
-    <button id="viewChangeBtn">Change File</button>
+  <img id="viewModalImage" src="#" alt="Uploaded Proof Preview" style="width: 350px;">
+  <div id="viewModalButtons" style="display: flex; justify-content: space-between;">
+    <button class="btn deleteBtn" id="viewCloseBtn">Close</button>
+    <button class="btn editBtn" id="viewChangeBtn">Change File</button>
   </div>
 </dialog>
 
@@ -159,8 +159,10 @@
   <!-- Dialog -->
   <dialog class="modal" data-modal>
     <div id="previewID"></div>
-    <img id="preview" src="" alt="#" style="max-width: 500px;"/>
-    <button data-close-modal >Close</button>
+    <img id="preview" src="" alt="#" style="width: 350px;"  >
+    <div id="modal-btns" style="display: flex; justify-content: space-between;">
+      <button class="btn deleteBtn" data-close-modal>Close</button>
+    </div>
   </dialog>
 
   <!-- Footer -->
