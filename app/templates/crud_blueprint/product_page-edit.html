@@ -17,7 +17,9 @@
   <!-- Content -->
   <form id="product-form" method="POST" action="{{ url_for('seller.product_edit_submit', product_id=product.product_id) }}" enctype="multipart/form-data">
     {{ form.csrf_token }}
+    {% if product.order_type == 1%}
     <input type="date" id="submitPreorderDate" name="preorderDate" value="" required hidden>
+    {% endif %}
   </form>
   <main class="product">
     <section class="product__image-wrapper">
@@ -69,9 +71,11 @@
     </section>
 
     <div class="product__content-wrapper">
-      <div class="product__content-back-wrapper">
-        <a class="product__content-back" href="../../"><b>Home</b></a>
-        <a class="product__content-back" href="../"><b>Back to Shop</b></a>
+      <div style="display: flex; justify-content: space-between;">
+        <div class="product__content-back-wrapper">
+          <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
+          <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
+        </div>
       </div>
 
       <div class="input-box">
@@ -138,6 +142,9 @@
               {% if product.order_type == 1 %}<option value="1" selected>Time Based</option>{% else %}<option value="1">Time Based</option>{% endif %}
             </select>
             <label for="preorder" hidden>How many products will you sell?</label>
+            {% if product.order_type == 1 %}
+            <input type="date" id="preorderDate" name="preorderDate" required="" value="" placeholder="Select preorder end date..." onchange="logDate(this)">
+            {% endif %}
           </div>
         </div>
         <!-- Remove for Product Details -->
@@ -196,13 +203,14 @@
   </script>
   <script>
     let slidesData = [];
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', function() {
       {% for image in product_pictures %}
-        slidesData.push('{{ image }}')
+        slidesData.push("{{ image }}")
       {% endfor %}
 
-      console.log(slidesData)
-    };
+      console.log("slidesData: "+slidesData)
+      console.log("lakjshdfkljsahdlfjhiouhdf ipush")
+    });
   </script>
   <script>
     // Image Slider Logic
@@ -234,6 +242,38 @@
 
       slides[slideIndex - 1].style.display = "flex";
       dots[slideIndex - 1].className += " active";
+    }
+  </script>
+  <script>
+    window.onload = function() {
+      if ({{ product.order_type }} == 1) {
+        const dateInput = document.getElementById('preorderDate');
+
+        // Calculate one week from today
+        const today = new Date();
+        const oneWeekFromToday = new Date(today);
+        oneWeekFromToday.setDate(today.getDate() + 8); // Add 7 days to the current date
+        const formattedDate = oneWeekFromToday.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+
+        // Set the default value to one week from today
+        console.log("Date: "+formattedDate)
+        dateInput.value = `${formattedDate}`;
+
+        // Add the onchange attribute inline
+        dateInput.setAttribute('onchange', 'logDate(this)');
+
+        // Now, append inputBox to the form
+        const form = document.getElementById("product-form");
+        const dateInputSubmit = document.getElementById('submitPreorderDate');
+        dateInputSubmit.hidden = true;
+        dateInputSubmit.value = formattedDate;
+
+        const releaseDate = new Date(formattedDate)
+        const differenceInMillis = releaseDate - today;
+        const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24));
+        quantity.innerText = differenceInDays;
+        number_of_days.value = differenceInDays;
+      }
     }
   </script>
   <script src="{{ url_for('static', filename='js/product_page.js') }}"></script>
