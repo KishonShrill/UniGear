@@ -55,7 +55,7 @@
             </thead>
             <tbody>
               {% for order in orders %}
-              <tr value="{{ order['Order'] }}" data-order-id="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}">
+              <tr value="{{ order['Order'] }}" data-order-id="{{ order['Order'] }}" data="{{ order['Proof of Payment'] }}" status="{{ order['Status'] }}">
                 <td><input type="checkbox"></td>
                 <td>{{ order['Order'] }}</td>
                 <td>{{ order['Customer'] }}</td>

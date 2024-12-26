@@ -81,53 +81,37 @@ function toggleOrderStatus(orderId) {
 }
 
 
-// document.querySelectorAll("table tbody tr").forEach(row => {
-//   row.addEventListener("dblclick", () => {
-//     const orderId = row.dataset.orderId;  
-//     const orderValue = row.children[1].textContent;  
-//     const currentStatus = row.querySelector('td:nth-child(9)').textContent === "Paid" ? 1 : 0;  
-
-//     openModal(orderId, orderValue, currentStatus);
-//   });
-// });
-
 // Delete order functionality
 deleteOneBtn.addEventListener("click", () => {
   modal.querySelector("#modal-text").textContent = `Are you sure you want to cancel your order?`;
   modal.querySelector("#order_number").textContent = `Order: ${deleteOneBtn.value}`;
-
   let confirmButton = document.createElement("button");
-  confirmButton.textContent = "Confirm";
-  confirmButton.classList.add("btn");
-  confirmButton.classList.add("confirmBtn");
-  confirmButton.setAttribute("onclick", `deleteOrder(${deleteOneBtn.value})`);
+
+  if (deleteOneBtn.status == 0) {
+    confirmButton.textContent = "Confirm";
+    confirmButton.classList.add("btn");
+    confirmButton.classList.add("confirmBtn");
+    confirmButton.setAttribute("onclick", `deleteOrder(${deleteOneBtn.value})`);
+    modal_btns.appendChild(confirmButton);
+  }
 
   // Remove any existing confirm button to avoid duplicates
   const existingConfirmButton = modal.querySelector("button[data-confirm]");
   if (existingConfirmButton) {
     existingConfirmButton.remove();
   }
-
+  
   // Add the confirm button to the modal
   confirmButton.setAttribute("data-confirm", "true");
-  modal_btns.appendChild(confirmButton);
   modal.showModal();
 });
 
 // Set delete button value when clicking on a row
-function setDeleteBtn(orderValue) {
+function setDeleteBtn(orderValue, imgSource, paymentStatus) {
   deleteOneBtn.value = orderValue;
+  console.log("Status: " + deleteOneBtn.value)
+  deleteOneBtn.data = imgSource;
+  console.log("Status: " + deleteOneBtn.data)
+  deleteOneBtn.status = paymentStatus;
+  console.log("Status: " + deleteOneBtn.status)
 }
-
-// // Function to open modal for product details
-// function openProductModal(productImageURL, productName) {
-//   const modal = document.querySelector("dialog[data-modal]");
-
-//   const imageSrc = productImageURL ? productImageURL : '/static/images/placeholder.jpg';
-
-//   modal.querySelector("div").textContent = productName; 
-//   modal.querySelector("img").src = imageSrc; 
-//   modal.querySelector("img").alt = `${productName} image`; 
-
-//   modal.showModal();
-// }

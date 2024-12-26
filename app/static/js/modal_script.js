@@ -20,7 +20,7 @@ deleteOneBtn.addEventListener("click", () => {
   modal.querySelector("div").textContent = `Are you sure you want to cancel order #${deleteOneBtn.value}`;
 
   // console.log("Status: " + deleteOneBtn.status + "\nSrc: " + deleteOneBtn.data)
-  if (deleteOneBtn.status == 0) {
+  if (deleteOneBtn.status == 0 || (window.location.pathname == '/seller/my-products')) {
     confirmButton.textContent = "Confirm";
     confirmButton.classList.add("btn");
     confirmButton.classList.add("confirmBtn");
@@ -37,7 +37,9 @@ deleteOneBtn.addEventListener("click", () => {
   confirmButton.setAttribute("data-confirm", "true");
   
   // Add image URL
-  document.getElementById("preview").src = deleteOneBtn.data;
+  if (window.location.pathname !== '/seller/my-products') {
+    document.getElementById("preview").src = deleteOneBtn.data;
+  }
 
   // Add the confirm button to the modal
   modal.showModal()
@@ -45,6 +47,9 @@ deleteOneBtn.addEventListener("click", () => {
 
 function setDeleteBtn(orderValue, imgSource, paymentStatus) {
   deleteOneBtn.value = orderValue;
+  console.log("Status: " + deleteOneBtn.value)
   deleteOneBtn.data = imgSource;
+  console.log("Status: " + deleteOneBtn.data)
   deleteOneBtn.status = paymentStatus;
+  console.log("Status: " + deleteOneBtn.status)
 }
