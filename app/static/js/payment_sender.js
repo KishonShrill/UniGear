@@ -93,12 +93,16 @@ function handleFileUpload(event, orderId) {
                   // Update the UI and save the URL to the database
                   const proofCell = document.getElementById(`proofCell_${orderId}`);
                   proofCell.innerHTML = `
-                      <button onclick="viewUploadedProof('${cloudinaryUrl}', ${orderId})">
+                      <button data-order-id="${orderId}" onclick="viewUploadedProof('${cloudinaryUrl}', ${orderId})">
                           View Proof
                       </button>
                   `;
-
                   paymentModal.close();  // Close the modal after successful upload
+                  
+                  // Change the status of the row
+                  const status = document.getElementById(`status-${orderId}`);
+                  status.textContent = "Pending";
+                  status.style.color = "rgb(211, 211, 0)";
               })
               .catch(error => {
                   console.error('Error uploading the file:', error);
@@ -135,12 +139,31 @@ function viewUploadedProof(imageURL, orderId) {
   const viewChangeBtn = document.getElementById("viewChangeBtn");
   viewChangeBtn.onclick = function () {
     const proofCell = document.getElementById(`proofCell_${orderId}`);
-    
-    // Show the original file input
-    // const fileInput = document.getElementById(`paymentProof_${orderId}`);
-    // if (fileInput) {
-    //   fileInput.style.display = "block"; // Show input field again
-    // }
+    const button = document.querySelector(`button[data-order-id="${orderId}"]`);
+    const status = document.getElementById(`status-${orderId}`);
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch('/user/receipt/delete', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Correct Content-Type
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({picture: imageURL}), // Send product_id in JSON format
+    }).then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+      }
+      return response.json(); // Parse the response as JSON
+    })
+    .then(data => {
+        console.log("Entry: " + data.success); // Access the 'success' property from the JSON response
+        status.textContent = "Unpaid";
+        status.style.color = "red";
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
 
     proofCell.innerHTML = `
       <input 
@@ -148,12 +171,10 @@ function viewUploadedProof(imageURL, orderId) {
         name="paymentProof_{{ order['Order'] }}" 
         id="paymentProof_{{ order['Order'] }}" 
         accept="image/*,.pdf" 
-        onchange="handleFileUpload(event, {{ order['Order'] }})">
+        onchange="handleFileUpload(event, '${orderId}')">
     `;
   
-    // Remove the "View Proof" button
-    proofCell.querySelector('button').remove();
-    
+    button.remove(); // Remove the "View Proof" button
     viewModal.close(); // Close the modal
   };  
 }

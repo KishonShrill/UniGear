@@ -51,17 +51,48 @@ def delete_order():
             order_id = data.get('order_id')  # Extract product_id
             if not order_id:
                 return jsonify({"error": "Order ID is required"}), 400
-
             print(f"\nOrder ID: {order_id}")
-            Order.deletePreorder(order_id)
-            # jsonify({"success": True, "message": f"Product {product_id} deleted"}), 200
+            
+            
+            picture = Order.fetchReceipt(order_id)
+            if picture:
+                old_public_id = picture.split('/')[-1]  # Get the filename
+                old_public_id = '.'.join(old_public_id.split('.')[:-1])  # Remove the last extension
+                print(f"Filename: {old_public_id}")
+                cloudinary.api.delete_resources(old_public_id, resource_type="image", type="upload")
+            print(f"Picture: {picture}")
+            
+            status = Order.deleteOrder(order_id)
+            print(f"Status: {status}")
+            
         except Exception as e:
             print(f"Error: {e}")
             return jsonify({"error": "Something went wrong"}), 500
     if request.method == 'GET':
         return abort(404)
 
-
+@user_bp.route('/user/receipt/delete', methods=['POST'])
+@login_is_required
+def delete_receipt():
+    try:
+        data = request.get_json()  # Parse the JSON body
+        print(f"Received data: {data}")  # Log received data
+        
+        picture = data.get('picture')  # Extract product_id
+    
+        if picture:
+            old_public_id = picture.split('/')[-1]  # Get the filename
+            old_public_id = '.'.join(old_public_id.split('.')[:-1])  # Remove the last extension
+            result = cloudinary.api.delete_resources(old_public_id, resource_type="image", type="upload")
+            print(f"Result: {result}")
+        
+        status = Order.deleteReceipt(picture)
+        print(f"Delete Status: {status}")
+        
+        return jsonify({"success": True})
+    except Exception as e:
+        print(f"Receipt Del ERR: {e}")
+        return jsonify({"error": e})
 
 @user_bp.route('/user/profile', methods=['GET', 'POST'])
 @login_is_required 

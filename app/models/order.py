@@ -68,6 +68,24 @@ class Order(object):
       print(f"Error: {e}")
       return False, None  # Return failure if any exception occurs
           
+  @staticmethod
+  def fetchReceipt(order_id):
+    try:
+      cursor = mysql.connection.cursor()
+      cursor.execute(
+        """
+          SELECT proof_of_payment
+          FROM ordered_by
+          WHERE order_id = %s
+        """,
+        (order_id,)
+      )
+      mysql.connection.commit()
+      picture = cursor.fetchone()[0]
+      cursor.close()
+      return picture
+    except Exception as e:
+      return f"Fetch Pic ERR: {e}"
           
   @staticmethod
   def deleteOrder(order_id):
@@ -75,12 +93,44 @@ class Order(object):
       cursor = mysql.connection.cursor()
       cursor.execute(
         """
-          DELETE FROM ordered_by 
+          SELECT order_status
+          FROM ordered_by
           WHERE order_id = %s
         """,
         (order_id,)
       )
       mysql.connection.commit()
+      isPaid = cursor.fetchone()[0]
+      
+      if isPaid == False:
+        cursor.execute(
+          """
+            DELETE FROM ordered_by 
+            WHERE order_id = %s
+          """,
+          (order_id,)
+        )
+        mysql.connection.commit()
+        
       cursor.close()
+      return f"isPaid ? {order_id} : {isPaid}"
     except Exception as e:
       return f"Error: {e}"
+    
+  @staticmethod
+  def deleteReceipt(picture):
+    try:
+      cursor = mysql.connection.cursor()
+      cursor.execute(
+        """
+          UPDATE ordered_by 
+          SET proof_of_payment = NULL 
+          WHERE proof_of_payment = %s
+        """,
+        (picture,)
+      )
+      mysql.connection.commit()
+      cursor.close()
+      return "Success"
+    except Exception as e:
+      return f"Receipt Delete ERR: {e}"

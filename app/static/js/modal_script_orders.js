@@ -13,22 +13,26 @@ function openModal(orderId, orderValue, imgSource, currentStatus) {
   modal.querySelector("#order_number").textContent = `Order: ${orderValue}`;
   modal.querySelector("img").src = `${imgSource}`;
   
-  toggleStatusBtn.setAttribute('data-order-id', orderId);  
-  toggleStatusBtn.classList.add("btn");
-  toggleStatusBtn.classList.add("confirmBtn");
-  if (currentStatus === 1) {
-    toggleStatusBtn.textContent = "Mark as Unpaid";  
-  } else {
-    toggleStatusBtn.textContent = "Mark as Paid";  
+  console.log("Source: " + imgSource)
+  if (imgSource != 'None') {
+    toggleStatusBtn.setAttribute('data-order-id', orderId);  
+    toggleStatusBtn.classList.add("btn");
+    toggleStatusBtn.classList.add("confirmBtn");
+    if (currentStatus === 1) {
+      toggleStatusBtn.textContent = "Mark as Unpaid";  
+    } else {
+      toggleStatusBtn.textContent = "Mark as Paid";  
+    }
+    console.log("YAHOO")
   }
+  
   const existingConfirmButton = modal.querySelector("button[data-confirm]");
   if (existingConfirmButton) {
     existingConfirmButton.remove();
   }
   toggleStatusBtn.setAttribute("data-confirm", "true");
   
-  modal_btns.appendChild(toggleStatusBtn);
-  
+  if (imgSource != 'None') {modal_btns.appendChild(toggleStatusBtn);}
   modal.showModal();
 }
 
