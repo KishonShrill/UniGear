@@ -294,11 +294,13 @@ def product_new_submit():
         # Upload to Cloudinary
         try:
           filename = os.path.splitext(filename)[0]
+          print(f"Picture: {filename}")
           upload_result = cloudinary.uploader.upload(picture, public_id=filename)
           cloudinary_url = upload_result.get('secure_url')  # Get the URL of the uploaded image
+          print(f"URL: {cloudinary_url  }")
 
           # Save the Cloudinary URL to the database for this product
-          product.add_product_pictures(cloudinary_url)
+          product.init_product_pictures(cloudinary_url)
           URLS.append(cloudinary_url)
 
           print(f"cloudinary_url: {cloudinary_url}")

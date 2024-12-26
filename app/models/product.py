@@ -119,7 +119,7 @@ class Product(object):
         mysql.connection.commit()
         cursor.close()
 
-    def add_product_pictures(self, picture_url):
+    def init_product_pictures(self, picture_url):
         """Add sizes to the product."""
         query = """
         INSERT INTO pictures (picture_id, picture_url)
