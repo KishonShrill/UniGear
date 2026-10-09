@@ -2,52 +2,53 @@ import cloudinary
 from flask import Flask, render_template
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
-from config import DB_USERNAME, DB_PASSWORD, DB_NAME, DB_HOST, SECRET_KEY
-from config import CLOUD_NAME, API_KEY, API_SECRET
-from datetime import timedelta
+from config import get_config
 
 mysql = MySQL()
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY=SECRET_KEY,
-        MYSQL_USER=DB_USERNAME,
-        MYSQL_PASSWORD=DB_PASSWORD,
-        MYSQL_DB=DB_NAME,
-        MYSQL_HOST=DB_HOST,
-    )
 
-    # Set the max upload size to 25MB (in bytes)
-    app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB
-    
-    # Error Page
+def create_app(test_config=None):
+    """Application factory for UniGear Flask app."""
+    app = Flask(__name__, instance_relative_config=True)
+
+    # Load configuration
+    config_class = get_config()
+    app.config.from_object(config_class)
+
+    if test_config is not None:
+        if isinstance(test_config, dict):
+            app.config.from_mapping(test_config)
+        else:
+            app.config.from_object(test_config)
+
+    # Error Page Handlers
     @app.errorhandler(404)
     def not_found(e):
-        return render_template("./components/404.html")
+        return render_template("./components/404.html"), 404
+
     @app.errorhandler(401)
     def not_logged_in(e):
-        return render_template("./components/401.html")
+        return render_template("./components/401.html"), 401
 
+    # Initialize Cloudinary SDK
     cloudinary.config(
-        cloud_name=CLOUD_NAME,
-        api_key=API_KEY,
-        api_secret=API_SECRET,
-        secure=True
+        cloud_name=app.config.get("CLOUD_NAME"),
+        api_key=app.config.get("API_KEY"),
+        api_secret=app.config.get("API_SECRET"),
+        secure=True,
     )
 
+    # Initialize Extensions
     mysql.init_app(app)
     CSRFProtect(app)
-    app.permanent_session_lifetime = timedelta(days=1)  # Session lasts 1 day
 
-    # Gather Routes
+    # Register Blueprints
     from app.routes.auth import auth_bp
     from app.routes.website import website_bp
     from app.routes.colleges import colleges_bp
     from app.routes.seller import seller_bp
     from app.routes.user import user_bp
 
-    # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(website_bp)
     app.register_blueprint(colleges_bp)

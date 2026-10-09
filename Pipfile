@@ -6,17 +6,17 @@ name = "pypi"
 [packages]
 flask = "*"
 flask-wtf = "*"
-flask-mysql = "*"
 flask-mysqldb = "*"
-pymysql = "*"
-python-dotenv = "*"
 mysqlclient = "*"
+python-dotenv = "*"
 wtforms = "*"
 cloudinary = "*"
 google-auth = "*"
 google-auth-oauthlib = "*"
 
 [dev-packages]
+pytest = "*"
+ruff = "*"
 
 [requires]
 python_version = "3.10"
