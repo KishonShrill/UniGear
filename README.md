@@ -7,82 +7,113 @@
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
 
+> **⚠️ Branch Notice:** The **`main`** branch is the active, updated, and upstream version of this project. The **`master`** branch represents the older legacy version. All new development, pull requests, and checkouts should use the **`main`** branch.
+
 ## 📖 Introduction
 
 Welcome to **College Marketplace**! This is a web-based application built with Flask, designed to connect students from different colleges through an online marketplace. The application allows users to explore and purchase products sold by various student organizations from the eight colleges of your institution.
 
 The platform features a seller dashboard for organizations to manage their products and orders, while users can browse products from different colleges, place orders, and view their purchase history.
 
+## 🌿 Repository & Branching Structure
+
+- **`main` (Upstream / Active)**: Contains the latest refactored architecture, including:
+  - Database schema migrations CLI (`flask db migrate`, `flask db status`, `flask db create`).
+  - Resource-safe connection management with `get_db_cursor`.
+  - CSRF protection (`Flask-WTF`) and enhanced session security.
+  - Reusable authentication decorators (`@login_is_required`, `@seller_required`).
+  - Comprehensive automated test suite (`pytest`) and linting (`ruff`).
+- **`master` (Legacy)**: The initial legacy version of the application preserved for historical reference.
+
 ## ✨ Features
 
 - **Landing Page**: Introduction to the platform with links to sign up or sign in.
-- **User Authentication**: Secure user registration and login system.
-- **Explore Page**: Browse products from various colleges.
-- **Seller Dashboard**: Manage your products, view your orders, and track your sales.
-- **College-Specific Pages**: Separate pages for each of the 8 colleges where users can explore products.
-- **Order Management**: Users can track their orders, and sellers can manage orders from their dashboard.
+- **User Authentication**: Secure user registration, login system, and Google OAuth integration.
+- **Explore Page**: Browse products across various colleges.
+- **Seller Dashboard**: Manage products, view orders, track sales, and export order CSVs.
+- **College-Specific Pages**: Dedicated storefronts for all 8 colleges (CASS, CBA, CCS, CED, COE, CHS, CSM).
+- **Order Management**: Preorder tracking, order cancellation, and proof-of-payment receipt uploads.
   
 ## 🤖 Technologies Used
 
-- **Flask**: Web framework used for the backend logic.
-- **MySQL**: Database used to manage user accounts, products, and orders.
-- **HTML/CSS/JavaScript**: Frontend technologies for designing a responsive and user-friendly interface.
+- **Flask**: Web framework for backend routing and application logic.
+- **MySQL**: Relational database managing users, organizations, products, and orders.
+- **Flask-WTF & WTForms**: CSRF security and form validation.
+- **Cloudinary**: Cloud image storage and management.
+- **Pytest**: Automated testing framework.
+- **Ruff**: Fast Python linter and formatter.
+- **HTML5 / CSS3 / JavaScript**: Responsive and interactive user interface.
 
 ## 🤔 Prerequisites
 
 Before you begin, ensure you have met the following requirements:
 
-- Python 3.x installed on your machine.
-- MySQL server installed and running.
-- Basic knowledge of Flask and MySQL.
+- **Python 3.10+** and **Pipenv** installed.
+- **MySQL Server** installed and running.
+- Cloudinary credentials and Google OAuth client secrets (for full feature functionality).
 
-## 💿 Installation
+## 💿 Installation & Setup
 
-1. **Clone the repository**:
+1. **Clone the repository and checkout `main`**:
     ```bash
     git clone https://kishonshrill-admin@bitbucket.org/kishonshrill/unigear.git
     cd unigear
+    git checkout main
     ```
 
-2. **Ask for the `.env` file to activate dot-env variables**
+2. **Configure Environment Variables**:
+   - Create and configure your `.env` file in the project root with database credentials, Flask secret key, Cloudinary keys, and mail configuration.
 
-3. **Install the required Python packages**:
+3. **Install Python dependencies**:
     ```bash
     pipenv install --dev
     ```
-    If this does not work, try to search the solution in [DEBUG.md](./DEBUG.md)
+    If you encounter Pipenv or dependency issues, consult [DEBUG.md](./DEBUG.md).
 
-4. **Configure the database**:
-   - Create a MySQL database named `college_marketplace`.
-   - Update the `config.py` file with your MySQL credentials.
-   - Run the following command to initialize the database:
-        - Enter MySQL Terminal
-        ```bash
-        mysql -u root -p
-        ```
-        - Inside MySQL Terminal
-        ```sql
-        CREATE DATABASE college_marketplace;
-        EXIT;
-        ```
-        - Back to Bash Terminal
-        ```bash
-        mysql -u root -p college_marketplace < initSQLData.sql
-        ```
+4. **Configure the Database**:
+   - Create a MySQL database:
+     ```sql
+     CREATE DATABASE college_marketplace;
+     ```
+   - Apply all pending schema migrations:
+     ```bash
+     flask db migrate
+     ```
+   - *(Optional Fallback)*: You can restore sample data directly using the SQL dump:
+     ```bash
+     mysql -u root -p college_marketplace < unigear_sample_data.sql
+     ```
 
-5. **Run the Flask application**:
+5. **Run the Flask Application**:
     ```bash
     flask run --debug
     ```
-    ⚠️ Use this command below if it doesn't work ⚠️
+    Or explicitly referencing the application entry point:
     ```bash
     flask --app run.py run --debug
-    
+    ```
+    Or on a custom host/port:
+    ```bash
     flask run --host=localhost --port=5000 --debug
     ```
 
 6. **Access the application**:
-   Open your browser and go to `http://localhost:5000`.
+   Open your browser and navigate to `http://localhost:5000`.
+
+## 🧪 Testing & Code Quality
+
+- **Run the Pytest suite**:
+  ```bash
+  pipenv run pytest
+  ```
+- **Check code quality with Ruff**:
+  ```bash
+  pipenv run ruff check .
+  ```
+- **Format code**:
+  ```bash
+  pipenv run ruff format .
+  ```
 
 ## ⚠️ Usage
 
