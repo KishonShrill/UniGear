@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, jsonify, request, session, flash, redirect, url_for, abort, Response
 from app.models.product import Product
 from app.forms import *
-from app.routes.auth import seller_required
 from app.models.user import User
 from app.models.order import Order
+from app.utils.decorators import login_is_required, seller_required
 import math
 
 import os
@@ -15,19 +15,6 @@ from werkzeug.datastructures import FileStorage
 
 
 seller_bp = Blueprint('seller', __name__)
-
-
-# Seller Routes
-# Seller Routes
-# Seller Routes
-def login_is_required(function):
-  
-  def wrapper(*args, **kwargs):
-    if "id" not in session:
-      return abort(401)
-    return function(*args, **kwargs)
-  wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
-  return wrapper
 
 
 @seller_bp.route('/seller/my-orders')
@@ -70,8 +57,8 @@ def export_my_orders():
   # Return the CSV response
   return Response(generate(), mimetype='text/csv', headers={"Content-Disposition": "attachment;filename=orders.csv"})
 
-@seller_bp.route('/seller/my-orders/delete', methods=['POST','GET'])
-@login_is_required
+@seller_bp.route('/seller/my-orders/delete', methods=['POST', 'GET'])
+@seller_required
 def delete_order():
     if request.method == 'POST':
         try:
@@ -105,8 +92,8 @@ def my_products():
   products = Product.getProducts(session['org_id'])
   return render_template('/seller/my_products.html', products=products, current_page=current_page, total_pages=total_pages)
 
-@seller_bp.route('/seller/my-products/delete', methods=['POST','GET'])
-@login_is_required
+@seller_bp.route('/seller/my-products/delete', methods=['POST', 'GET'])
+@seller_required
 def delete_product():
     if request.method == 'POST':
         try:

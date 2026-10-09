@@ -3,7 +3,7 @@ from app.models.product import Product
 from app.models.user import User
 from app.models.order import Order
 from app.forms import *
-from app.models.order import Order
+from app.utils.decorators import login_is_required
 import math
 import cloudinary.api
 import cloudinary.uploader
@@ -14,17 +14,6 @@ from app import mysql
 import sys
 
 user_bp = Blueprint('user', __name__)
-
-
-# User Route
-def login_is_required(function):
-  
-  def wrapper(*args, **kwargs):
-    if "id" not in session:
-      return abort(401)
-    return function(*args, **kwargs)
-  wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
-  return wrapper
 
 @user_bp.route('/user/my-orders')
 @login_is_required
@@ -137,6 +126,7 @@ def profile():
     return render_template('user/user_profile.html', user=user, zipcode_street=zipcode_street, barangay=barangay, city=city)
 
 @user_bp.route('/user/my-orders/upload', methods=['POST'])
+@login_is_required
 def upload_file():
     try:
         # Check if file is present in request

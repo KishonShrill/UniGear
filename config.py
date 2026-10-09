@@ -45,7 +45,13 @@ class Config:
     API_KEY = os.getenv("API_KEY", "")
     API_SECRET = os.getenv("API_SECRET", "")
 
-    # Mailtrap / SMTP Email Config
+    # Google OAuth
+    GOOGLE_CLIENT_ID = os.getenv(
+        "GOOGLE_CLIENT_ID",
+        "888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
+    )
+
+    # Email / Mailtrap Configuration
     MAIL_SERVER = os.getenv("MAIL_SERVER", "sandbox.smtp.mailtrap.io")
     MAIL_PORT = _get_int_env("MAIL_PORT", 2525)
     MAIL_USERNAME = os.getenv("MAIL_USERNAME", "")

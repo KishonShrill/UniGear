@@ -1,193 +1,157 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, abort, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, session, abort, request, current_app
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from app.models.user import *
-from app.routes.website import *
-from app.forms import *
-import os
+from app.models.user import User
+from app.forms import LinkVerify, SignUpForm
+from app.utils.decorators import login_is_required, seller_required
 
 
 auth_bp = Blueprint('auth', __name__)
 
 
-def login_is_required(function):
-  def wrapper(*args, **kwargs):
-    if "id" not in session:
-      return abort(401)
-    return function(*args, **kwargs)
-  wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
-  return wrapper
-
-def seller_required(function):
-    def wrapper(*args, **kwargs):
-        # Check if the user is logged in
-        if "id" not in session:
-            flash("You must be logged in to access this page.", "warning")
-            return abort(401)
-        
-        # Retrieve the user's role from the session or database
-        user_role = session.get('role')  # Assuming the role is stored in the session
-        print(f"Role: {user_role}")
-        
-        if not user_role or user_role.lower() != "seller":
-            flash("Access denied. Only sellers can access this page.", "danger")
-            return abort(404)  # HTTP 403 Forbidden
-        
-        # If everything checks out, allow access
-        return function(*args, **kwargs)
-    
-    wrapper.__name__ = function.__name__  # Fix Flask's view function name requirement
-    return wrapper
-
-
 @auth_bp.route('/sign-in')
 def sign_in():
-  form = LinkVerify()
-  return render_template('sign_in.html', form=form)
+    form = LinkVerify()
+    return render_template('sign_in.html', form=form)
+
 
 # The route to render the sign-up page
 @auth_bp.route('/sign-up')
 def sign_up():
-  form = SignUpForm()
-  return render_template('sign_up.html', form=form)  # Pass the form to the template
+    form = SignUpForm()
+    return render_template('sign_up.html', form=form)
+
 
 @auth_bp.route('/sign-up2', methods=['GET', 'POST'])
 def sign_up2():
-  form = SignUpForm()
-  if request.method == 'POST':
-    # Check if password confirmation match
-    if form.password.data != form.repassword.data:
-      flash("Password confirmation don't match", "warning")
-      return redirect(url_for('auth.sign_up'))
-    
-    # Handle form submission
-    username = request.form.get('username')
-    email = request.form.get('email')
-    password = request.form.get('password')
-    
-    return render_template('sign_up2.html', username=username, email=email, password=password, form=form)
-  if request.method == 'GET':
-    return redirect(url_for('auth.sign_up'))
-  
+    form = SignUpForm()
+    if request.method == 'POST':
+        # Check if password confirmation match
+        if form.password.data != form.repassword.data:
+            flash("Password confirmation don't match", "warning")
+            return redirect(url_for('auth.sign_up'))
+
+        # Handle form submission
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        return render_template('sign_up2.html', username=username, email=email, password=password, form=form)
+    if request.method == 'GET':
+        return redirect(url_for('auth.sign_up'))
+
+
 @auth_bp.route('/sign-up/submit', methods=['GET', 'POST'])
 def submit_sign_up():
-  if request.method == 'POST':
-    username = request.form.get('username')
-    email = request.form.get('email')
-    password = request.form.get('password')
-    city = request.form.get('city')
-    barangay = request.form.get('barangay')
-    street = request.form.get('address')
-    contact = request.form.get('contact')
-    
-    # Combine the address
-    address = f"{street}, {barangay}, {city}"
-    
-    # Check if user exists or create new one
-    user = User.get_by_email(email)
-    
-    if not user:
-      try:
-        print(f"Debug: {username}, {email}, {password}, {contact}, {address}")
-        user = User.create_from_website(username, email, password, contact, address)
-      except Exception as e:
-        flash(f"The contact number is already used...", "warning")
-        return redirect(url_for('auth.sign_up'))
-      
-    flash(f"Account created successfully...", "success")
-    return redirect(url_for('auth.sign_in'))
-  
-  if request.method == "GET":
-    abort(404)
-  
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        city = request.form.get('city')
+        barangay = request.form.get('barangay')
+        street = request.form.get('address')
+        contact = request.form.get('contact')
+
+        # Combine the address
+        address = f"{street}, {barangay}, {city}"
+
+        # Check if user exists or create new one
+        user = User.get_by_email(email)
+
+        if not user:
+            try:
+                user = User.create_from_website(username, email, password, contact, address)
+            except Exception:
+                flash("The contact number is already used...", "warning")
+                return redirect(url_for('auth.sign_up'))
+
+        flash("Account created successfully...", "success")
+        return redirect(url_for('auth.sign_in'))
+
+    if request.method == "GET":
+        abort(404)
+
 
 @auth_bp.route('/auth/callback', methods=['POST'])
 def callback():
-  form = LinkVerify()
-  if request.method == 'POST':
-    # Simulate getting data from Google OAuth
-    getEmail = request.form.get("email")
-    getPassword = request.form.get("password")
-    
-    print(f"Email: {getEmail}")
-    # Check if user exists or create new one
-    user = User.get_by_email(getEmail)
-    print(f"User: {user}")
-    if not user:
-      flash(f"User does not exist", "warning")
-      return render_template('sign_in.html', form=form)
-    
-    # Check if password is the same with database
-    isLogin = user.verify_password(getPassword)
-    if not isLogin:
-      flash(f"Password does not match", "warning")
-      return render_template('sign_in.html', form=form)
-    
-    # Store user info in the session
-    session['id'] = user.user_id
-    session['name'] = user.user_name
-    session['email'] = user.user_email
-    session['role'] = user.user_role
-    session['org_id'] = user.org_id
-    
-    flash(f"Welcome {user.user_name}", "success")
-    return redirect(url_for('website.explore'))
-  
-  if request.method == 'GET':
-    return redirect(url_for('website.landing'))
+    form = LinkVerify()
+    if request.method == 'POST':
+        # Simulated authentication / standard form login
+        get_email = request.form.get("email")
+        get_password = request.form.get("password")
+
+        # Check if user exists
+        user = User.get_by_email(get_email)
+        if not user:
+            flash("User does not exist", "warning")
+            return render_template('sign_in.html', form=form)
+
+        # Check if password matches database hash
+        is_login = user.verify_password(get_password)
+        if not is_login:
+            flash("Password does not match", "warning")
+            return render_template('sign_in.html', form=form)
+
+        # Store user info in session
+        session['id'] = user.user_id
+        session['name'] = user.user_name
+        session['email'] = user.user_email
+        session['role'] = user.user_role
+        session['org_id'] = user.org_id
+
+        flash(f"Welcome {user.user_name}", "success")
+        return redirect(url_for('website.explore'))
+
+    if request.method == 'GET':
+        return redirect(url_for('website.landing'))
+
 
 @auth_bp.route('/auth/google_callback')
 def google_callback():
-  form = LinkVerify()
-  # Get authorization code from the request
-  token = request.args.get("credential")
-  
-  if not token:
-    flash(f"Token is not being recieved properly.", "warning")
-    print("No credential received in the callback.")
-    return redirect(url_for('auth.sign_in', form=form))
-  
-  try:
-    # Verify the token
-    idinfo = id_token.verify_oauth2_token(
-      token, 
-      requests.Request(), 
-      audience="888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
-      clock_skew_in_seconds=1000,  # Adjust the skew tolerance
-      )
-    
-    # Store user info in the session
-    session['name'] = idinfo.get('name')
-    session['email'] = idinfo.get('email')
-    session['picture'] = idinfo.get('picture')
-    
-    # Check if user exists or create new one
-    user = User.get_by_email(idinfo.get('email'))
-    if not user:
-      user = User.create_from_website(idinfo.get('name'), idinfo.get('email'))
-    
-    print(f"Role: {user.user_role}")
-    session['id'] = user.user_id
-    print(f"User ID: {user.user_id}")
-    session['role'] = user.user_role
-    session['org_id'] = user.org_id
-    
-    # print(f"User: {user}")  # TODO: For debugging purposes only
-    # print(f"I am a: {user.user_role}") # TODO: For debugging purposes only
+    form = LinkVerify()
+    token = request.args.get("credential")
 
-    flash(f"Welcome {idinfo.get('name')}", "success")
-    return redirect(url_for('website.explore'))
-  except ValueError as ve:
-    print(f"Token verification failed: {ve}")
-    return "Invalid token", 400  # Token verification failed
-  except Exception as e:
-    print(f"Unexpected error: {e}")
-    return "An error occurred during authentication. Please try again.", 500
-  
+    if not token:
+        flash("Token is not being received properly.", "warning")
+        return redirect(url_for('auth.sign_in', form=form))
+
+    try:
+        # Verify the token against configured Google Client ID
+        client_id = current_app.config.get(
+            "GOOGLE_CLIENT_ID",
+            "888454362739-8khch6t2lesrhrevs4s22h739a9ek8gh.apps.googleusercontent.com",
+        )
+        idinfo = id_token.verify_oauth2_token(
+            token,
+            requests.Request(),
+            audience=client_id,
+            clock_skew_in_seconds=1000,
+        )
+
+        # Store user info in session
+        session['name'] = idinfo.get('name')
+        session['email'] = idinfo.get('email')
+        session['picture'] = idinfo.get('picture')
+
+        # Check if user exists or create new one
+        user = User.get_by_email(idinfo.get('email'))
+        if not user:
+            user = User.create_from_website(idinfo.get('name'), idinfo.get('email'))
+
+        session['id'] = user.user_id
+        session['role'] = user.user_role
+        session['org_id'] = user.org_id
+
+        flash(f"Welcome {idinfo.get('name')}", "success")
+        return redirect(url_for('website.explore'))
+    except ValueError:
+        return "Invalid token", 400
+    except Exception:
+        return "An error occurred during authentication. Please try again.", 500
+
 
 @auth_bp.route('/logout')
 def logout():
-  # Clear session to log out
-  session.clear()
-  flash(f"User has logged out...", "success")
-  return redirect(url_for('website.explore'))
+    session.clear()
+    flash("User has logged out...", "success")
+    return redirect(url_for('website.explore'))

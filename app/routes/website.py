@@ -1,25 +1,17 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort,jsonify
+from flask import Blueprint, render_template, flash, redirect, url_for, request, session, abort, jsonify
 from datetime import datetime, timedelta
-from config import MAILTRAP_SERVER,MAILTRAP_PORT,MAILTRAP_USERNAME,MAILTRAP_PASSWORD
+from config import MAILTRAP_SERVER, MAILTRAP_PORT, MAILTRAP_USERNAME, MAILTRAP_PASSWORD
 from app.models.product import Product
 from app.models.user import User
 from app.models.order import Order
 from app.forms import ProductForm
+from app.utils.decorators import login_is_required
 
 import smtplib
 from email.mime.text import MIMEText
 
 
 website_bp = Blueprint('website', __name__)
-
-
-def login_is_required(function):
-  def wrapper(*args, **kwargs):
-    if "id" not in session:
-      return abort(401)
-    return function(*args, **kwargs)
-  wrapper.__name__ = function.__name__  # Fixes Flask's view function name requirement
-  return wrapper
 
 @website_bp.route('/api/check-login', methods=['GET'])
 def check_login():
@@ -347,11 +339,9 @@ def convert_size(size_number):
     return size_map[size_number]
 
 
-#Wishlist------------------------------------------------------------------
-from app import mysql
-from flask import session, jsonify, flash
-
+# Wishlist ------------------------------------------------------------------
 from MySQLdb.cursors import DictCursor  # Import DictCursor for dictionary-based row access
+
 
 @website_bp.route('/wishlist', methods=['GET'])
 @login_is_required

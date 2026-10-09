@@ -1,0 +1,28 @@
+{% extends "master_blueprint/base.html" %}
+
+{% import "components/macros.html" as components %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}">
+{% endblock %}
+
+{% block content %}
+  <!-- Header -->
+  {{ components.render_header(user=session.get('name'), role=session.get('role')) }}
+
+  <main class="error">
+    <div class="error-container">
+      <h1 class="error-title">403</h1>
+      <h2 class="error-subtitle">ACCESS FORBIDDEN</h2>
+      <p class="error-message">You do not have permission to access this page.<br>Only authorized sellers or administrators may view this area.</p>
+      <div style="display: flex; gap: 1rem;">
+        <a class="btn error-redirect-btn secondary" href="{{ url_for('website.explore') }}">Go Back</a>
+        <a class="btn error-redirect-btn" href="{{ url_for('website.landing') }}">Home</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  {{ components.render_footer() }}
+{% endblock %}

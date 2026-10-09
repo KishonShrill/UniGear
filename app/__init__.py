@@ -30,6 +30,10 @@ def create_app(test_config=None):
     def not_logged_in(e):
         return render_template("./components/401.html"), 401
 
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template("./components/403.html"), 403
+
     # Initialize Cloudinary SDK
     cloudinary.config(
         cloud_name=app.config.get("CLOUD_NAME"),

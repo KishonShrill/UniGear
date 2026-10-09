@@ -32,7 +32,8 @@ class User(object):
         cursor.close()
 
     def verify_password(self, password):
-        print(self.user_password)
+        if not self.user_password:
+            return False
         return check_password_hash(self.user_password, password)
 
 
