@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
+
 from MySQLdb.cursors import DictCursor
+
 from app.utils.db import get_db_cursor
 
 

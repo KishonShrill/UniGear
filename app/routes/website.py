@@ -1,6 +1,8 @@
 """Public website routes for browsing, explore, product details, preorder, and wishlist."""
-from datetime import datetime, timedelta
+
 import logging
+from datetime import datetime, timedelta
+
 from flask import (
     Blueprint,
     flash,
@@ -11,13 +13,13 @@ from flask import (
     session,
     url_for,
 )
+
 from app.forms import ProductForm
 from app.models.favorite import Favorite
 from app.models.order import Order
 from app.models.product import Product
 from app.models.user import User
 from app.utils.decorators import login_is_required
-from app.utils.helpers import convert_size
 
 logger = logging.getLogger(__name__)
 
@@ -166,9 +168,7 @@ def preorder(product_id):
         return redirect(url_for("website.merch_details", product_id=product_id))
 
     try:
-        Order.preorderProduct(
-            user.user_id, product.product_id, size, quantity, product.price
-        )
+        Order.preorderProduct(user.user_id, product.product_id, size, quantity, product.price)
         preorder_count, goal = product.countPreorder()
 
         if preorder_count >= goal:

@@ -14,8 +14,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   pipenv install --dev
   ```
 
-### Database Setup
-- Import database schema and sample data into MySQL:
+### Database Setup & Migrations
+- Apply all pending database schema migrations:
+  ```bash
+  flask db migrate
+  ```
+- Check migration status:
+  ```bash
+  flask db status
+  ```
+- Create a new migration file:
+  ```bash
+  flask db create <migration_name>
+  ```
+- Manual database restore (optional fallback):
   ```bash
   mysql -u root -p college_marketplace < unigear_sample_data.sql
   ```
@@ -34,12 +46,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   flask run --host=localhost --port=5000 --debug
   ```
 
-### Testing & Verification
-- Run tests (when test files are present):
+### Testing & Code Quality
+- Run the full test suite with pytest:
   ```bash
-  pytest
+  pipenv run pytest
   # Or run a specific test file
-  pytest tests/test_example.py
+  pipenv run pytest tests/test_migrations.py
+  ```
+- Run linting with Ruff:
+  ```bash
+  pipenv run ruff check .
+  # Auto-fix linting issues
+  pipenv run ruff check --fix .
+  ```
+- Check code formatting:
+  ```bash
+  pipenv run ruff format --check .
+  # Format code
+  pipenv run ruff format .
   ```
 
 ## Architecture & Code Structure
@@ -62,15 +86,27 @@ UniGear (College Marketplace) is a Flask-based multi-college e-commerce web appl
 - **`user.py` (`user_bp`)**: Student order tracking (`/user/my-orders`), order cancellation, proof-of-payment receipt uploads, wishlist, and profile management.
 
 ### Models & Data Access (`app/models/`)
-Data access relies on parameterized raw SQL queries using `flask_mysqldb.MySQL` cursors (`mysql.connection.cursor()`) rather than an ORM.
+Data access relies on parameterized raw SQL queries using the exception-safe `get_db_cursor` context manager (`app/utils/db.py`) rather than an ORM.
 - **`User` (`app/models/user.py`)**: User authentication, password hashing (`werkzeug.security`), role assignment (`user` vs `seller`), and Google account provisioning.
-- **`Product` (`app/models/product.py`)**: Product lifecycle management, sizing mappings (`product_sizes`), picture associations (`pictures`), preorder counts vs goals, and order pagination.
-- **`Order` (`app/models/order.py`)**: Order creation (`ordered_by`), status tracking (`0` unpaid, `1` paid), receipt fetching, and order deletion.
+- **`Product` (`app/models/product.py`)**: Product lifecycle management, sizing mappings (`product_sizes`), picture associations (`pictures`), preorder counts vs goals, catalog queries, and order pagination.
+- **`Order` (`app/models/order.py`)**: Order creation (`ordered_by`), atomic preorder placement, status tracking (`0` unpaid, `1` paid), receipt fetching, payment proof uploads, and order deletion.
+- **`Organization` (`app/models/organization.py`)**: College-to-organization mapping and executive council sorting queries.
+- **`Favorite` (`app/models/favorite.py`)**: User wishlist queries and atomic favorite toggling.
 
-### Database Schema (`unigear_sample_data.sql`)
+### Utilities & Infrastructure (`app/utils/` & `app/cli.py`)
+- **`app/utils/db.py`**: Exception-safe `get_db_cursor` context manager handling cursor lifecycles, connection commits (`commit=True`), and rollback recovery on errors.
+- **`app/utils/migrator.py`**: Lightweight raw SQL migration engine supporting multi-statement execution, DDL/DML transactions, `schema_migrations` tracking, and automatic file scaffolding.
+- **`app/utils/image_service.py`**: Cloudinary upload/deletion abstraction with file validation and public ID extraction.
+- **`app/utils/decorators.py`**: Route authentication and authorization decorators (`@login_is_required`, `@seller_required`).
+- **`app/utils/helpers.py`**: Address parsing/formatting and size conversions.
+- **`app/cli.py`**: Flask CLI integration providing `flask db` subcommands.
+
+### Database Schema (`migrations/` & `unigear_sample_data.sql`)
 - **`college` & `organization`**: Relational hierarchy of colleges and student organizations.
 - **`user`**: Users with roles (`user` or `seller`) optionally linked to an `org_id`.
 - **`products`**: Product listings with types, price, order type (regular or preorder), release dates, and goals.
 - **`sizes` & `product_sizes`**: Size definitions and stock/preorder quantities per product.
 - **`pictures`**: Cloudinary URLs associated with products.
+- **`favorites`**: User product wishlist mappings.
 - **`ordered_by`**: Order transactions linking users, products, sizes, quantities, payment status, and proof of payment URLs.
+- **`schema_migrations`**: Migration history tracking table.

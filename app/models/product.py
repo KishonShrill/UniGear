@@ -1,13 +1,16 @@
 """Product model managing product catalog, inventory sizes, and organization queries."""
-from datetime import datetime
+
 import logging
+from datetime import datetime
+
 from MySQLdb.cursors import DictCursor
+
 from app.utils.db import get_db_cursor
 
 logger = logging.getLogger(__name__)
 
 
-class Product(object):
+class Product:
     def __init__(
         self,
         product_name=None,
@@ -575,9 +578,7 @@ class Product(object):
                 "release_date": product_row[7],
             }
 
-            cursor.execute(
-                "SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,)
-            )
+            cursor.execute("SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,))
             images = [img[0] for img in cursor.fetchall()]
 
             cursor.execute(

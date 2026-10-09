@@ -1,11 +1,13 @@
 """Order model handling order placement, status toggling, and receipts."""
+
 import logging
+
 from app.utils.db import get_db_cursor
 
 logger = logging.getLogger(__name__)
 
 
-class Order(object):
+class Order:
     @staticmethod
     def preorderProduct(user_id, product_id, size, quantity, price):
         """Create an order record and increment product reserved size quantities atomically."""

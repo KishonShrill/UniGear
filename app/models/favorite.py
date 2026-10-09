@@ -1,8 +1,9 @@
 from MySQLdb.cursors import DictCursor
+
 from app.utils.db import get_db_cursor
 
 
-class Favorite(object):
+class Favorite:
     def __init__(self, favorite_id=None, user_id=None, product_id=None):
         self.favorite_id = favorite_id
         self.user_id = user_id
@@ -64,19 +65,19 @@ class Favorite(object):
         with get_db_cursor(commit=True) as cursor:
             cursor.execute(
                 "SELECT favorite_id FROM favorites WHERE user_id = %s AND product_id = %s",
-                (user_id, product_id)
+                (user_id, product_id),
             )
             existing = cursor.fetchone()
 
             if existing:
                 cursor.execute(
                     "DELETE FROM favorites WHERE user_id = %s AND product_id = %s",
-                    (user_id, product_id)
+                    (user_id, product_id),
                 )
                 return True, False
             else:
                 cursor.execute(
                     "INSERT INTO favorites (user_id, product_id) VALUES (%s, %s)",
-                    (user_id, product_id)
+                    (user_id, product_id),
                 )
                 return True, True

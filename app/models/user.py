@@ -1,10 +1,12 @@
 """User model representing application users and sellers."""
+
 from werkzeug.security import check_password_hash, generate_password_hash
+
 from app.utils.db import get_db_cursor
 from app.utils.helpers import split_address
 
 
-class User(object):
+class User:
     """User domain model for authentication and profile management."""
 
     def __init__(
@@ -123,7 +125,9 @@ class User(object):
             return None
 
     @classmethod
-    def create_from_google(cls, google_name, google_email, google_contact=None, google_address=None):
+    def create_from_google(
+        cls, google_name, google_email, google_contact=None, google_address=None
+    ):
         """Create a new user from Google OAuth data."""
         with get_db_cursor(commit=True) as cursor:
             cursor.execute(
@@ -135,7 +139,9 @@ class User(object):
             )
             user_id = cursor.lastrowid
 
-        return cls(user_id=user_id, user_name=google_name, user_email=google_email, user_role="seller")
+        return cls(
+            user_id=user_id, user_name=google_name, user_email=google_email, user_role="seller"
+        )
 
     @classmethod
     def create_from_website(cls, name, email, password=None, contact=None, address=None):

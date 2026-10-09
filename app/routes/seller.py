@@ -1,6 +1,8 @@
 """Seller routes for inventory, orders, product management, and exports."""
+
 import logging
 import math
+
 from flask import (
     Blueprint,
     Response,
@@ -13,6 +15,7 @@ from flask import (
     session,
     url_for,
 )
+
 from app.forms import ProductForm
 from app.models.order import Order
 from app.models.product import Product

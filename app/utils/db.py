@@ -1,13 +1,15 @@
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator, Any
-from MySQLdb.cursors import DictCursor, Cursor
+from typing import Any
+
+from MySQLdb.cursors import Cursor
+
 from app import mysql
 
 
 @contextmanager
 def get_db_cursor(
-    cursorclass: type[Cursor] | None = None,
-    commit: bool = False
+    cursorclass: type[Cursor] | None = None, commit: bool = False
 ) -> Generator[Any, None, None]:
     """Context manager for acquiring and safely releasing MySQL database cursors.
 

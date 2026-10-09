@@ -1,6 +1,9 @@
 """College storefront and student organization product API routes."""
+
 import logging
+
 from flask import Blueprint, jsonify, render_template, request
+
 from app.models.organization import Organization
 from app.models.product import Product
 

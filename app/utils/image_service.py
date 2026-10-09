@@ -1,7 +1,8 @@
 """Service module for Cloudinary image uploads and management."""
+
 import logging
 import os
-from typing import List, Optional
+
 import cloudinary.api
 import cloudinary.uploader
 from werkzeug.datastructures import FileStorage
@@ -16,7 +17,7 @@ class ImageService:
     MAX_FILE_SIZE = 25 * 1024 * 1024  # 25 MB
 
     @staticmethod
-    def extract_public_id(image_url: str) -> Optional[str]:
+    def extract_public_id(image_url: str) -> str | None:
         """Extract Cloudinary public ID from a hosted image URL.
 
         Example:
@@ -36,9 +37,9 @@ class ImageService:
     def upload_image(
         cls,
         file_obj: FileStorage,
-        public_id: Optional[str] = None,
+        public_id: str | None = None,
         max_size: int = MAX_FILE_SIZE,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Validate and upload an image to Cloudinary.
 
         Args:
@@ -98,31 +99,24 @@ class ImageService:
             return False
 
         try:
-            cloudinary.api.delete_resources(
-                [public_id], resource_type="image", type="upload"
-            )
+            cloudinary.api.delete_resources([public_id], resource_type="image", type="upload")
             return True
         except Exception as e:
             logger.error("Failed to delete Cloudinary resource '%s': %s", public_id, e)
             return False
 
     @classmethod
-    def delete_images(cls, image_urls: List[str]) -> bool:
+    def delete_images(cls, image_urls: list[str]) -> bool:
         """Delete multiple images from Cloudinary given their URLs."""
         if not image_urls:
             return True
 
-        public_ids = [
-            pid for url in image_urls
-            if (pid := cls.extract_public_id(url)) is not None
-        ]
+        public_ids = [pid for url in image_urls if (pid := cls.extract_public_id(url)) is not None]
         if not public_ids:
             return True
 
         try:
-            cloudinary.api.delete_resources(
-                public_ids, resource_type="image", type="upload"
-            )
+            cloudinary.api.delete_resources(public_ids, resource_type="image", type="upload")
             return True
         except Exception as e:
             logger.error("Failed to bulk delete Cloudinary resources: %s", e)

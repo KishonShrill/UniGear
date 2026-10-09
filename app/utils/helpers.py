@@ -1,5 +1,4 @@
 """General helper utilities for data formatting and conversion."""
-from typing import Tuple
 
 
 def convert_size(size_number: int) -> str:
@@ -27,7 +26,7 @@ def convert_size(size_number: int) -> str:
     return size_map[size_number]
 
 
-def split_address(address_str: str | None) -> Tuple[str, str, str]:
+def split_address(address_str: str | None) -> tuple[str, str, str]:
     """Split comma-separated address into (street, barangay, city).
 
     Args:

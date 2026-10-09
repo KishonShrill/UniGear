@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from app.models.user import User
-from app.models.order import Order
-from app.models.product import Product
-from app.models.organization import Organization
+
 from app.models.favorite import Favorite
+from app.models.order import Order
+from app.models.organization import Organization
+from app.models.product import Product
+from app.models.user import User
 
 
 class TestUserModel(unittest.TestCase):
@@ -96,9 +97,7 @@ class TestOrderModel(unittest.TestCase):
         mock_cursor.lastrowid = 101
         mock_get_cursor.return_value.__enter__.return_value = mock_cursor
 
-        order_id = Order.preorderProduct(
-            user_id=1, product_id=5, size=2, quantity=3, price=450.00
-        )
+        order_id = Order.preorderProduct(user_id=1, product_id=5, size=2, quantity=3, price=450.00)
         self.assertEqual(order_id, 101)
         mock_get_cursor.assert_called_once_with(commit=True)
         self.assertEqual(mock_cursor.execute.call_count, 2)
@@ -179,7 +178,16 @@ class TestProductModel(unittest.TestCase):
     def test_get_details_by_id(self, mock_get_cursor):
         mock_cursor = MagicMock()
         mock_cursor.fetchone.side_effect = [
-            (7, "College Shirt", "Description", "Hook", "shirt", 350.00, 1, "2026-12-01"),  # product
+            (
+                7,
+                "College Shirt",
+                "Description",
+                "Hook",
+                "shirt",
+                350.00,
+                1,
+                "2026-12-01",
+            ),  # product
             (100,),  # sum of quantities
         ]
         mock_cursor.fetchall.side_effect = [

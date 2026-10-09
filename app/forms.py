@@ -1,4 +1,5 @@
 """WTForms form definitions for UniGear."""
+
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 from wtforms import (
@@ -14,11 +15,13 @@ from wtforms.validators import DataRequired, InputRequired
 
 class LinkVerify(FlaskForm):
     """Simple verification form with a submit button."""
+
     log_in = SubmitField()
 
 
 class SignUpForm(FlaskForm):
     """User registration form."""
+
     username = StringField("Username", validators=[InputRequired()])
     email = StringField("Email", validators=[InputRequired()])
     password = PasswordField("Password", validators=[InputRequired()])
@@ -27,6 +30,7 @@ class SignUpForm(FlaskForm):
 
 class ProductForm(FlaskForm):
     """Product creation and update form."""
+
     name = StringField("Product Name", validators=[DataRequired()])
     price = DecimalField("Price", validators=[DataRequired()])
     description = TextAreaField("Description", validators=[DataRequired()])

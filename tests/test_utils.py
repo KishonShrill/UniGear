@@ -1,7 +1,9 @@
 """Unit tests for helper utilities and ImageService."""
+
 import io
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
 from werkzeug.datastructures import FileStorage
 
 from app.utils.helpers import convert_size, format_address, split_address
@@ -39,14 +41,18 @@ class TestHelpers(unittest.TestCase):
 
     def test_split_address_partial(self):
         self.assertEqual(split_address("123 Main St"), ("123 Main St", "", ""))
-        self.assertEqual(split_address("123 Main St, Barangay 1"), ("123 Main St", "Barangay 1", ""))
+        self.assertEqual(
+            split_address("123 Main St, Barangay 1"), ("123 Main St", "Barangay 1", "")
+        )
 
     def test_format_address(self):
         formatted = format_address("123 Main St", "Barangay 1", "Iligan City")
         self.assertEqual(formatted, "123 Main St, Barangay 1, Iligan City")
 
     def test_format_address_with_nones_or_blanks(self):
-        self.assertEqual(format_address("123 Main St", None, "Iligan City"), "123 Main St, Iligan City")
+        self.assertEqual(
+            format_address("123 Main St", None, "Iligan City"), "123 Main St, Iligan City"
+        )
         self.assertEqual(format_address("", "", ""), "")
         self.assertEqual(format_address(None, None, None), "")
 
@@ -68,7 +74,9 @@ class TestImageService(unittest.TestCase):
 
     @patch("cloudinary.uploader.upload")
     def test_upload_image_success(self, mock_upload):
-        mock_upload.return_value = {"secure_url": "https://res.cloudinary.com/demo/image/upload/test.jpg"}
+        mock_upload.return_value = {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/test.jpg"
+        }
 
         file_obj = FileStorage(
             stream=io.BytesIO(b"fake image data"),
@@ -98,7 +106,9 @@ class TestImageService(unittest.TestCase):
     @patch("cloudinary.api.delete_resources")
     def test_delete_image_success(self, mock_delete):
         mock_delete.return_value = {"deleted": {"sample": "deleted"}}
-        result = ImageService.delete_image("https://res.cloudinary.com/demo/image/upload/sample.jpg")
+        result = ImageService.delete_image(
+            "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+        )
         self.assertTrue(result)
         mock_delete.assert_called_once_with(["sample"], resource_type="image", type="upload")
 
@@ -109,7 +119,9 @@ class TestImageService(unittest.TestCase):
     @patch("cloudinary.api.delete_resources")
     def test_delete_image_failure(self, mock_delete):
         mock_delete.side_effect = Exception("Cloudinary API error")
-        result = ImageService.delete_image("https://res.cloudinary.com/demo/image/upload/sample.jpg")
+        result = ImageService.delete_image(
+            "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+        )
         self.assertFalse(result)
 
     @patch("cloudinary.api.delete_resources")

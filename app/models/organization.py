@@ -1,7 +1,7 @@
 from app.utils.db import get_db_cursor
 
 
-class Organization(object):
+class Organization:
     COLLEGE_CODE_MAP = {
         "cass": 1,
         "cba": 2,

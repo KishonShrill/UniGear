@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+
 from dotenv import load_dotenv
 
 # Automatically load .env file if present
@@ -62,12 +63,14 @@ class Config:
 
 class DevelopmentConfig(Config):
     """Development environment configuration."""
+
     DEBUG = True
     TESTING = False
 
 
 class ProductionConfig(Config):
     """Production environment configuration with secure cookie policies."""
+
     DEBUG = False
     TESTING = False
     SESSION_COOKIE_SECURE = True
@@ -77,6 +80,7 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
     """Testing environment configuration."""
+
     TESTING = True
     DEBUG = True
     WTF_CSRF_ENABLED = False

@@ -2,6 +2,7 @@ import cloudinary
 from flask import Flask, render_template
 from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
+
 from config import get_config
 
 mysql = MySQL()
@@ -47,12 +48,14 @@ def create_app(test_config=None):
     CSRFProtect(app)
 
     # Register Blueprints
+    from app.cli import register_cli_commands
     from app.routes.auth import auth_bp
-    from app.routes.website import website_bp
     from app.routes.colleges import colleges_bp
     from app.routes.seller import seller_bp
     from app.routes.user import user_bp
+    from app.routes.website import website_bp
 
+    register_cli_commands(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(website_bp)
     app.register_blueprint(colleges_bp)

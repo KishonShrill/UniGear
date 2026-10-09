@@ -1,5 +1,7 @@
 """Authentication routes handling sign-in, registration, and Google OAuth."""
+
 import logging
+
 from flask import (
     Blueprint,
     abort,
@@ -13,6 +15,7 @@ from flask import (
 )
 from google.auth.transport import requests
 from google.oauth2 import id_token
+
 from app.forms import LinkVerify, SignUpForm
 from app.models.user import User
 from app.utils.helpers import format_address
@@ -78,9 +81,7 @@ def submit_sign_up():
 
         if not user:
             try:
-                user = User.create_from_website(
-                    username, email, password, contact, address
-                )
+                user = User.create_from_website(username, email, password, contact, address)
             except Exception as e:
                 logger.warning("Registration failed for %s: %s", email, e)
                 flash("The contact number is already used...", "warning")
