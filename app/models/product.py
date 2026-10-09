@@ -3,7 +3,8 @@
 import logging
 from datetime import datetime
 
-from MySQLdb.cursors import DictCursor
+#from MySQLdb.cursors import DictCursor
+from psycopg.rows import dict_row
 
 from app.utils.db import get_db_cursor
 
@@ -262,7 +263,7 @@ class Product:
             query = """
             SELECT COUNT(*) AS row_count
             FROM products p
-            LEFT JOIN user u ON p.seller_id = u.user_id
+            LEFT JOIN "user" u ON p.seller_id = u.user_id
             WHERE u.org_id = %s;
             """
             with get_db_cursor() as cursor:
@@ -289,10 +290,10 @@ class Product:
                 ob.order_date,
                 ob.proof_of_payment
             FROM ordered_by ob
-            JOIN user u ON ob.user_id = u.user_id
+            JOIN "user" u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
-            JOIN user seller ON p.seller_id = seller.user_id
+            JOIN "user" seller ON p.seller_id = seller.user_id
             WHERE seller.org_id = %s
             ORDER BY ob.order_id DESC
             LIMIT 10;
@@ -338,10 +339,10 @@ class Product:
                 ob.order_date,
                 ob.proof_of_payment
             FROM ordered_by ob
-            JOIN user u ON ob.user_id = u.user_id
+            JOIN "user" u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
-            JOIN user seller ON p.seller_id = seller.user_id
+            JOIN "user" seller ON p.seller_id = seller.user_id
             WHERE seller.org_id = %s
             ORDER BY ob.order_id DESC
             LIMIT 10
@@ -372,12 +373,12 @@ class Product:
 
     @staticmethod
     def countOrdersWithEmail(email):
-        """Count total orders associated with a user's email."""
+        """Count total orders associated with a user"s email."""
         try:
             query = """
             SELECT COUNT(*) as row_count
             FROM ordered_by ob
-            JOIN user u ON ob.user_id = u.user_id
+            JOIN "user" u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
             WHERE user_email = %s;
@@ -407,7 +408,7 @@ class Product:
                 p.product_id,
                 ob.proof_of_payment
             FROM ordered_by ob
-            JOIN user u ON ob.user_id = u.user_id
+            JOIN "user" u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
             WHERE user_email = %s
@@ -450,7 +451,7 @@ class Product:
                 p.created_at,
                 p.updated_at
             FROM products p
-            LEFT JOIN user u ON p.seller_id = u.user_id
+            LEFT JOIN "user" u ON p.seller_id = u.user_id
             WHERE u.org_id = %s
             ORDER BY p.product_id ASC;
             """
@@ -483,10 +484,10 @@ class Product:
             query = """
             SELECT COUNT(*) AS row_count
             FROM ordered_by ob
-            JOIN user u ON ob.user_id = u.user_id
+            JOIN "user" u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
             JOIN sizes s ON ob.size_id = s.size_id
-            JOIN user seller ON p.seller_id = seller.user_id
+            JOIN "user" seller ON p.seller_id = seller.user_id
             WHERE seller.org_id = %s;
             """
             with get_db_cursor() as cursor:
@@ -536,22 +537,22 @@ class Product:
                 LEFT JOIN pictures pic ON p.product_id = pic.picture_id
             )
             SELECT
-                p.product_id AS 'Product',
-                p.product_name AS 'Name',
-                col.college_name AS 'College',
-                ps.picture_url AS 'Picture',
-                p.price AS 'Price',
-                p.order_type AS 'OrderType',
-                p.type AS 'Type',
-                org.org_name AS 'OrgName',
-                p.preorder_goal AS 'Goal',
+                p.product_id AS "Product",
+                p.product_name AS "Name",
+                col.college_name AS "College",
+                ps.picture_url AS "Picture",
+                p.price AS "Price",
+                p.order_type AS "OrderType",
+                p.type AS "Type",
+                org.org_name AS "OrgName",
+                p.preorder_goal AS "Goal",
                 COALESCE((
                     SELECT SUM(ob.quantity)
                     FROM ordered_by ob
                     WHERE ob.product_id = p.product_id
                 ), 0) AS total_ordered
             FROM products p
-            LEFT JOIN user u ON p.seller_id = u.user_id
+            LEFT JOIN "user" u ON p.seller_id = u.user_id
             LEFT JOIN organization org ON u.org_id = org.org_id
             LEFT JOIN college col ON org.college_id = col.college_id
             LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
@@ -596,7 +597,7 @@ class Product:
                         WHERE ob.product_id = p.product_id
                     ), 0) AS total_ordered
                 FROM products p
-                LEFT JOIN user u ON p.seller_id = u.user_id
+                LEFT JOIN "user" u ON p.seller_id = u.user_id
                 LEFT JOIN organization org ON u.org_id = org.org_id
                 LEFT JOIN college col ON org.college_id = col.college_id
                 LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
@@ -674,7 +675,7 @@ class Product:
                         WHERE ob.product_id = p.product_id
                     ), 0) AS total_ordered
                 FROM products p
-                LEFT JOIN user u ON p.seller_id = u.user_id
+                LEFT JOIN "user" u ON p.seller_id = u.user_id
                 LEFT JOIN organization org ON u.org_id = org.org_id
                 LEFT JOIN college col ON org.college_id = col.college_id
                 WHERE p.product_id = %s
@@ -759,17 +760,17 @@ class Product:
         """Retrieve products belonging to an organization, with optional type filtering."""
         query = """
             SELECT
-                p.product_id AS 'Product',
-                p.product_name AS 'Product Name',
-                p.description AS 'Description',
-                p.price AS 'Price',
-                p.order_type AS 'OrderType',
-                p.hook AS 'Hook',
-                MIN(pi.picture_url) AS 'Picture',
-                p.type AS 'Type'
+                p.product_id AS "Product",
+                p.product_name AS "Product Name",
+                p.description AS "Description",
+                p.price AS "Price",
+                p.order_type AS "OrderType",
+                p.hook AS "Hook",
+                MIN(pi.picture_url) AS "Picture",
+                p.type AS "Type"
             FROM products p
             LEFT JOIN pictures pi ON p.product_id = pi.picture_id
-            LEFT JOIN user u ON p.seller_id = u.user_id
+            LEFT JOIN "user" u ON p.seller_id = u.user_id
             WHERE u.org_id = %s
         """
         params = [org_id]
@@ -779,7 +780,7 @@ class Product:
 
         query += " GROUP BY p.product_id, p.product_name, p.description, p.price, p.order_type, p.hook, p.type;"
 
-        with get_db_cursor(cursorclass=DictCursor) as cursor:
+        with get_db_cursor(cursorclass=dict_row) as cursor:
             cursor.execute(query, params)
             products = cursor.fetchall()
             return [

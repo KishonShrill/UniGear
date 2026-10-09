@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from MySQLdb.cursors import DictCursor
+#from MySQLdb.cursors import DictCursor
+from psycopg.rows import dict_row
 
 from app.utils.db import get_db_cursor
 
@@ -61,10 +62,10 @@ class TestDbContextManager(unittest.TestCase):
         mock_conn.cursor.return_value = mock_cursor
         mock_mysql.connection = mock_conn
 
-        with get_db_cursor(cursorclass=DictCursor) as cursor:
+        with get_db_cursor(cursorclass=dict_row) as cursor:
             cursor.execute("SELECT * FROM products")
 
-        mock_conn.cursor.assert_called_once_with(DictCursor)
+        mock_conn.cursor.assert_called_once_with(dict_row)
         mock_cursor.close.assert_called_once()
 
 

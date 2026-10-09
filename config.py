@@ -35,11 +35,14 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
 
     # MySQL Database Config (Flask-MySQLdb)
-    MYSQL_USER = os.getenv("DB_USERNAME", "root")
-    MYSQL_PASSWORD = os.getenv("DB_PASSWORD", "")
-    MYSQL_DB = os.getenv("DB_NAME", "college_marketplace")
-    MYSQL_HOST = os.getenv("DB_HOST", "localhost")
-    MYSQL_UNIX_SOCKET = os.getenv("DB_UNIX_SOCKET") or None
+    #MYSQL_USER = os.getenv("DB_USERNAME", "root")
+    #MYSQL_PASSWORD = os.getenv("DB_PASSWORD", "")
+    #MYSQL_DB = os.getenv("DB_NAME", "college_marketplace")
+    #MYSQL_HOST = os.getenv("DB_HOST", "localhost")
+    #MYSQL_UNIX_SOCKET = os.getenv("DB_UNIX_SOCKET") or None
+
+    # PostgreSQL / Supabase
+    DATABASE_URL = os.getenv("DATABASE_URL")
 
     # Cloudinary Credentials
     CLOUD_NAME = os.getenv("CLOUD_NAME", "")
@@ -106,11 +109,12 @@ def get_config(env_name: str | None = None) -> type[Config]:
 # ==============================================================================
 _active_config = get_config()
 
-DB_NAME = _active_config.MYSQL_DB
-DB_USERNAME = _active_config.MYSQL_USER
-DB_PASSWORD = _active_config.MYSQL_PASSWORD
-DB_HOST = _active_config.MYSQL_HOST
-DB_UNIX_SOCKET = _active_config.MYSQL_UNIX_SOCKET
+DATABASE_URL = _active_config.DATABASE_URL
+#DB_NAME = _active_config.MYSQL_DB
+#DB_USERNAME = _active_config.MYSQL_USER
+#DB_PASSWORD = _active_config.MYSQL_PASSWORD
+#DB_HOST = _active_config.MYSQL_HOST
+#DB_UNIX_SOCKET = _active_config.MYSQL_UNIX_SOCKET
 
 CLOUD_NAME = _active_config.CLOUD_NAME
 API_KEY = _active_config.API_KEY

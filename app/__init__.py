@@ -1,11 +1,12 @@
 import cloudinary
 from flask import Flask, render_template
-from flask_mysqldb import MySQL
 from flask_wtf.csrf import CSRFProtect
+#from flask_mysqldb import MySQL
+
+#mysql = MySQL(app)
 
 from config import get_config
 
-mysql = MySQL()
 
 
 def create_app(test_config=None):
@@ -44,7 +45,7 @@ def create_app(test_config=None):
     )
 
     # Initialize Extensions
-    mysql.init_app(app)
+    #mysql.init_app(app)
     CSRFProtect(app)
 
     # Register Blueprints

@@ -13,6 +13,7 @@ wtforms = "*"
 cloudinary = "*"
 google-auth = "*"
 google-auth-oauthlib = "*"
+psycopg = {extras = ["binary"], version = "*"}
 
 [dev-packages]
 pytest = "*"

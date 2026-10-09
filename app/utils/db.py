@@ -1,37 +1,80 @@
+import os
 from collections.abc import Generator
 from contextlib import contextmanager
 from typing import Any
 
-from MySQLdb.cursors import Cursor
+#from MySQLdb.cursors import Cursor
+#from app import mysql
+#
+import psycopg
+from psycopg.rows import dict_row
+from config import get_config
 
-from app import mysql
+
+#
+#
+#
+#@contextmanager
+#def get_db_cursor(
+#    cursorclass: type[Cursor] | None = None, commit: bool = False
+#) -> Generator[Any, None, None]:
+#    """Context manager for acquiring and safely releasing MySQL database cursors.
+#
+#    Args:
+#        cursorclass: Optional cursor class (e.g. DictCursor). If None, standard tuple cursor is used.
+#        commit: If True, commits the transaction on successful exit, and rolls back on exception.
+#
+#    Yields:
+#        A database cursor object.
+#    """
+#    conn = mysql.connection
+#    cursor = conn.cursor(cursorclass) if cursorclass else conn.cursor()
+#    try:
+#        yield cursor
+#        if commit:
+#            conn.commit()
+#    except Exception:
+#        if commit:
+#            try:
+#                conn.rollback()
+#            except Exception:
+#                pass
+#        raise
+#    finally:
+#        cursor.close()
 
 
 @contextmanager
 def get_db_cursor(
-    cursorclass: type[Cursor] | None = None, commit: bool = False
+    cursorclass: Any = None,
+    commit: bool = False,
 ) -> Generator[Any, None, None]:
-    """Context manager for acquiring and safely releasing MySQL database cursors.
+    """Acquire and safely release a PostgreSQL database cursor."""
 
-    Args:
-        cursorclass: Optional cursor class (e.g. DictCursor). If None, standard tuple cursor is used.
-        commit: If True, commits the transaction on successful exit, and rolls back on exception.
+    config_class = get_config()
+    database_url = config_class.DATABASE_URL
+    print(database_url)
 
-    Yields:
-        A database cursor object.
-    """
-    conn = mysql.connection
-    cursor = conn.cursor(cursorclass) if cursorclass else conn.cursor()
+    conn = psycopg.connect(
+        database_url,
+        sslmode="require",
+    )
+
+    cursor = None
+
     try:
+        cursor = conn.cursor(row_factory=cursorclass)
         yield cursor
+
         if commit:
             conn.commit()
+
     except Exception:
         if commit:
-            try:
-                conn.rollback()
-            except Exception:
-                pass
+            conn.rollback()
         raise
+
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
+        conn.close()

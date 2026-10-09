@@ -1,4 +1,5 @@
-from MySQLdb.cursors import DictCursor
+#from MySQLdb.cursors import DictCursor
+from psycopg.rows import dict_row
 
 from app.utils.db import get_db_cursor
 
@@ -38,7 +39,7 @@ class Favorite:
             WHERE f.user_id = %s
             GROUP BY f.favorite_id, f.user_id, p.product_id, p.product_name, p.description, col.college_name, ps.picture_url;
         """
-        with get_db_cursor(cursorclass=DictCursor) as cursor:
+        with get_db_cursor(cursorclass=dict_row) as cursor:
             cursor.execute(query, (user_id,))
             return cursor.fetchall()
 
