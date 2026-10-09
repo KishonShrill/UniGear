@@ -49,7 +49,6 @@ def create_app(test_config=None):
     CSRFProtect(app)
 
     # Register Blueprints
-    from app.cli import register_cli_commands
     from app.routes.auth import auth_bp
     from app.routes.colleges import colleges_bp
     from app.routes.seller import seller_bp
