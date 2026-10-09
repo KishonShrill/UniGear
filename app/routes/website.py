@@ -32,11 +32,83 @@ def check_login():
     return {"logged_in": "id" in session}
 
 
+COLLEGES_CATALOG = [
+    {
+        "code": "cass",
+        "abbr": "CASS",
+        "name": "College of Arts and Social Sciences",
+        "color": "#324831",
+        "accent": "#4a6b49",
+        "icon": "fas fa-feather-alt",
+        "tagline": "Humanities, Social Sciences & Arts",
+    },
+    {
+        "code": "ccs",
+        "abbr": "CCS",
+        "name": "College of Computer Studies",
+        "color": "#598181",
+        "accent": "#73a5a5",
+        "icon": "fas fa-code",
+        "tagline": "Computing, Software & Systems",
+    },
+    {
+        "code": "cba",
+        "abbr": "CBA",
+        "name": "College of Business Administration",
+        "color": "#9A9A71",
+        "accent": "#b8b88a",
+        "icon": "fas fa-chart-line",
+        "tagline": "Accountancy, Management & Hospitality",
+    },
+    {
+        "code": "chs",
+        "abbr": "CHS",
+        "name": "College of Health Sciences",
+        "color": "#8B9EAF",
+        "accent": "#a8c0d6",
+        "icon": "fas fa-heartbeat",
+        "tagline": "Nursing & Allied Health Sciences",
+    },
+    {
+        "code": "ced",
+        "abbr": "CED",
+        "name": "College of Education",
+        "color": "#414459",
+        "accent": "#5e6382",
+        "icon": "fas fa-graduation-cap",
+        "tagline": "Teacher Education & Leadership",
+    },
+    {
+        "code": "coe",
+        "abbr": "COE",
+        "name": "College of Engineering",
+        "color": "#593838",
+        "accent": "#7d5050",
+        "icon": "fas fa-cogs",
+        "tagline": "Civil, Mechanical, Electrical & Chemical",
+    },
+    {
+        "code": "csm",
+        "abbr": "CSM",
+        "name": "College of Science and Mathematics",
+        "color": "#934F50",
+        "accent": "#ba6768",
+        "icon": "fas fa-atom",
+        "tagline": "Physics, Chemistry, Biology & Mathematics",
+    },
+]
+
+
 # Landing Page Route
 @website_bp.route("/")
 def landing():
-    """Render the application landing page."""
-    return render_template("landing.html")
+    """Render the application landing page with college directories and featured products."""
+    featured_products = Product.get_featured_showcase(limit=4)
+    return render_template(
+        "landing.html",
+        colleges=COLLEGES_CATALOG,
+        featured_products=featured_products,
+    )
 
 
 @website_bp.route("/explore")

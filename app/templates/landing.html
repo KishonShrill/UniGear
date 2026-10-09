@@ -2,114 +2,353 @@
 
 {% import "components/macros.html" as components %}
 
-{% block content %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-
-
-  {{ components.render_header(user=session['name'], role=session['role']) }}
-  
-
-  <!-- Landing pageee -->
-  <main class="landing-page">
-    <img src="{{ url_for('static', filename='images/landingpage.jpg') }}" alt="UNIGEAR" class="background-image">
-    
-    <div class="overlay">
-        <h1 class="main-title">UNIGEAR</h1>
-        <p class="main-description">
-            Wear your college legacy with pride! From hoodies and caps to bags and memorabilia, 
-            find everything you need to represent your alma mater. 
-            Shop exclusive, high-quality college merchandise that lets you carry your school spirit wherever you go.
-        </p>
-        <div class="button-container">
-            <a href="{{ url_for('auth.sign_up') }}" class="btn btn-primary">Get Started</a>
-            <a href="{{ url_for('website.explore') }}" class="btn btn-secondary">Explore</a>
-        </div>
-    </div>
-</main>
-
-
-  <!-- Pre order stepsss -->
-  <section id="step-process" class="step-process">
-    <div class="container">
-      <h1 class="title">HOW IT WORKS</h1>
-      <p class="subtitle">Follow these simple steps to pre-order your exclusive merch</p>
-  
-      <div class="steps-container">
-        <div class="step step-1">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>Login</h3>
-            <p>Start by logging into your UNIGEAR account to access personalized options and secure checkout.</p>
-          </div>
-          <div class="step-icon"><i class="fas fa-sign-in-alt"></i></div>
-        </div>
-  
-        <div class="step step-2">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>Choose </h3>
-            <p>Explore available merchandise to find items that represent your college spirit.</p>
-          </div>
-          <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
-        </div>
-  
-        <div class="step step-3">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>Order</h3>
-            <p>Select your preferred size, color, and quantity, and fill in your shipping and payment details.</p>
-          </div>
-          <div class="step-icon"><i class="fas fa-pencil-alt"></i></div>
-        </div>
-  
-        <div class="step step-4">
-          <div class="step-number">4</div>
-          <div class="step-content">
-            <h3>Wait</h3>
-            <p>After placing your order, check your email for confirmation. Wait for a complete batch.</p>
-          </div>
-          <div class="step-icon"><i class="fas fa-clock"></i></div>
-        </div>
-  
-        <div class="step step-5">
-          <div class="step-number">5</div>
-          <div class="step-content">
-            <h3>Wear</h3>
-            <p> wear the merch proudly to showcase your school spirit and  your college memories.</p>
-          </div>
-          <div class="step-icon"><i class="fas fa-tshirt"></i></div>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  
-  
-  <!-- promo -->
-  <section id="promo" class="promo">
-    <div class="promo-content">
-        <div class="promo-text">
-            <h2 class="promo-title">Find all college merch in one Website</h2>
-            <p class="promo-subtitle">
-                Find all your favorite college merch in one convenient website! Whether you're looking for apparel, accessories, or souvenirs, 
-                we’ve got everything from top universities in one place. Easily browse, compare, and shop 
-                for official college merchandise to show off your school pride.
-            </p>
-        </div>
-        <div class="promo-image">
-            <img src="{{ url_for('static', filename='images/promo.jpg') }}" alt="promo" class="promo-pic">
-        </div>
-    </div>
-</section>
-
-
-
-  <!-- Footer -->
-  {{ components.render_footer() }}
 {% endblock %}
 
+{% block content %}
+    {{ components.render_alerts() }}
+    {{ components.render_header(user=session.get('name'), role=session.get('role')) }}
 
+    <!-- ==================== HERO SECTION ==================== -->
+    <section class="landing-hero">
+        <img src="{{ url_for('static', filename='images/landingpage.jpg') }}" alt="UniGear MSU-IIT Campus Marketplace" class="hero-bg-image">
+        <div class="hero-overlay"></div>
 
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-certificate"></i>
+                    <span>Official MSU-IIT Campus Merchandise Hub</span>
+                </div>
+
+                <h1 class="hero-title">UNIGEAR</h1>
+
+                <h2 class="hero-subtitle">Wear Your College Legacy with Pride</h2>
+
+                <p class="hero-description">
+                    The centralized marketplace connecting students with accredited student organizations across all 7 colleges.
+                    Explore official hoodies, shirts, lanyards, and accessories with seamless batch pre-ordering.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{{ url_for('website.explore') }}" class="btn btn-hero-primary">
+                        <span>Explore Catalog</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#step-process" class="btn btn-hero-secondary">
+                        <i class="fas fa-info-circle"></i>
+                        <span>How It Works</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Trust / Platform Stats Strip -->
+            <div class="hero-stats-strip">
+                <div class="stat-card">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Colleges</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-card">
+                    <div class="stat-number">35+</div>
+                    <div class="stat-label">Student Orgs</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Student-Led</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-card">
+                    <div class="stat-number">Direct</div>
+                    <div class="stat-label">Campus Pickup</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SHOP BY COLLEGE SECTION ==================== -->
+    <section id="colleges-section" class="section-colleges">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-tag">COLLEGE STOREFRONTS</span>
+                <h2 class="section-title">EXPLORE BY COLLEGE</h2>
+                <p class="section-subtitle">Direct access to official student organization merchandise for each academic college</p>
+            </div>
+
+            <div class="colleges-grid">
+                {% for college in colleges %}
+                <a href="/college-{{ college.code }}" class="college-card" style="--college-color: {{ college.color }}; --college-accent: {{ college.accent }};">
+                    <div class="college-card-accent-bar"></div>
+                    <div class="college-card-body">
+                        <div class="college-card-header">
+                            <span class="college-abbr">{{ college.abbr }}</span>
+                            <div class="college-icon-wrap">
+                                <i class="{{ college.icon }}"></i>
+                            </div>
+                        </div>
+                        <h3 class="college-name">{{ college.name }}</h3>
+                        <p class="college-tagline">{{ college.tagline }}</p>
+                        <div class="college-card-action">
+                            <span>Browse Store</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FEATURED & TRENDING PREORDERS ==================== -->
+    <section id="featured-section" class="section-featured">
+        <div class="landing-container">
+            <div class="section-header-flex">
+                <div class="section-header-text">
+                    <span class="section-tag">SPOTLIGHT DROPS</span>
+                    <h2 class="section-title">TRENDING MERCHANDISE</h2>
+                    <p class="section-subtitle">Active pre-orders and limited edition campus releases</p>
+                </div>
+                <a href="{{ url_for('website.explore') }}" class="btn-link-viewall">
+                    <span>View All Products</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            {% if featured_products %}
+            <div class="products-showcase-grid">
+                {% for product in featured_products %}
+                <div class="product-showcase-card">
+                    <div class="product-image-wrap">
+                        <img src="{{ product.picture_url }}" alt="{{ product.product_name }}" loading="lazy">
+                        <span class="product-badge college-badge-{{ product.college_code }}">
+                            {{ product.college_code|upper }}
+                        </span>
+                        {% if product.order_type == 0 %}
+                            <span class="order-type-badge goal-badge">Pre-Order</span>
+                        {% else %}
+                            <span class="order-type-badge time-badge">Batch Order</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-card-body">
+                        <div class="product-meta">
+                            <span class="product-org"><i class="fas fa-users"></i> {{ product.org_name }}</span>
+                            <span class="product-type">{{ product.type|capitalize }}</span>
+                        </div>
+
+                        <h3 class="product-name" title="{{ product.product_name }}">
+                            <a href="{{ url_for('website.merch_details', product_id=product.product_id) }}">{{ product.product_name }}</a>
+                        </h3>
+
+                        <div class="product-price-row">
+                            <span class="product-price">₱{{ "%.2f"|format(product.price) }}</span>
+                            {% if product.order_type == 0 and product.preorder_goal > 0 %}
+                                <span class="preorder-stat">{{ product.total_ordered }}/{{ product.preorder_goal }} Reserved</span>
+                            {% endif %}
+                        </div>
+
+                        {% if product.order_type == 0 and product.preorder_goal > 0 %}
+                        <div class="product-progress-track">
+                            <div class="product-progress-fill" style="width: {{ product.progress_pct }}%;"></div>
+                        </div>
+                        {% endif %}
+
+                        <a href="{{ url_for('website.merch_details', product_id=product.product_id) }}" class="btn-product-order">
+                            <span>View Pre-Order</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-showcase-card">
+                <div class="empty-showcase-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <h3>Fresh Merchandise Coming Soon</h3>
+                <p>Student organizations are preparing exciting new batches. Explore the catalog to see existing products across colleges!</p>
+                <a href="{{ url_for('website.explore') }}" class="btn btn-hero-primary">
+                    <span>Browse Explore Catalog</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- ==================== HOW PREORDERS WORK ==================== -->
+    <section id="step-process" class="section-how-it-works">
+        <div class="landing-container">
+            <div class="section-header">
+                <span class="section-tag">STEP-BY-STEP</span>
+                <h2 class="section-title">HOW PRE-ORDERS WORK</h2>
+                <p class="section-subtitle">Follow our seamless 4-step process to reserve and receive your exclusive gear</p>
+            </div>
+
+            <div class="timeline-steps-grid">
+                <!-- Step 1 -->
+                <div class="step-box">
+                    <div class="step-indicator">
+                        <span class="step-num">01</span>
+                        <div class="step-icon-bubble">
+                            <i class="fas fa-compass"></i>
+                        </div>
+                    </div>
+                    <div class="step-text">
+                        <h3 class="step-heading">Discover & Select</h3>
+                        <p class="step-desc">
+                            Browse official merchandise catalogs across colleges and student organizations. Select your preferred design and size.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-box">
+                    <div class="step-indicator">
+                        <span class="step-num">02</span>
+                        <div class="step-icon-bubble">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="step-text">
+                        <h3 class="step-heading">Secure Pre-Order</h3>
+                        <p class="step-desc">
+                            Place your reservation in seconds and upload your GCash or bank transfer receipt for verification.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-box">
+                    <div class="step-indicator">
+                        <span class="step-num">03</span>
+                        <div class="step-icon-bubble">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                    </div>
+                    <div class="step-text">
+                        <h3 class="step-heading">Batch Production</h3>
+                        <p class="step-desc">
+                            Once the batch goal or deadline is reached, student organizations produce the apparel with quality assurance.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-box">
+                    <div class="step-indicator">
+                        <span class="step-num">04</span>
+                        <div class="step-icon-bubble">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                    </div>
+                    <div class="step-text">
+                        <h3 class="step-heading">Campus Pickup</h3>
+                        <p class="step-desc">
+                            Pick up your official gear at the student org booth on campus and represent your college pride!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== VALUE PROPOSITION & PROMO SECTION ==================== -->
+    <section id="impact-section" class="section-impact">
+        <div class="landing-container">
+            <div class="impact-split-grid">
+                <!-- Promo Visual with Floating Badge -->
+                <div class="impact-visual-column">
+                    <div class="impact-image-container">
+                        <img src="{{ url_for('static', filename='images/promo.jpg') }}" alt="MSU-IIT Student Merchandise" class="impact-main-image">
+                        <div class="impact-badge-floating">
+                            <div class="badge-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="badge-text">
+                                <strong>100% Student-Led</strong>
+                                <span>Official Org Certified</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Value Proposition Content -->
+                <div class="impact-text-column">
+                    <span class="section-tag">CAMPUS IMPACT</span>
+                    <h2 class="impact-title">All College Merch in One Unified Platform</h2>
+                    <p class="impact-lead">
+                        UniGear eliminates fragmented Facebook pre-order forms and scattered payment verification, creating a reliable home for MSU-IIT pride.
+                    </p>
+
+                    <div class="value-pillars">
+                        <div class="pillar-item">
+                            <div class="pillar-icon">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="pillar-content">
+                                <h4>Support Student Organizations</h4>
+                                <p>Every merchandise purchase directly funds student academic projects, leadership seminars, and community initiatives.</p>
+                            </div>
+                        </div>
+
+                        <div class="pillar-item">
+                            <div class="pillar-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="pillar-content">
+                                <h4>Zero Overproduction Waste</h4>
+                                <p>Demand-driven batch pre-ordering guarantees fair, affordable prices for students while preventing excess fabric waste.</p>
+                            </div>
+                        </div>
+
+                        <div class="pillar-item">
+                            <div class="pillar-icon">
+                                <i class="fas fa-store-alt"></i>
+                            </div>
+                            <div class="pillar-content">
+                                <h4>Organized Campus Distribution</h4>
+                                <p>Track your pre-order progress from reservation to verified pickup at official university booths.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Org Seller Call To Action Banner -->
+            <div class="seller-cta-banner">
+                <div class="seller-cta-content">
+                    <div class="seller-cta-text">
+                        <h3>Are You an Accredited Student Organization?</h3>
+                        <p>Streamline your merchandise pre-orders, size inventory, receipt verification, and sales reports in one dashboard.</p>
+                    </div>
+                    <div class="seller-cta-action">
+                        {% if not session.get('name') %}
+                            <a href="{{ url_for('auth.sign_up') }}" class="btn btn-seller-primary">
+                                <span>Become a Seller</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        {% elif session.get('role') == 'seller' %}
+                            <a href="{{ url_for('seller.my_orders') }}" class="btn btn-seller-primary">
+                                <span>Go to Dashboard</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('website.explore') }}" class="btn btn-seller-primary">
+                                <span>Explore Marketplace</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {{ components.render_footer() }}
+{% endblock %}

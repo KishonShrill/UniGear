@@ -552,6 +552,91 @@ class Product:
             return cursor.fetchall()
 
     @staticmethod
+    def get_featured_showcase(limit=4):
+        """Retrieve featured/trending products for the landing page showcase."""
+        try:
+            query = """
+                WITH PictureSelection AS (
+                    SELECT
+                        p.product_id,
+                        pic.picture_url,
+                        ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY pic.picture_url) AS row_num
+                    FROM products p
+                    LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+                )
+                SELECT
+                    p.product_id,
+                    p.product_name,
+                    p.hook,
+                    p.type,
+                    p.price,
+                    p.order_type,
+                    p.release_date,
+                    p.preorder_goal,
+                    col.college_name,
+                    org.org_name,
+                    ps.picture_url,
+                    COALESCE((
+                        SELECT SUM(ob.quantity)
+                        FROM ordered_by ob
+                        WHERE ob.product_id = p.product_id
+                    ), 0) AS total_ordered
+                FROM products p
+                LEFT JOIN user u ON p.seller_id = u.user_id
+                LEFT JOIN organization org ON u.org_id = org.org_id
+                LEFT JOIN college col ON org.college_id = col.college_id
+                LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
+                ORDER BY p.product_id DESC
+                LIMIT %s;
+            """
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (limit,))
+                results = cursor.fetchall()
+                if not results:
+                    return []
+
+                college_code_map = {
+                    "College of Arts and Social Sciences": "cass",
+                    "College of Computer Studies": "ccs",
+                    "College of Business Administration": "cba",
+                    "College of Health Sciences": "chs",
+                    "College of Education": "ced",
+                    "College of Engineering": "coe",
+                    "College of Science and Mathematics": "csm",
+                }
+
+                featured = []
+                for row in results:
+                    college_name = row[8] or "MSU-IIT Campus"
+                    college_code = college_code_map.get(college_name, "explore")
+                    goal = row[7] if row[7] is not None and row[7] > 0 else 25
+                    total_ordered = int(row[11]) if row[11] is not None else 0
+                    progress_pct = min(100, int((total_ordered / goal) * 100)) if goal > 0 else 0
+
+                    featured.append(
+                        {
+                            "product_id": row[0],
+                            "product_name": row[1],
+                            "hook": row[2] or "",
+                            "type": row[3] or "Merch",
+                            "price": float(row[4]) if row[4] is not None else 0.0,
+                            "order_type": row[5],
+                            "release_date": str(row[6]) if row[6] else None,
+                            "preorder_goal": goal,
+                            "college_name": college_name,
+                            "college_code": college_code,
+                            "org_name": row[9] or "Student Organization",
+                            "picture_url": row[10] if row[10] else "/static/images/placeholder.jpg",
+                            "total_ordered": total_ordered,
+                            "progress_pct": progress_pct,
+                        }
+                    )
+                return featured
+        except Exception as e:
+            logger.error("Error fetching featured showcase products: %s", e)
+            return []
+
+    @staticmethod
     def get_details_by_id(product_id):
         """Retrieve complete details for a product including images, sizes, and total stock."""
         with get_db_cursor() as cursor:
