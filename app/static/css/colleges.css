@@ -1,0 +1,971 @@
+/* ==========================================================================
+   UniGear - College Storefront Modern Stylesheet
+   ========================================================================== */
+
+/* College Brand Design Tokens */
+:root {
+    --college-primary: #598181;
+    --college-primary-dark: #3f6060;
+    --college-primary-light: #729e9e;
+    --college-accent: #d8eded;
+    --college-bg-soft: #f2f9f9;
+    --college-border: #bfdede;
+}
+
+[data-college="cass"] {
+    --college-primary: #324831;
+    --college-primary-dark: #233322;
+    --college-primary-light: #476445;
+    --college-accent: #d4e5d3;
+    --college-bg-soft: #f2f7f2;
+    --college-border: #c2d8c1;
+}
+
+[data-college="cba"] {
+    --college-primary: #9A9A71;
+    --college-primary-dark: #767652;
+    --college-primary-light: #b0b085;
+    --college-accent: #f0f0dc;
+    --college-bg-soft: #f9f9f2;
+    --college-border: #dedebb;
+}
+
+[data-college="ccs"] {
+    --college-primary: #598181;
+    --college-primary-dark: #3f6060;
+    --college-primary-light: #729e9e;
+    --college-accent: #d8eded;
+    --college-bg-soft: #f2f9f9;
+    --college-border: #bfdede;
+}
+
+[data-college="ced"] {
+    --college-primary: #414459;
+    --college-primary-dark: #2d2f40;
+    --college-primary-light: #575a74;
+    --college-accent: #dadce9;
+    --college-bg-soft: #f3f4f8;
+    --college-border: #c4c6d8;
+}
+
+[data-college="coe"] {
+    --college-primary: #593838;
+    --college-primary-dark: #3f2525;
+    --college-primary-light: #764c4c;
+    --college-accent: #eddada;
+    --college-bg-soft: #faf2f2;
+    --college-border: #dbc0c0;
+}
+
+[data-college="chs"] {
+    --college-primary: #8B9EAF;
+    --college-primary-dark: #62778a;
+    --college-primary-light: #a4b4c2;
+    --college-accent: #dce6ef;
+    --college-bg-soft: #f4f7fb;
+    --college-border: #c7d6e3;
+}
+
+[data-college="csm"] {
+    --college-primary: #934F50;
+    --college-primary-dark: #6e3536;
+    --college-primary-light: #ab6062;
+    --college-accent: #f2dcdc;
+    --college-bg-soft: #faf2f2;
+    --college-border: #dec2c3;
+}
+
+/* Base Page Layout */
+.college-storefront-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1e293b;
+}
+
+/* ==========================================================================
+   Hero Header Section
+   ========================================================================== */
+.college-hero {
+    height: auto;
+    position: relative;
+    background: linear-gradient(135deg, var(--college-primary-dark, #1e293b) 0%, #0f172a 100%);
+    color: #ffffff;
+    padding: 2.5rem 2rem 3rem;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.college-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: radial-gradient(circle at 85% 20%, var(--college-primary) 0%, transparent 60%);
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.college-hero-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding-inline: 1.5rem;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Navigation & Breadcrumbs Bar */
+.college-hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.college-breadcrumbs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.college-breadcrumbs a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.college-breadcrumbs a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.college-breadcrumbs .crumb-sep {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.college-breadcrumbs .crumb-current {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.btn-back-explore {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.btn-back-explore:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(-2px);
+}
+
+/* College Identity Header */
+.college-identity-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.college-title-group {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.college-acronym-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background: var(--college-primary);
+    color: #ffffff;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 2.25rem;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.college-title-meta h1 {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: clamp(2rem, 3.5vw, 2.75rem);
+    letter-spacing: 0.05em;
+    margin: 0;
+    color: #ffffff;
+    line-height: 1.1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.college-title-meta p {
+    margin: 0.35rem 0 0;
+    font-size: 0.9375rem;
+    color: #cbd5e1;
+    max-width: 600px;
+}
+
+.college-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.hero-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.hero-pill-badge i {
+    color: var(--college-accent, #94a3b8);
+}
+
+/* ==========================================================================
+   Main Storefront Layout
+   ========================================================================== */
+.college-storefront-body {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* ==========================================================================
+   Sidebar: Student Organizations
+   ========================================================================== */
+.college-org-sidebar {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    position: sticky;
+    top: 1.5rem;
+}
+
+.sidebar-header {
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    background: #ffffff;
+}
+
+.sidebar-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.sidebar-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    margin: 0;
+}
+
+.sidebar-title i {
+    color: var(--college-primary);
+}
+
+.org-count-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+}
+
+.org-search-box {
+    position: relative;
+    width: 100%;
+}
+
+.org-search-box i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8125rem;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.org-search-input {
+    width: 100%;
+    padding: 0.55rem 0.75rem 0.55rem 2.1rem;
+    font-size: 0.8125rem;
+    font-family: inherit;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #1e293b;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.org-search-input:focus {
+    background: #ffffff;
+    border-color: var(--college-primary);
+    box-shadow: 0 0 0 3px var(--college-bg-soft);
+}
+
+/* Organizations List */
+.org-list-container {
+    max-height: calc(100vh - 280px);
+    overflow-y: auto;
+    padding: 0.75rem 0.5rem;
+}
+
+.org-list-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.org-list-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+#org-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.org-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #334155;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    user-select: none;
+}
+
+.org-tab i {
+    font-size: 0.9375rem;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.org-tab .org-name-text {
+    flex: 1;
+    line-height: 1.35;
+}
+
+.org-tab:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.org-tab:hover i {
+    color: var(--college-primary);
+}
+
+.org-tab.active {
+    background: var(--college-bg-soft, #f1f5f9);
+    color: var(--college-primary-dark, #0f172a);
+    font-weight: 700;
+    border-color: var(--college-border, #cbd5e1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.org-tab.active i {
+    color: var(--college-primary);
+}
+
+.org-tab.council {
+    border-left: 3px solid var(--college-primary);
+}
+
+/* ==========================================================================
+   Main Content Area: Organization Showcase & Catalog
+   ========================================================================== */
+.college-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+/* Active Organization Info Banner */
+.active-org-banner {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.active-org-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.active-org-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--college-bg-soft);
+    color: var(--college-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    border: 1px solid var(--college-border);
+}
+
+.active-org-text h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.active-org-text p {
+    margin: 0.2rem 0 0;
+    font-size: 0.8125rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.active-org-text .verified-dot {
+    color: #10b981;
+    font-size: 0.625rem;
+}
+
+.active-org-metrics {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.org-metric-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Category Filter Chips (Type Tabs)
+   ========================================================================== */
+.category-filter-section {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+#type-tabs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#type-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.type-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.15rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.type-tab .type-icon-wrapper {
+    font-size: 0.9375rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+}
+
+.type-tab .type-name {
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: inherit;
+}
+
+.type-tab:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.type-tab.active {
+    background: var(--college-primary);
+    color: #ffffff;
+    border-color: var(--college-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.type-tab.active .type-icon-wrapper {
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   Product Grid & Merchandise Cards
+   ========================================================================== */
+#org-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.product-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08);
+    border-color: var(--college-border, #cbd5e1);
+}
+
+/* Product Media Stage */
+.product-card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background-color: #f1f5f9;
+}
+
+.product-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    display: block;
+}
+
+.product-card:hover .product-card-media img {
+    transform: scale(1.05);
+}
+
+/* Floating Badges on Card Image */
+.card-floating-badges {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    z-index: 2;
+}
+
+.badge-order-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+}
+
+.badge-order-type.goal {
+    background: rgba(16, 185, 129, 0.9);
+    color: #ffffff;
+}
+
+.badge-order-type.time {
+    background: rgba(245, 158, 11, 0.9);
+    color: #ffffff;
+}
+
+/* Floating Wishlist Button */
+.favorite-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 3;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.15);
+    background: #ffffff;
+    color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.favorite-btn.favorited {
+    color: #ef4444;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+/* Product Card Details Body */
+.product-card-body {
+    padding: 1rem 1.15rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-category-tag {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--college-primary);
+    margin-bottom: 0.35rem;
+}
+
+.product-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.35rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+}
+
+.product-card:hover .product-card-title {
+    color: var(--college-primary);
+}
+
+.product-card-desc {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0 0 1rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+}
+
+.product-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.85rem;
+    border-top: 1px solid #f1f5f9;
+    margin-top: auto;
+}
+
+.product-price-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-label {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.price-value {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.btn-card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    background: var(--college-bg-soft);
+    color: var(--college-primary-dark);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.product-card:hover .btn-card-action {
+    background: var(--college-primary);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   State Displays: Shimmer Skeleton & Empty States
+   ========================================================================== */
+.skeleton-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.skeleton-media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-content {
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line.title {
+    height: 18px;
+    width: 80%;
+}
+
+.skeleton-line.short {
+    width: 50%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.empty-products-stage {
+    grid-column: 1 / -1;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px dashed #cbd5e1;
+    padding: 4rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.empty-icon-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--college-bg-soft);
+    color: var(--college-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+}
+
+.empty-products-stage h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.empty-products-stage p {
+    font-size: 0.9375rem;
+    color: #64748b;
+    margin: 0;
+    max-width: 440px;
+    line-height: 1.5;
+}
+
+.btn-reset-filters {
+    margin-top: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 8px;
+    background: var(--college-primary);
+    color: #ffffff;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-reset-filters:hover {
+    background: var(--college-primary-dark);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .college-storefront-body {
+        grid-template-columns: 240px 1fr;
+        gap: 1.25rem;
+        padding: 1.5rem 1rem 3rem;
+    }
+}
+
+@media (max-width: 860px) {
+    .college-hero {
+        padding: 1.75rem 1rem 2.25rem;
+    }
+
+    .college-storefront-body {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.25rem 1rem 3rem;
+    }
+
+    .college-org-sidebar {
+        position: static;
+    }
+
+    .org-list-container {
+        max-height: 200px;
+    }
+
+    #org-products {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 540px) {
+    .college-acronym-badge {
+        width: 56px;
+        height: 56px;
+        font-size: 1.75rem;
+        border-radius: 14px;
+    }
+
+    .college-title-meta h1 {
+        font-size: 1.75rem;
+    }
+
+    #org-products {
+        grid-template-columns: 1fr;
+    }
+}

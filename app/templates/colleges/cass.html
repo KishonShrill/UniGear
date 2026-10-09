@@ -3,188 +3,137 @@
 {% import "components/macros.html" as components %}
 
 {% block head %}
+    <title>CASS Storefront | UniGear</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cass.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
-<main data-college-id="1">
+<main class="college-storefront-wrapper" data-college="cass" data-college-id="1">
     {{ components.render_header(user=session['name'], role=session['role']) }}
-    <section id="college-cass-header-container">
-        <div id="college-cass-header">
-            <h1>COLLEGE OF ARTS AND SOCIAL SCIENCES</h1>
-            <a href="explore" class="back-link">&larr; Go back</a>
-        </div>
-    </section>
 
-    <section id="college-cass-content">
-        <!-- Organization Tabs -->
-        <aside id="org-tabs">
-            <section id="org-tabs-section">
-                <ul id="org-list">
-                    <!-- Tabs will populate dynamically via JavaScript -->
+    <!-- College Hero Section -->
+    <header class="college-hero">
+        <div class="college-hero-container">
+            <div class="college-hero-top">
+                <nav class="college-breadcrumbs" aria-label="Breadcrumb">
+                    <a href="{{ url_for('website.landing') }}"><i class="fas fa-home"></i> Home</a>
+                    <span class="crumb-sep">/</span>
+                    <a href="{{ url_for('website.explore') }}">Explore</a>
+                    <span class="crumb-sep">/</span>
+                    <span class="crumb-current">CASS</span>
+                </nav>
+                <a href="{{ url_for('website.explore') }}" class="btn-back-explore">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Explore</span>
+                </a>
+            </div>
+
+            <div class="college-identity-card">
+                <div class="college-title-group">
+                    <div class="college-acronym-badge" aria-hidden="true">CASS</div>
+                    <div class="college-title-meta">
+                        <h1>COLLEGE OF ARTS AND SOCIAL SCIENCES</h1>
+                        <p>Official accredited student organization merchandise and preorder store.</p>
+                    </div>
+                </div>
+                <div class="college-badges-row">
+                    <span class="hero-pill-badge"><i class="fas fa-shield-alt"></i> Verified Student Orgs</span>
+                    <span class="hero-pill-badge"><i class="fas fa-shopping-bag"></i> Official Merchandise</span>
+                    <span class="hero-pill-badge"><i class="fas fa-receipt"></i> Secure Preorders</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Storefront Body (Sidebar + Content) -->
+    <div class="college-storefront-body">
+        <!-- Sticky Organization Sidebar -->
+        <aside class="college-org-sidebar" aria-label="Organizations navigation">
+            <div class="sidebar-header">
+                <div class="sidebar-title-row">
+                    <h2 class="sidebar-title">
+                        <i class="fas fa-sitemap"></i> Student Orgs
+                    </h2>
+                    <span class="org-count-pill" id="orgCountPill">0 Orgs</span>
+                </div>
+                <div class="org-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="orgSearchInput" class="org-search-input" placeholder="Search organizations..." autocomplete="off" aria-label="Search organizations">
+                </div>
+            </div>
+            <div class="org-list-container">
+                <ul id="org-list" role="list">
+                    <!-- Loaded dynamically via JavaScript -->
                 </ul>
-            </section>
+            </div>
         </aside>
 
-        <section id="content">
-            <div id="college-cass-main">
-                <ul id="type-tabs">
-                    <li class="type-tab">
-                        <img src="{{ url_for('static', filename='images/all.jpg') }}" alt="All Icon" class="type-icon">
+        <!-- Main Content Area -->
+        <section class="college-main-content">
+            <!-- Active Organization Info Banner -->
+            <div class="active-org-banner">
+                <div class="active-org-info">
+                    <div class="active-org-avatar" aria-hidden="true">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="active-org-text">
+                        <h2 id="activeOrgName">Loading Organization...</h2>
+                        <p><i class="fas fa-circle verified-dot"></i> Accredited Student Organization</p>
+                    </div>
+                </div>
+                <div class="active-org-metrics">
+                    <span class="org-metric-chip" id="activeOrgCount">
+                        <i class="fas fa-box"></i> 0 Items
+                    </span>
+                </div>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="category-filter-section">
+                <ul id="type-tabs" role="tablist">
+                    <li class="type-tab active" data-type="all" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-th-large"></i></span>
                         <span class="type-name">All</span>
                     </li>
-                    <li class="type-tab">
-                        <img src="{{ url_for('static', filename='images/t-shirt.jpg') }}" alt="T-shirt Icon" class="type-icon">
+                    <li class="type-tab" data-type="t-shirt" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-tshirt"></i></span>
                         <span class="type-name">T-Shirt</span>
                     </li>
-                    <li class="type-tab">
-                        <img src="{{ url_for('static', filename='images/hoodie.jpg') }}" alt="Hoodie Icon" class="type-icon">
+                    <li class="type-tab" data-type="hoodie" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-vest"></i></span>
                         <span class="type-name">Hoodie</span>
                     </li>
-                    <li class="type-tab">
-                        <img src="{{ url_for('static', filename='images/footwear.jpg') }}" alt="Footwear Icon" class="type-icon">
+                    <li class="type-tab" data-type="footwear" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-shoe-prints"></i></span>
                         <span class="type-name">Footwear</span>
                     </li>
-                    <li class="type-tab">
-                        <img src="{{ url_for('static', filename='images/lanyard.jpg') }}" alt="Lanyard Icon" class="type-icon">
+                    <li class="type-tab" data-type="lanyard" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-id-badge"></i></span>
                         <span class="type-name">Lanyard</span>
                     </li>
-                    <li class="type-tab">
-                        <img src="{{ url_for('static', filename='images/pin.jpg') }}" alt="Pin Icon" class="type-icon">
+                    <li class="type-tab" data-type="pin" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-certificate"></i></span>
                         <span class="type-name">Pin</span>
+                    </li>
+                    <li class="type-tab" data-type="accessories" role="tab" tabindex="0">
+                        <span class="type-icon-wrapper"><i class="fas fa-tags"></i></span>
+                        <span class="type-name">Accessories</span>
                     </li>
                 </ul>
             </div>
 
-            <!-- Products Display -->
-            <section id="org-products">
-                <p>Select an organization to view products.</p>
+            <!-- Products Display Grid -->
+            <section id="org-products" aria-label="Organization products grid">
+                <!-- Products loaded asynchronously via college_storefront.js -->
             </section>
         </section>
-    </section>
+    </div>
 </main>
 
 {{ components.render_footer() }}
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const productsContainer = document.getElementById("org-products");
-        const typeTabs = document.querySelectorAll("#type-tabs .type-tab");
-        const orgTabsContainer = document.getElementById("org-list");
-    
-        let selectedType = 'all';
-        let selectedOrgId = null;
-    
-        // Fetch organization tabs dynamically
-        fetch('/api/cass/organizations')
-            .then(response => response.json())
-            .then(organizations => {
-                organizations.forEach(org => {
-                    const orgTab = document.createElement("li");
-                    orgTab.classList.add("org-tab");
-                    orgTab.setAttribute("data-org-id", org.id);
-                    orgTab.innerText = org.name;
-                    orgTabsContainer.appendChild(orgTab);
-    
-                    orgTab.addEventListener("click", function () {
-                        document.querySelectorAll(".org-tab").forEach(tab => tab.classList.remove("active"));
-                        orgTab.classList.add("active");
-                        loadProductsForOrg(org.id);
-                    });
-                });
-    
-                if (organizations.length > 0) {
-                    const firstOrgTab = orgTabsContainer.querySelector(".org-tab");
-                    firstOrgTab.classList.add("active");
-                    loadProductsForOrg(organizations[0].id);
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching organizations:", error);
-                productsContainer.innerHTML = "<p>There was an issue loading the organizations.</p>";
-            });
-    
-        // Fetch products for an organization
-        function loadProductsForOrg(org_id) {
-            selectedOrgId = org_id;
-            productsContainer.innerHTML = "<p>Loading products...</p>";
-    
-            fetch(`/api/organizations/products?org_id=${org_id}&type=${selectedType}`)
-                .then(response => response.json())
-                .then(products => {
-                    if (!products || products.length === 0) {
-                        productsContainer.innerHTML = "<p>No products available for this organization.</p>";
-                        return;
-                    }
-    
-                    productsContainer.innerHTML = ''; // Clear previous products
-                    products.forEach(product => {
-                        const productCard = document.createElement("div");
-                        productCard.classList.add("product-card");
-                        productCard.setAttribute("data-product-id", product.id);
-    
-                        const isFavorite = product.is_favorite; // Check if product is already in favorites
-                        const imgSrc = product.picture || "{{ url_for('static', filename='images/placeholder.jpg') }}"; // Fallback image
-                        productCard.innerHTML = `
-                            <a href="/product/${product.id}">
-                                <img src="${imgSrc}" alt="${product.name}">
-                                <h3>${product.name}</h3>
-                                <p>${product.description}</p>
-                            </a>
-                            <button class="favorite-btn ${isFavorite ? 'favorited' : ''}" data-product-id="${product.id}">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        `;
-                        productsContainer.appendChild(productCard);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error fetching products:", error);
-                    productsContainer.innerHTML = "<p>There was an issue loading the products.</p>";
-                });
-        }
-    
-        // Handle wishlist toggle functionality
-        productsContainer.addEventListener("click", function (event) {
-            const favoriteBtn = event.target.closest(".favorite-btn");
-            if (!favoriteBtn) return; // Exit if the click wasn't on a favorite button
-    
-            const productId = favoriteBtn.getAttribute("data-product-id");
-            console.log("Product ID clicked:", productId); // Debugging line to check if ID is being passed correctly
-    
-            fetch(`/favorite/${productId}`, {
-                method: 'POST',
-                credentials: 'same-origin',
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Response data:", data); // Debugging line to check the response data
-    
-                    if (data.success) {
-                        // Toggle favorite button color and state
-                        if (data.favorite_status) {
-                            favoriteBtn.classList.add("favorited");
-                            favoriteBtn.style.color = "red"; // Set color to red
-                            alert("Added to Wishlist");
-                        } else {
-                            favoriteBtn.classList.remove("favorited");
-                            favoriteBtn.style.color = "gray"; // Set color to gray
-                            alert("Removed from Wishlist");
-                        }
-                    } else {
-                        alert(data.message || "An error occurred.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error toggling favorite:", error);
-                    alert("An unexpected error occurred. Please try again.");
-                });
-        });
-    });
-    </script>
-    
-    
+<script src="{{ url_for('static', filename='js/college_storefront.js') }}"></script>
 {% endblock %}

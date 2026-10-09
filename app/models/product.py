@@ -762,6 +762,9 @@ class Product:
                 p.product_id AS 'Product',
                 p.product_name AS 'Product Name',
                 p.description AS 'Description',
+                p.price AS 'Price',
+                p.order_type AS 'OrderType',
+                p.hook AS 'Hook',
                 MIN(pi.picture_url) AS 'Picture',
                 p.type AS 'Type'
             FROM products p
@@ -774,7 +777,7 @@ class Product:
             query += " AND p.type = %s"
             params.append(product_type)
 
-        query += " GROUP BY p.product_id, p.product_name, p.description, p.type;"
+        query += " GROUP BY p.product_id, p.product_name, p.description, p.price, p.order_type, p.hook, p.type;"
 
         with get_db_cursor(cursorclass=DictCursor) as cursor:
             cursor.execute(query, params)
@@ -784,6 +787,10 @@ class Product:
                     "id": p["Product"],
                     "name": p["Product Name"],
                     "description": p["Description"],
+                    "price": float(p["Price"]) if p.get("Price") is not None else 0.0,
+                    "order_type": p.get("OrderType"),
+                    "hook": p.get("Hook") or "",
+                    "type": p.get("Type") or "",
                     "picture": p["Picture"],
                 }
                 for p in products

@@ -103,6 +103,24 @@ class TestRoutes(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {"success": True, "favorite_status": True})
 
+    def test_college_storefront_routes(self):
+        colleges = ["cass", "cba", "ccs", "ced", "coe", "chs", "csm"]
+        for college in colleges:
+            response = self.client.get(f"/college-{college}")
+            self.assertEqual(
+                response.status_code,
+                200,
+                f"Failed to render college storefront for {college}",
+            )
+            self.assertIn(
+                f'data-college="{college}"'.encode(),
+                response.data,
+            )
+
+    def test_invalid_college_storefront_route(self):
+        response = self.client.get("/college-invalid")
+        self.assertEqual(response.status_code, 404)
+
     @patch("app.models.order.Order.toggle_status")
     def test_seller_toggle_order_status(self, mock_toggle_status):
         mock_toggle_status.return_value = (True, 1)
