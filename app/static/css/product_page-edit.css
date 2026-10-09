@@ -1,16 +1,2 @@
-.product__image-wrapper {
-  align-items: end !important;
-  justify-items: start !important;
-}
-
-#upload-button {
-  transform: scale(0.4) !important;
-}
-
-#upload-button__description {
-  display: none !important;
-}
-
-#delete-image-button {
-  display: grid !important;
-}
+/* product_page-edit.css - Edit mode specific overrides (if any) */
+/* Shared styling is fully managed by product_page-crud.css */
