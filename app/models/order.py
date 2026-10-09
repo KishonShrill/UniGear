@@ -1,4 +1,8 @@
+"""Order model handling order placement, status toggling, and receipts."""
+import logging
 from app.utils.db import get_db_cursor
+
+logger = logging.getLogger(__name__)
 
 
 class Order(object):
@@ -24,7 +28,7 @@ class Order(object):
                 )
                 return cursor.lastrowid
         except Exception as e:
-            print(f"Error in preorderProduct: {e}")
+            logger.error("Error in preorderProduct: %s", e)
             return None
 
     @staticmethod
@@ -58,7 +62,7 @@ class Order(object):
                 )
                 return True, new_status
         except Exception as e:
-            print(f"Error in toggle_status: {e}")
+            logger.error("Error in toggle_status: %s", e)
             return False, None
 
     @staticmethod
@@ -77,7 +81,7 @@ class Order(object):
                 row = cursor.fetchone()
                 return row[0] if row else None
         except Exception as e:
-            print(f"Error in fetchReceipt: {e}")
+            logger.error("Error in fetchReceipt: %s", e)
             return None
 
     @staticmethod
@@ -110,7 +114,7 @@ class Order(object):
                     return True
                 return False
         except Exception as e:
-            print(f"Error in deleteOrder: {e}")
+            logger.error("Error in deleteOrder: %s", e)
             return False
 
     @staticmethod
@@ -128,7 +132,7 @@ class Order(object):
                 )
                 return True
         except Exception as e:
-            print(f"Error in deleteReceipt: {e}")
+            logger.error("Error in deleteReceipt: %s", e)
             return False
 
     @staticmethod

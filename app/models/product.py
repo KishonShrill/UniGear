@@ -1,6 +1,10 @@
+"""Product model managing product catalog, inventory sizes, and organization queries."""
 from datetime import datetime
+import logging
 from MySQLdb.cursors import DictCursor
 from app.utils.db import get_db_cursor
+
+logger = logging.getLogger(__name__)
 
 
 class Product(object):
@@ -85,9 +89,9 @@ class Product(object):
                     ),
                 )
         except AttributeError as e:
-            print(f"AttributeError: {str(e)}")
+            logger.error("AttributeError during product update: %s", e)
         except Exception as e:
-            print(f"Something went wrong when updating product_id...\n{e}")
+            logger.error("Error updating product %s: %s", self.product_id, e)
 
     def countPreorder(self):
         """Count preorders and fetch preorder goal."""
@@ -160,7 +164,11 @@ class Product(object):
             with get_db_cursor(commit=True) as cursor:
                 cursor.execute(query, (release_date, self.product_id))
         except Exception as e:
-            print(f"Something went wrong with transitioning from goal to time:\n{e}")
+            logger.error(
+                "Error transitioning product %s from goal to time: %s",
+                self.product_id,
+                e,
+            )
 
     @staticmethod
     def add_product_pictures(product_id, picture_url):
@@ -306,7 +314,7 @@ class Product(object):
                     orders.append(order)
                 return orders
         except Exception as e:
-            print(f"Error occurred: {e}")
+            logger.error("Error fetching orders for org %s: %s", org_id, e)
             return None
 
     @staticmethod
@@ -356,7 +364,7 @@ class Product(object):
                     orders.append(order)
                 return orders
         except Exception as e:
-            print(f"Error occurred: {e}")
+            logger.error("Error fetching paginated orders for org %s: %s", org_id, e)
             return None
 
     @staticmethod
@@ -376,7 +384,7 @@ class Product(object):
                 row = cursor.fetchone()
                 return row[0] if row else 0
         except Exception as e:
-            print(f"Error occurred: {e}")
+            logger.error("Error counting orders for email %s: %s", email, e)
             return None
 
     @staticmethod
@@ -422,7 +430,7 @@ class Product(object):
                     orders.append(order)
                 return orders
         except Exception as e:
-            print(f"Error occurred: {e}")
+            logger.error("Error fetching orders for email %s: %s", email, e)
             return None
 
     @staticmethod
@@ -462,7 +470,7 @@ class Product(object):
                     products.append(product)
                 return products
         except Exception as e:
-            print(f"Error occurred: {e}")
+            logger.error("Error fetching products for org %s: %s", org_id, e)
             return None
 
     @staticmethod
@@ -483,7 +491,7 @@ class Product(object):
                 row = cursor.fetchone()
                 return row[0] if row else 0
         except Exception as e:
-            print(f"Products Count ERR: {e}")
+            logger.error("Error counting orders for org %s: %s", org_id, e)
             return 0
 
     @staticmethod
@@ -496,7 +504,7 @@ class Product(object):
                 results = cursor.fetchall()
                 return [row[0] for row in results]
         except Exception as e:
-            print(f"Error fetching product pictures: {e}")
+            logger.error("Error fetching product pictures for product %s: %s", product_id, e)
             return []
 
     @staticmethod
@@ -509,7 +517,7 @@ class Product(object):
                 results = cursor.fetchall()
                 return [row[0] for row in results]
         except Exception as e:
-            print(f"Error fetching sizes: {e}")
+            logger.error("Error fetching sizes for product %s: %s", product_id, e)
             return []
 
     @staticmethod

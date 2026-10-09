@@ -1,8 +1,12 @@
-from werkzeug.security import generate_password_hash, check_password_hash
+"""User model representing application users and sellers."""
+from werkzeug.security import check_password_hash, generate_password_hash
 from app.utils.db import get_db_cursor
+from app.utils.helpers import split_address
 
 
 class User(object):
+    """User domain model for authentication and profile management."""
+
     def __init__(
         self,
         user_id=None,
@@ -22,6 +26,11 @@ class User(object):
         self.user_address = user_address
         self.user_role = user_role
         self.org_id = org_id
+
+    @property
+    def parsed_address(self):
+        """Return (street, barangay, city) tuple parsed from user_address."""
+        return split_address(self.user_address)
 
     def save(self):
         """Save the current user instance to the database."""
