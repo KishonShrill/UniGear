@@ -1,0 +1,20 @@
+name: 'Enforce Branch PR Restrictions'
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  check_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Source Branch
+        # Blocks PR if base is main and head is master (and vice versa)
+        if: |
+          (github.base_ref == 'main' && github.head_ref == 'master') ||
+          (github.base_ref == 'master' && github.head_ref == 'main')
+        run: |
+          echo "ERROR: Pull Requests between main and master branches are strictly forbidden."
+          exit 1

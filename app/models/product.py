@@ -656,9 +656,28 @@ class Product:
         with get_db_cursor() as cursor:
             cursor.execute(
                 """
-                SELECT product_id, product_name, description, hook, type, price, order_type, release_date
-                FROM products
-                WHERE product_id = %s
+                SELECT
+                    p.product_id,
+                    p.product_name,
+                    p.description,
+                    p.hook,
+                    p.type,
+                    p.price,
+                    p.order_type,
+                    p.release_date,
+                    p.preorder_goal,
+                    col.college_name,
+                    org.org_name,
+                    COALESCE((
+                        SELECT SUM(ob.quantity)
+                        FROM ordered_by ob
+                        WHERE ob.product_id = p.product_id
+                    ), 0) AS total_ordered
+                FROM products p
+                LEFT JOIN user u ON p.seller_id = u.user_id
+                LEFT JOIN organization org ON u.org_id = org.org_id
+                LEFT JOIN college col ON org.college_id = col.college_id
+                WHERE p.product_id = %s
                 """,
                 (product_id,),
             )
@@ -666,15 +685,50 @@ class Product:
             if not product_row:
                 return None
 
+            college_code_map = {
+                "College of Arts and Social Sciences": "cass",
+                "College of Computer Studies": "ccs",
+                "College of Business Administration": "cba",
+                "College of Health Sciences": "chs",
+                "College of Education": "ced",
+                "College of Engineering": "coe",
+                "College of Science and Mathematics": "csm",
+            }
+
+            college_name = (
+                product_row[9] if len(product_row) > 9 and product_row[9] else "MSU-IIT Campus"
+            )
+            college_code = college_code_map.get(college_name, "explore")
+            goal = (
+                product_row[8]
+                if len(product_row) > 8 and product_row[8] is not None and product_row[8] > 0
+                else 25
+            )
+            total_ordered = (
+                int(product_row[11]) if len(product_row) > 11 and product_row[11] is not None else 0
+            )
+            progress_pct = min(100, int((total_ordered / goal) * 100)) if goal > 0 else 0
+
             product = {
                 "product_id": product_row[0],
                 "name": product_row[1],
+                "product_name": product_row[1],
                 "description": product_row[2],
                 "hook": product_row[3],
                 "type": product_row[4],
-                "price": product_row[5],
+                "price": float(product_row[5]) if product_row[5] is not None else 0.0,
                 "order_type": product_row[6],
-                "release_date": product_row[7],
+                "release_date": str(product_row[7]) if product_row[7] else None,
+                "preorder_goal": goal,
+                "college_name": college_name,
+                "college_code": college_code,
+                "org_name": (
+                    product_row[10]
+                    if len(product_row) > 10 and product_row[10]
+                    else "Student Organization"
+                ),
+                "total_ordered": total_ordered,
+                "progress_pct": progress_pct,
             }
 
             cursor.execute("SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,))

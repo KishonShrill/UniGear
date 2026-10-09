@@ -23,6 +23,43 @@ class TestRoutes(unittest.TestCase):
         response = self.client.get("/explore")
         self.assertEqual(response.status_code, 200)
 
+    @patch("app.models.favorite.Favorite.is_favorite")
+    @patch("app.models.product.Product.get_details_by_id")
+    def test_product_details_page(self, mock_get_details, mock_is_fav):
+        mock_get_details.return_value = {
+            "product": {
+                "product_id": 1,
+                "name": "CCS Hoodie",
+                "product_name": "CCS Hoodie",
+                "description": "Official CCS Hoodie",
+                "hook": "Wear your legacy",
+                "type": "hoodie",
+                "price": 650.0,
+                "order_type": 0,
+                "release_date": "2026-12-31",
+                "preorder_goal": 50,
+                "college_name": "College of Computer Studies",
+                "college_code": "ccs",
+                "org_name": "SITE",
+                "total_ordered": 15,
+                "progress_pct": 30,
+            },
+            "images": ["https://img.com/ccs1.jpg", "https://img.com/ccs2.jpg"],
+            "sizes": ["S", "M", "L", "XL"],
+            "total_quantity": 100,
+        }
+        mock_is_fav.return_value = False
+        response = self.client.get("/product/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"CCS Hoodie", response.data)
+        self.assertIn(b"SITE", response.data)
+
+    @patch("app.models.product.Product.get_details_by_id")
+    def test_product_details_not_found(self, mock_get_details):
+        mock_get_details.return_value = None
+        response = self.client.get("/product/9999")
+        self.assertEqual(response.status_code, 404)
+
     @patch("app.models.organization.Organization.get_by_college_code")
     def test_get_organizations_api(self, mock_get_orgs):
         mock_get_orgs.return_value = [{"id": "SITE", "name": "SITE Organization"}]

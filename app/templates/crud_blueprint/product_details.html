@@ -3,296 +3,614 @@
 {% import "components/macros.html" as components %}
 
 {% block head %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product_details.css') }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
-  <!-- Header -->
-  {{ components.render_header(user=session['name'], role=session['role']) }}
+  <!-- Global Alerts & Header -->
+  {{ components.render_alerts() }}
+  {{ components.render_header(user=session.get('name'), role=session.get('role')) }}
 
-  <!-- Main Content -->
-  <main class="product">
-    <section class="product__image-wrapper">
-      <div class="product__image-gallery">
-        <div class="product__image-preview" id="slides-container">
-          {% for image in images %}
-            <div class="mySlides" style="{% if loop.index == 1 %}display: flex;{% else %}display: none;{% endif %}">
-              <div class="numbertext">{{ loop.index }} / {{ images|length }}</div>
-              <img src="{{ image }}" alt="Product Image" class="mySlides__image">
+  <!-- ==================== MAIN PRODUCT VIEWPORT ==================== -->
+  <main class="product-page">
+    <!-- ==================== LEFT COLUMN: PHOTO GALLERY ==================== -->
+    <section class="product__image-wrapper" aria-label="Product Media Gallery">
+      <!-- Gallery Stage Container -->
+      <div class="product-gallery-stage">
+        <!-- Floating Status Badges -->
+        <div class="gallery-top-badges">
+          {% if product.order_type == 0 %}
+            <span class="gallery-badge badge-preorder">
+              <i class="fas fa-hourglass-half"></i> Pre-Order
+            </span>
+          {% else %}
+            <span class="gallery-badge badge-batch">
+              <i class="fas fa-boxes"></i> Batch Order
+            </span>
+          {% endif %}
+
+          {% if product.order_type == 0 and product.preorder_goal > 0 %}
+            <div class="gallery-milestone-pill" title="{{ product.total_ordered }} reserved out of {{ product.preorder_goal }} goal">
+              <span class="milestone-label">
+                <i class="fas fa-fire"></i>
+                <b>{{ product.total_ordered }}</b>/{{ product.preorder_goal }} Reserved
+              </span>
+              <div class="milestone-progress-track">
+                <div class="milestone-progress-bar" style="width: {{ product.progress_pct }}%;"></div>
+              </div>
             </div>
-          {% endfor %}
+          {% else %}
+            <div class="gallery-milestone-pill in-production">
+              <i class="fas fa-check-circle"></i> Official Release
+            </div>
+          {% endif %}
         </div>
-        <a class="prev" onclick="plusSlides(-1)">❮</a>
-        <a class="next" onclick="plusSlides(1)">❯</a>
-      </div>
 
-      <div class="product__image-thumbnails" id="thumbnails">
-        {% for image in images %}
-          <div class="column">
-            <img src="{{ image }}" 
-                 class="demo cursor {% if loop.first %}active{% endif %}" 
-                 onclick="currentSlide({{ loop.index }})">
+        <!-- Main Image Slides Preview -->
+        <div class="product__image-preview" id="slides-container">
+          {% if images %}
+            {% for image in images %}
+              <div class="mySlides fade" style="{% if loop.index == 1 %}display: flex;{% else %}display: none;{% endif %}">
+                <img src="{{ image }}" alt="{{ product.name }} photo {{ loop.index }}" class="mySlides__image" loading="lazy">
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="mySlides fade" style="display: flex;">
+              <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="{{ product.name }}" class="mySlides__image">
+            </div>
+          {% endif %}
+
+          <!-- Photo Counter Pill -->
+          <div class="slide-counter-badge" id="slideCounterBadge">
+            <i class="fas fa-camera"></i>
+            <span id="currentSlideNum">1</span> / <span id="totalSlidesNum">{{ images|length if images else 1 }}</span>
           </div>
-        {% endfor %}
-      </div>
-
-      <div class="product__quantity-viewer">
-        <h1>{{ total_quantity }}</h1>
-        <p>Preorder Count</p>
-      </div>
-    </section>
-
-    <!-- Product Details -->
-    <section class="product__content-wrapper">
-      <div style="display: flex; justify-content: space-between;">
-        <div class="product__content-back-wrapper">
-          <a class="product__content-back" href="{{ url_for('website.landing') }}"><b>Home</b></a>
-          <a class="product__content-back" href="{{ url_for('website.explore') }}"><b>Back to Shop</b></a>
         </div>
-        {% if product.release_date %}
-        <p style="text-align: end;">🕛 <b style="color: red;"><span id="release_counter"></span> Days Left...</b></p>
+
+        <!-- Gallery Arrows Navigation -->
+        {% if images and images|length > 1 %}
+          <button type="button" class="gallery-nav-btn prev-btn" onclick="plusSlides(-1)" aria-label="Previous photo">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button type="button" class="gallery-nav-btn next-btn" onclick="plusSlides(1)" aria-label="Next photo">
+            <i class="fas fa-chevron-right"></i>
+          </button>
         {% endif %}
       </div>
 
-      <!-- Product Name and Price -->
-      <div class="product__name-price">
-        <h2 id="name">{{ product.name }}</h2>
-        <h3 id="price">₱{{ product.price }}</h3>
+      <!-- Thumbnails Strip Carousel -->
+      {% if images and images|length > 1 %}
+        <div class="product__image-thumbnails" id="thumbnails" role="tablist" aria-label="Product image thumbnails">
+          {% for image in images %}
+            <button
+              type="button"
+              class="thumb-item-btn {% if loop.first %}active{% endif %}"
+              onclick="currentSlide({{ loop.index }})"
+              aria-label="View photo {{ loop.index }}"
+            >
+              <img src="{{ image }}" alt="Thumbnail {{ loop.index }}" class="thumb-img">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- ==================== RIGHT COLUMN: PRODUCT DETAILS & ACTIONS ==================== -->
+    <section class="product__content-wrapper" aria-label="Product Details and Ordering">
+      <!-- Breadcrumb Bar & Countdown -->
+      <div class="product-top-bar">
+        <nav class="product-breadcrumbs" aria-label="Breadcrumb">
+          <a href="{{ url_for('website.landing') }}" class="crumb-link">Home</a>
+          <i class="fas fa-chevron-right crumb-sep"></i>
+          <a href="{{ url_for('website.explore') }}" class="crumb-link">Explore</a>
+          <i class="fas fa-chevron-right crumb-sep"></i>
+          <span class="crumb-current">{{ product.college_name if product.college_name else 'MSU-IIT' }}</span>
+        </nav>
+
+        {% if product.release_date %}
+          <div class="countdown-badge" id="countdownBadge">
+            <i class="fas fa-clock"></i>
+            <span><b id="release_counter">--</b> Days Left</span>
+          </div>
+        {% endif %}
       </div>
 
-      <!-- That line and tabs -->
-      <div class="product__content-details">
-        <div class="product__content-details-box">
-          <p selected>Description</p>
-          <p>Details</p>
-          <p>Specs</p>
-        </div>
-        <button id="favorite-btn" class="favorite-btn {% if not session.get('logged_in') %}gray-btn{% endif %}">
+      <!-- College & Student Organization Badges -->
+      <div class="product-org-tags">
+        <a href="/college-{{ product.college_code }}" class="college-pill-badge" title="Browse {{ product.college_name }}">
+          <i class="fas fa-university"></i>
+          <span>{{ product.college_name }}</span>
+        </a>
+        <span class="org-pill-badge" title="Student Organization">
+          <i class="fas fa-users"></i>
+          <span>{{ product.org_name }}</span>
+        </span>
+      </div>
+
+      <!-- Product Title and Wishlist Header -->
+      <div class="product-header-block">
+        <h1 class="product-title" id="productTitle">{{ product.name }}</h1>
+        <button
+          type="button"
+          id="favorite-btn"
+          class="favorite-circle-btn {% if is_favorite %}favorited{% endif %}"
+          title="{{ 'Remove from wishlist' if is_favorite else 'Add to wishlist' }}"
+          aria-label="Wishlist toggle"
+        >
           <i class="fas fa-heart"></i>
-        </button>        
-      </div>
-      <hr style="margin-bottom: 2rem;"/>
-
-      <!-- Description -->
-      <div class="product-detail">
-        <p>{{ product.description if product.description else "No description available." }}</p>
-        <p>{{ product.hook if product.hook else "N/A" }}</p>
+        </button>
       </div>
 
-      <!-- Product Specifications -->
-      <div class="product__content-specs-box">
-        <div>
-          <p>PRODUCT TYPE</p>
-          <div class="input-box">
-            <span>{{ product.type if product.type else "No type specified." }}</span>
-          </div>
-        </div>
-
-        <div>
-          <p>ORDER TYPE</p>
-          <div class="input-box">
-            <span class="{{ 'goal-based' if product.order_type == 0 else 'time-based' }}">
-              {{ "Goal Based" if product.order_type == 0 else "Time Based" }}
-            </span>
-          </div>
-        </div>
-        
-
-        <div>
-          <p>SIZE</p>
-          <div class="product__size-selector" style="display: flex; justify-content: left; gap: 5px;">
-            {% for size in sizes %}
-              <button type="button" 
-                      class="size-btn" 
-                      data-size="{{ size[0] }}" 
-              >
-                {% if size[0] == 1 %}XS{% endif %}
-                {% if size[0] == 2 %}S{% endif %}
-                {% if size[0] == 3 %}M{% endif %}
-                {% if size[0] == 4 %}L{% endif %}
-                {% if size[0] == 5 %}XL{% endif %}
-                {% if size[0] == 6 %}2XL{% endif %}
-              </button>
-            {% endfor %}
-          </div>
+      <!-- Price & Badge Row -->
+      <div class="product-price-section">
+        <div class="price-main-display">₱{{ "%.2f"|format(product.price) }}</div>
+        <div class="price-sub-meta">
+          <span class="official-merch-tag"><i class="fas fa-certificate"></i> Official Org Merch</span>
+          <span class="tax-tag">All taxes included</span>
         </div>
       </div>
 
-      <hr />
+      <!-- Interactive Information Tabs -->
+      <div class="product-tabs-wrapper">
+        <div class="product-tabs-header" role="tablist">
+          <button type="button" class="tab-btn active" data-tab="tab-description" role="tab" aria-selected="true">
+            <i class="fas fa-align-left"></i> Description
+          </button>
+          <button type="button" class="tab-btn" data-tab="tab-specs" role="tab" aria-selected="false">
+            <i class="fas fa-sliders-h"></i> Specifications
+          </button>
+          <button type="button" class="tab-btn" data-tab="tab-guide" role="tab" aria-selected="false">
+            <i class="fas fa-clipboard-list"></i> Pre-Order Guide
+          </button>
+        </div>
 
-      <!-- Quantity and Preorder Button -->
+        <div class="tab-content-container">
+          <!-- Tab 1: Description -->
+          <div class="tab-pane active" id="tab-description" role="tabpanel">
+            {% if product.hook %}
+              <div class="product-hook-quote">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <p>{{ product.hook }}</p>
+              </div>
+            {% endif %}
+            <div class="product-desc-body">
+              <p>{{ product.description if product.description else "Official accredited student organization merchandise. Made with premium university-grade materials." }}</p>
+            </div>
+          </div>
+
+          <!-- Tab 2: Specifications -->
+          <div class="tab-pane" id="tab-specs" role="tabpanel">
+            <div class="specs-grid">
+              <div class="spec-card">
+                <span class="spec-label">Merchandise Type</span>
+                <span class="spec-value">{{ product.type if product.type else "Campus Apparel" }}</span>
+              </div>
+              <div class="spec-card">
+                <span class="spec-label">Order Model</span>
+                <span class="spec-value">{{ "Goal-Based Pre-Order" if product.order_type == 0 else "Batch Order" }}</span>
+              </div>
+              <div class="spec-card">
+                <span class="spec-label">Student Organization</span>
+                <span class="spec-value">{{ product.org_name }}</span>
+              </div>
+              <div class="spec-card">
+                <span class="spec-label">Sizing System</span>
+                <span class="spec-value">Unisex Standard PH/US</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Pre-Order Guide -->
+          <div class="tab-pane" id="tab-guide" role="tabpanel">
+            <div class="preorder-steps-mini">
+              <div class="mini-step">
+                <span class="step-num">1</span>
+                <div>
+                  <h4>Select Size & Reserve</h4>
+                  <p>Pick your size and confirm your pre-order reservation.</p>
+                </div>
+              </div>
+              <div class="mini-step">
+                <span class="step-num">2</span>
+                <div>
+                  <h4>Submit Payment Proof</h4>
+                  <p>Upload your GCash or bank transfer screenshot under <b>My Orders</b>.</p>
+                </div>
+              </div>
+              <div class="mini-step">
+                <span class="step-num">3</span>
+                <div>
+                  <h4>Claim at Org Booth</h4>
+                  <p>Pick up your official merchandise on campus during distribution week.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== SIZING SELECTOR ==================== -->
+      <div class="product-size-section">
+        <div class="size-section-header">
+          <label class="section-title">
+            <span>SELECT SIZE</span>
+            <span class="required-star">*</span>
+          </label>
+          <span class="selected-size-label" id="sizeFeedback">Please select a size</span>
+        </div>
+
+        <div class="size-pill-group" id="sizePillGroup" role="radiogroup" aria-label="Available sizes">
+          {% for size in sizes %}
+            <button
+              type="button"
+              class="size-pill-btn"
+              data-size="{{ size[0] }}"
+              data-size-name="{% if size[0] == 1 %}XS{% elif size[0] == 2 %}S{% elif size[0] == 3 %}M{% elif size[0] == 4 %}L{% elif size[0] == 5 %}XL{% elif size[0] == 6 %}2XL{% else %}Size {{ size[0] }}{% endif %}"
+              aria-label="Size {% if size[0] == 1 %}Extra Small{% elif size[0] == 2 %}Small{% elif size[0] == 3 %}Medium{% elif size[0] == 4 %}Large{% elif size[0] == 5 %}Extra Large{% elif size[0] == 6 %}Double Extra Large{% endif %}"
+            >
+              <span class="size-btn-text">
+                {% if size[0] == 1 %}XS{% elif size[0] == 2 %}S{% elif size[0] == 3 %}M{% elif size[0] == 4 %}L{% elif size[0] == 5 %}XL{% elif size[0] == 6 %}2XL{% else %}{{ size[0] }}{% endif %}
+              </span>
+            </button>
+          {% endfor %}
+        </div>
+        <div id="sizeErrorNotice" class="size-error-notice" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please choose a size before placing your pre-order.
+        </div>
+      </div>
+
+      <!-- ==================== QUANTITY & TOTAL STEPPER ==================== -->
+      <div class="product-quantity-section">
+        <div class="qty-stepper-wrapper">
+          <label for="quantity" class="section-title">QUANTITY</label>
+          <div class="qty-stepper-control">
+            <button type="button" class="qty-btn" id="qtyMinusBtn" aria-label="Decrease quantity">
+              <i class="fas fa-minus"></i>
+            </button>
+            <input type="number" id="quantity" name="quantity" min="1" max="20" value="1" readonly aria-label="Selected quantity">
+            <button type="button" class="qty-btn" id="qtyPlusBtn" aria-label="Increase quantity">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="subtotal-display-box">
+          <span class="subtotal-title">Total Price:</span>
+          <span class="subtotal-amount" id="subtotalAmount">₱{{ "%.2f"|format(product.price) }}</span>
+        </div>
+      </div>
+
+      <!-- Hidden Preorder Form -->
       <form id="pre_order-form" action="{{ url_for('website.preorder', product_id=product.product_id) }}" method="POST">
         {{ form.csrf_token }}
-        <div class="product__quantity-input">
-          <label for="quantity">QUANTITY</label>
-          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
-        </div>
-        <input type="hidden" id="selectedSize" name="selectedSizes" form="pre_order-form" value="">
+        <input type="hidden" id="selectedSizes" name="selectedSizes" value="">
+        <input type="hidden" id="formQuantity" name="quantity" value="1">
       </form>
-      <button class="preorder-btn" data-open-modal>PRE-ORDER</button>
+
+      <!-- Primary Action CTA Button -->
+      <div class="product-action-footer">
+        <button type="button" class="btn-preorder-cta" id="openPreorderModalBtn">
+          <i class="fas fa-shopping-bag"></i>
+          <span>RESERVE PRE-ORDER</span>
+        </button>
+
+        <div class="security-guarantee-note">
+          <i class="fas fa-shield-alt"></i>
+          <span>Official Org Preorder • Pay via GCash / Bank Proof After Reserving</span>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- Modal Dialog -->
-  <dialog class="modal" data-modal>
-    <div style="margin-bottom: 1rem;">Are you sure you want to pre-order this item?</div>
-    <p class="modal-texts">Item: <b>{{ product.name }}</b></p>
-    <p class="modal-texts">Quantity: <b id="quantity-preview"></b></p>
-    <div class="confirmation-btns">
-      <button class="btn cancel" data-close-modal>Close</button>
-      <input class="btn confirm" id="pre_order" name="pre_order" type="submit" value="Submit" form="pre_order-form">
+  <!-- ==================== CONFIRMATION MODAL DIALOG ==================== -->
+  <dialog class="product-modal-dialog" id="preorderModal" data-modal>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-icon-circle">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <div class="modal-title-group">
+          <h3>Confirm Pre-Order Reservation</h3>
+          <p>Please review your pre-order details before submitting.</p>
+        </div>
+        <button type="button" class="btn-modal-close" data-close-modal aria-label="Close dialog">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-summary-box">
+        <div class="summary-row">
+          <span class="summary-label">Product:</span>
+          <span class="summary-val font-bold">{{ product.name }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Organization:</span>
+          <span class="summary-val">{{ product.org_name }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Selected Size:</span>
+          <span class="summary-val font-bold" id="modal-size-preview">Not selected</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Quantity:</span>
+          <span class="summary-val font-bold" id="modal-qty-preview">1</span>
+        </div>
+        <div class="summary-row total-row">
+          <span class="summary-label">Total Amount:</span>
+          <span class="summary-val total-val" id="modal-total-preview">₱{{ "%.2f"|format(product.price) }}</span>
+        </div>
+      </div>
+
+      <p class="modal-instruction-text">
+        <i class="fas fa-info-circle"></i> Once submitted, your order will be reserved. You can upload your payment receipt anytime under <b>My Orders</b>.
+      </p>
+
+      <div class="modal-action-buttons">
+        <button type="button" class="btn-modal btn-modal-cancel" data-close-modal>
+          <span>Cancel</span>
+        </button>
+        <button type="submit" class="btn-modal btn-modal-confirm" id="confirmPreorderBtn" form="pre_order-form">
+          <i class="fas fa-check"></i>
+          <span>Confirm & Submit</span>
+        </button>
+      </div>
     </div>
   </dialog>
 
-  <!-- Footer -->
-  {{ components.render_alerts() }}
+  <!-- Global Footer -->
   {{ components.render_footer() }}
 
+  <!-- ==================== CLIENT SCRIPTS ==================== -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const favoriteBtn = document.getElementById("favorite-btn");
-        const productId = {{ product.product_id }};
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        let favoriteProducts = JSON.parse(localStorage.getItem('favorites')) || [];
-    
-        if (favoriteProducts.includes(productId)) {
-            favoriteBtn.classList.add("favorited");
-        }
-    
-        favoriteBtn.addEventListener("click", function () {
-            fetch('/api/check-login', {
-                method: 'GET',
-                credentials: 'same-origin',
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.logged_in) {
-                    alert("You must log in to favorite products.");
-                    return;
-                }
-    
-                fetch(`/favorite/submit`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json', // Correct Content-Type
-                    'X-CSRFToken': csrfToken,
-                  },
-                  body: JSON.stringify({product_id: productId}), // Send product_id in JSON format
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (data.favorite_status) {
-                            favoriteBtn.classList.add("favorited");
-                            favoriteBtn.style.color = "red";
-                        } else {
-                            favoriteBtn.classList.remove("favorited");
-                            favoriteBtn.style.color = "gray";
-                        }
-                    } else {
-                        alert(data.message || "An error occurred.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error toggling favorite:", error);
-                    alert("An unexpected error occurred. Please try again.");
-                });
-            })
-            .catch(error => console.error("Error checking login status:", error));
-        });
-    });
-    </script>
-    
-    <script>
-    const openButton = document.querySelector("[data-open-modal]");
-    const closeButton = document.querySelector("[data-close-modal]");
-    const modal = document.querySelector("[data-modal]");
-    const quantity = document.querySelector("#quantity");
-    const quantityPreviewer = document.querySelector("#quantity-preview");
-    
-    openButton.addEventListener("click", () => {
-        modal.showModal();
-        quantityPreviewer.textContent = quantity.value;
-    });
-    
-    closeButton.addEventListener("click", () => {
-        modal.close();
-    });
+  document.addEventListener("DOMContentLoaded", function () {
+      const unitPrice = parseFloat("{{ product.price }}") || 0.0;
+      const productId = {{ product.product_id }};
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-    let slidesData = [];
-    // Image Slider Logic
-    let slideIndex = 1;
-    showSlides(slideIndex);
+      // --- 1. Gallery Slideshow Logic ---
+      let slideIndex = 1;
+      const slides = document.querySelectorAll('.mySlides');
+      const dots = document.querySelectorAll('.thumb-item-btn');
+      const currentSlideNumEl = document.getElementById('currentSlideNum');
 
-    function plusSlides(n) {
-      showSlides(slideIndex += n);
-    }
+      window.plusSlides = function (n) {
+          showSlides(slideIndex += n);
+      };
 
-    function currentSlide(n) {
-      showSlides(slideIndex = n);
-    }
+      window.currentSlide = function (n) {
+          showSlides(slideIndex = n);
+      };
 
-    function showSlides(n) {
-      const slides = document.getElementsByClassName("mySlides");
-      const dots = document.getElementsByClassName("demo");
+      function showSlides(n) {
+          if (!slides.length) return;
+          if (n > slides.length) slideIndex = 1;
+          if (n < 1) slideIndex = slides.length;
 
-      if (n > slides.length) slideIndex = 1;
-      if (n < 1) slideIndex = slides.length;
+          slides.forEach(slide => slide.style.display = 'none');
+          dots.forEach(dot => dot.classList.remove('active'));
 
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
+          if (slides[slideIndex - 1]) {
+              slides[slideIndex - 1].style.display = 'flex';
+          }
+          if (dots[slideIndex - 1]) {
+              dots[slideIndex - 1].classList.add('active');
+          }
+          if (currentSlideNumEl) {
+              currentSlideNumEl.textContent = slideIndex;
+          }
       }
 
-      for (let i = 0; i < dots.length; i++) {
-        dots[i].className = dots[i].className.replace(" active", "");
-      }
+      // --- 2. Information Tabs Switching ---
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabPanes = document.querySelectorAll('.tab-pane');
 
-      slides[slideIndex - 1].style.display = "flex";
-      dots[slideIndex - 1].className += " active";
-    }
-  </script>
+      tabButtons.forEach(button => {
+          button.addEventListener('click', () => {
+              const targetTabId = button.getAttribute('data-tab');
 
-  <script>
-    // Size Selector and Btn Highlight Logic
-    const sizeButtons = document.querySelectorAll('.size-btn');
-    const selectedSize = document.querySelector('#selectedSize')
-    const hiddenInput = document.createElement('input');
+              tabButtons.forEach(btn => {
+                  btn.classList.remove('active');
+                  btn.setAttribute('aria-selected', 'false');
+              });
+              tabPanes.forEach(pane => pane.classList.remove('active'));
 
-    sizeButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        sizeButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        selectedSize.value = this.getAttribute('data-size');
-        console.log("Value: " + selectedSize.value)
+              button.classList.add('active');
+              button.setAttribute('aria-selected', 'true');
+
+              const targetPane = document.getElementById(targetTabId);
+              if (targetPane) {
+                  targetPane.classList.add('active');
+              }
+          });
       });
-    });
-  </script>
-  <script>
-    window.onload = function() {
-      const release_counter = document.getElementById('release_counter');
-      const today = new Date();
-      const releaseDate = new Date('{{ product.release_date }}')
 
-      const formattedDate = today.toISOString().split('T')[0];
-      const formattedReleaseDate = releaseDate.toISOString().split('T')[0];
-      
-      console.log("Today's Date: ",formattedDate); // Logs the date in 'YYYY-MM-DD' format
-      console.log("Selected: ",formattedReleaseDate);
+      // --- 3. Size Selection Controls ---
+      const sizeButtons = document.querySelectorAll('.size-pill-btn');
+      const selectedSizeHidden = document.getElementById('selectedSizes');
+      const sizeFeedback = document.getElementById('sizeFeedback');
+      const sizeErrorNotice = document.getElementById('sizeErrorNotice');
+      let chosenSizeLabel = '';
 
-      // Get the difference in milliseconds
-      const differenceInMillis = releaseDate - today;
+      sizeButtons.forEach(button => {
+          button.addEventListener('click', function () {
+              sizeButtons.forEach(btn => btn.classList.remove('active'));
+              this.classList.add('active');
 
-      // Convert the difference from milliseconds to days
-      const differenceInDays = Math.round(differenceInMillis / (1000 * 60 * 60 * 24));
+              const sizeVal = this.getAttribute('data-size');
+              chosenSizeLabel = this.getAttribute('data-size-name');
 
-      console.log(differenceInDays); // Logs the difference in days
+              if (selectedSizeHidden) {
+                  selectedSizeHidden.value = sizeVal;
+              }
 
-      quantity.innerText = differenceInDays;
-      release_counter.innerText = differenceInDays;
-    };
+              if (sizeFeedback) {
+                  sizeFeedback.textContent = `Selected: ${chosenSizeLabel}`;
+                  sizeFeedback.classList.add('has-selection');
+              }
+
+              if (sizeErrorNotice) {
+                  sizeErrorNotice.style.display = 'none';
+              }
+          });
+      });
+
+      // --- 4. Quantity Stepper & Price Calculation ---
+      const qtyInput = document.getElementById('quantity');
+      const formQtyHidden = document.getElementById('formQuantity');
+      const qtyMinusBtn = document.getElementById('qtyMinusBtn');
+      const qtyPlusBtn = document.getElementById('qtyPlusBtn');
+      const subtotalAmountEl = document.getElementById('subtotalAmount');
+
+      function updateQuantity(newVal) {
+          let qty = Math.max(1, Math.min(20, newVal));
+          if (qtyInput) qtyInput.value = qty;
+          if (formQtyHidden) formQtyHidden.value = qty;
+
+          const total = (qty * unitPrice).toFixed(2);
+          if (subtotalAmountEl) {
+              subtotalAmountEl.textContent = `₱${parseFloat(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          }
+      }
+
+      if (qtyMinusBtn) {
+          qtyMinusBtn.addEventListener('click', () => {
+              const current = parseInt(qtyInput.value, 10) || 1;
+              updateQuantity(current - 1);
+          });
+      }
+
+      if (qtyPlusBtn) {
+          qtyPlusBtn.addEventListener('click', () => {
+              const current = parseInt(qtyInput.value, 10) || 1;
+              updateQuantity(current + 1);
+          });
+      }
+
+      // --- 5. Pre-Order Confirmation Modal Dialog ---
+      const openModalBtn = document.getElementById('openPreorderModalBtn');
+      const closeModalBtns = document.querySelectorAll('[data-close-modal]');
+      const modal = document.getElementById('preorderModal');
+      const modalSizePreview = document.getElementById('modal-size-preview');
+      const modalQtyPreview = document.getElementById('modal-qty-preview');
+      const modalTotalPreview = document.getElementById('modal-total-preview');
+
+      if (openModalBtn && modal) {
+          openModalBtn.addEventListener('click', () => {
+              if (!selectedSizeHidden || !selectedSizeHidden.value) {
+                  if (sizeErrorNotice) {
+                      sizeErrorNotice.style.display = 'flex';
+                      sizeErrorNotice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  return;
+              }
+
+              const qty = parseInt(qtyInput.value, 10) || 1;
+              const total = (qty * unitPrice).toFixed(2);
+
+              if (modalSizePreview) modalSizePreview.textContent = chosenSizeLabel || 'Selected Size';
+              if (modalQtyPreview) modalQtyPreview.textContent = qty;
+              if (modalTotalPreview) {
+                  modalTotalPreview.textContent = `₱${parseFloat(total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              }
+
+              modal.showModal();
+          });
+      }
+
+      closeModalBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+              if (modal) modal.close();
+          });
+      });
+
+      // Close modal on backdrop click
+      if (modal) {
+          modal.addEventListener('click', (e) => {
+              const rect = modal.getBoundingClientRect();
+              const isInDialog = (
+                  rect.top <= e.clientY &&
+                  e.clientY <= rect.top + rect.height &&
+                  rect.left <= e.clientX &&
+                  e.clientX <= rect.left + rect.width
+              );
+              if (!isInDialog) {
+                  modal.close();
+              }
+          });
+      }
+
+      // --- 6. Wishlist / Favorite AJAX Toggle ---
+      const favoriteBtn = document.getElementById("favorite-btn");
+      if (favoriteBtn) {
+          favoriteBtn.addEventListener("click", function () {
+              fetch('/api/check-login', {
+                  method: 'GET',
+                  credentials: 'same-origin',
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (!data.logged_in) {
+                      alert("You must log in to add items to your wishlist.");
+                      return;
+                  }
+
+                  fetch('/favorite/submit', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': csrfToken,
+                      },
+                      body: JSON.stringify({ product_id: productId }),
+                  })
+                  .then(response => response.json())
+                  .then(resData => {
+                      if (resData.success) {
+                          if (resData.favorite_status) {
+                              favoriteBtn.classList.add("favorited");
+                              favoriteBtn.setAttribute("title", "Remove from wishlist");
+                          } else {
+                              favoriteBtn.classList.remove("favorited");
+                              favoriteBtn.setAttribute("title", "Add to wishlist");
+                          }
+                      } else {
+                          alert(resData.message || "An error occurred.");
+                      }
+                  })
+                  .catch(error => {
+                      console.error("Error toggling favorite:", error);
+                      alert("An unexpected error occurred. Please try again.");
+                  });
+              })
+              .catch(error => console.error("Error checking login status:", error));
+          });
+      }
+
+      // --- 7. Release Date Countdown Calculator ---
+      const releaseCounterEl = document.getElementById('release_counter');
+      const releaseDateRaw = "{{ product.release_date if product.release_date else '' }}";
+
+      if (releaseCounterEl && releaseDateRaw) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const releaseDate = new Date(releaseDateRaw);
+          releaseDate.setHours(0, 0, 0, 0);
+
+          const diffMs = releaseDate - today;
+          const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+          if (diffDays > 0) {
+              releaseCounterEl.textContent = diffDays;
+          } else if (diffDays === 0) {
+              releaseCounterEl.textContent = "Final";
+          } else {
+              const countdownBadge = document.getElementById('countdownBadge');
+              if (countdownBadge) countdownBadge.style.display = 'none';
+          }
+      }
+  });
   </script>
 {% endblock %}
