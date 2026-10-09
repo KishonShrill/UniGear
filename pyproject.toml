@@ -1,3 +1,18 @@
+[project]
+name = "unigear"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "flask",
+    "flask-wtf",
+    "python-dotenv",
+    "wtforms",
+    "cloudinary",
+    "google-auth",
+    "google-auth-oauthlib",
+    "psycopg[binary]",
+]
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
