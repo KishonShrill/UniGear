@@ -56,7 +56,6 @@ def create_app(test_config=None):
     from app.routes.user import user_bp
     from app.routes.website import website_bp
 
-    register_cli_commands(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(website_bp)
     app.register_blueprint(colleges_bp)
