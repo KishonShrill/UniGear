@@ -3,53 +3,346 @@
 {% import "components/macros.html" as components %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/utils.css') }}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700&display=swap">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block content %}
-    <!-- Header -->
-    {{ components.render_header(user=session['name'], role=session['role']) }}
+    <!-- Flash Alerts & Global Header -->
+    {{ components.render_alerts() }}
+    {{ components.render_header(user=session.get('name'), role=session.get('role')) }}
 
     <main class="explorer-page">
-        <!-- Background Image with Overlay and Title -->
-        <section class="background-section">
-            <img src="{{ url_for('static', filename='images/explorer.jpg') }}" class="background-image">
-            <div class="overlay">
-                <div class="main-title">UNIGEAR</div>
+        <!-- ==================== EXPLORE HERO & SEARCH HEADER ==================== -->
+        <section class="explore-hero">
+            <img src="{{ url_for('static', filename='images/explorer.jpg') }}" alt="UniGear Explore Catalog" class="explore-hero-bg">
+
+            <div class="explore-hero-content">
+                <h1 class="explore-hero-title">EXPLORE BY COLLEGE</h1>
+                <p class="explore-hero-subtitle">
+                    Discover official apparel, hoodies, and accessories from accredited student organizations across all 7 MSU-IIT colleges.
+                </p>
+
+                <!-- Interactive Live Search & Filter Bar -->
+                <div class="explore-search-filter-box">
+                    <div class="search-input-wrap">
+                        <i class="fas fa-search search-icon"></i>
+                        <input
+                            type="text"
+                            id="exploreSearch"
+                            class="explore-search-input"
+                            placeholder="Search by merchandise name, student org, or item type (e.g. hoodie, shirt, lanyard)..."
+                            autocomplete="off"
+                            aria-label="Search campus merchandise"
+                        >
+                        <button id="clearSearchBtn" class="btn-clear-search" title="Clear search" aria-label="Clear search">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Filter Type Chips -->
+                    <div class="filter-chips-row">
+                        <button type="button" class="filter-chip active" data-filter-type="all">
+                            <i class="fas fa-layer-group"></i>
+                            <span>All Merch</span>
+                        </button>
+                        <button type="button" class="filter-chip" data-filter-type="preorder">
+                            <i class="fas fa-hourglass-half"></i>
+                            <span>Pre-Orders</span>
+                        </button>
+                        <button type="button" class="filter-chip" data-filter-type="batch">
+                            <i class="fas fa-boxes"></i>
+                            <span>Batch Orders</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
-        
 
-        <!-- College Sections -->
-        {% for college, data in merchandise_data.items() %}
-        <div class="college-section {{ college|replace(' ', '') }}" style="background-color: {{ college_colors.get(college, '#ffffff') }};">
-            <!-- Title and "See More" Link -->
-            <div class="college-container">
-                <div class="college-title">{{ college }}</div>
-                <a href="/college-{{ data['college_code'] }}" class="view-more-link">View More</a>
-            </div>
-            <!-- Merchandise Row -->
-            <div class="merchandise-row">
-                {% if data['products'] %}
-                    {% for product in data['products'][:5] %}
-                        <a style="position: relative; z-index: 2;" href="{{ url_for('website.merch_details', product_id=product['product_id']) }}">
-                            <img src="{{ product['picture_url'] }}" alt="Product {{ product['product_id'] }}">
-                            <p style="position: absolute; bottom: 0; left: 0; background: white; color: black; padding: 5px 7px; z-index: 3;">{{ product['product_name'] }}</p>
-                        </a>
+        <!-- ==================== STICKY COLLEGE JUMP NAVIGATION ==================== -->
+        <nav class="college-jump-nav" id="collegeJumpNav" aria-label="Quick jump to college">
+            <div class="jump-nav-container">
+                <span class="jump-nav-label">
+                    <i class="fas fa-compass"></i> Colleges:
+                </span>
+                <div class="jump-pill-list" id="jumpPillList">
+                    <button type="button" class="jump-pill active" data-target="all">
+                        <span>All (7)</span>
+                    </button>
+                    {% for college in colleges %}
+                    <button type="button" class="jump-pill" data-target="{{ college.code }}" style="--pill-color: {{ college.color }};">
+                        <i class="{{ college.icon }}"></i>
+                        <span>{{ college.abbr }}</span>
+                    </button>
                     {% endfor %}
-                {% else %}
-                    <p class="no-merchandise">No merchandise available</p>
-                {% endif %}
+                </div>
             </div>
-        </div>
-        {% endfor %}
+        </nav>
 
+        <!-- ==================== OVERLAPPING COLLEGE ENVELOPES CATALOG ==================== -->
+        <div class="college-envelopes-wrapper">
+            <!-- No search matches feedback container -->
+            <div id="noSearchMatches" class="no-search-results" style="display: none;">
+                <div class="no-search-icon">
+                    <i class="fas fa-search-minus"></i>
+                </div>
+                <h3>No Matching Merchandise Found</h3>
+                <p>We couldn't find any products matching your search. Try different keywords or reset your filters.</p>
+                <button type="button" id="resetSearchBtn" class="btn-reset-search">
+                    <i class="fas fa-undo"></i>
+                    <span>Reset Search & Filters</span>
+                </button>
+            </div>
+
+            {% for college_name, data in merchandise_data.items() %}
+            <section
+                id="college-section-{{ data.college_code }}"
+                class="college-envelope-section {{ data.abbr }}"
+                style="--college-bg: {{ data.color }}; --college-accent: {{ data.accent }}; z-index: {{ loop.index }};"
+                data-college="{{ data.college_code }}"
+            >
+                <!-- Watermark Logo Overlay in Envelope Background -->
+                <div class="college-watermark-overlay" aria-hidden="true">
+                    <i class="{{ data.icon }}"></i>
+                </div>
+
+                <!-- College Header Inside Envelope -->
+                <div class="college-envelope-header">
+                    <div class="college-header-title-group">
+                        <h2 class="college-title">{{ data.name }}</h2>
+                        <span class="college-abbr-pill">{{ data.abbr }}</span>
+                        <span class="college-items-pill">
+                            <span class="count-num">{{ data.products|length }}</span> {{ 'Item' if data.products|length == 1 else 'Items' }}
+                        </span>
+                    </div>
+                    <a href="/college-{{ data.college_code }}" class="view-more-link">
+                        <span>View More</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Merchandise Envelope Row -->
+                {% if data.products %}
+                <div class="merchandise-envelope-row">
+                    {% for product in data.products %}
+                    <a
+                        href="{{ url_for('website.merch_details', product_id=product.product_id) }}"
+                        class="merchandise-card"
+                        data-product-name="{{ product.product_name|lower }}"
+                        data-org="{{ product.org_name|lower }}"
+                        data-type="{{ product.type|lower }}"
+                        data-order-type="{{ 'preorder' if product.order_type == 0 else 'batch' }}"
+                    >
+                        <div class="merch-img-container">
+                            <img src="{{ product.picture_url }}" alt="{{ product.product_name }}" loading="lazy">
+
+                            <!-- Status Badge -->
+                            {% if product.order_type == 0 %}
+                                <span class="merch-badge badge-preorder">
+                                    <i class="fas fa-hourglass-half"></i> Pre-Order
+                                </span>
+                            {% else %}
+                                <span class="merch-badge badge-batch">
+                                    <i class="fas fa-box"></i> Batch
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Card Details Overlay -->
+                        <div class="merch-info-overlay">
+                            <span class="merch-org-tag" title="{{ product.org_name }}">
+                                <i class="fas fa-users"></i> {{ product.org_name }}
+                            </span>
+                            <h3 class="merch-product-title" title="{{ product.product_name }}">{{ product.product_name }}</h3>
+                            <div class="merch-bottom-meta">
+                                <span class="merch-price">₱{{ "%.2f"|format(product.price) }}</span>
+                                {% if product.order_type == 0 and product.preorder_goal > 0 %}
+                                    <span class="merch-reserve-count">{{ product.total_ordered }}/{{ product.preorder_goal }} Reserved</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-merchandise">
+                    <div class="empty-envelope-content">
+                        <div class="empty-icon-circle">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <p class="empty-text">No active merchandise available right now</p>
+                        <a href="/college-{{ data.college_code }}" class="btn-explore-orgs">
+                            <span>Explore {{ data.abbr }} Orgs</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </div>
     </main>
 
-    <!-- Footer -->
-    {{ components.render_alerts() }}
+    <!-- Global Footer -->
     {{ components.render_footer() }}
+
+    <!-- ==================== EXPLORE PAGE CLIENT SCRIPT ==================== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('exploreSearch');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const resetBtn = document.getElementById('resetSearchBtn');
+        const filterChips = document.querySelectorAll('.filter-chip');
+        const jumpPills = document.querySelectorAll('.jump-pill');
+        const envelopeSections = document.querySelectorAll('.college-envelope-section');
+        const noSearchMatches = document.getElementById('noSearchMatches');
+
+        let currentFilterType = 'all';
+        let currentSearchQuery = '';
+        let currentSelectedCollege = 'all';
+
+        function applyFilters() {
+            let totalVisibleProducts = 0;
+            const query = currentSearchQuery.trim().toLowerCase();
+
+            envelopeSections.forEach(section => {
+                const collegeCode = section.getAttribute('data-college');
+                const isCollegeSelected = (currentSelectedCollege === 'all' || currentSelectedCollege === collegeCode);
+
+                if (!isCollegeSelected) {
+                    section.style.display = 'none';
+                    return;
+                }
+
+                const cards = section.querySelectorAll('.merchandise-card');
+                let sectionVisibleCount = 0;
+
+                cards.forEach(card => {
+                    const name = card.getAttribute('data-product-name') || '';
+                    const org = card.getAttribute('data-org') || '';
+                    const type = card.getAttribute('data-type') || '';
+                    const orderType = card.getAttribute('data-order-type') || '';
+
+                    const matchesSearch = !query || name.includes(query) || org.includes(query) || type.includes(query);
+                    const matchesType = (currentFilterType === 'all' || orderType === currentFilterType);
+
+                    if (matchesSearch && matchesType) {
+                        card.style.display = '';
+                        sectionVisibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Update counter if products exist
+                const counterNum = section.querySelector('.count-num');
+                if (counterNum && (query || currentFilterType !== 'all')) {
+                    counterNum.textContent = sectionVisibleCount;
+                }
+
+                // If searching/filtering and section has 0 visible cards, hide the whole section
+                if (query && sectionVisibleCount === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = '';
+                }
+
+                totalVisibleProducts += sectionVisibleCount;
+            });
+
+            // Toggle clear button
+            if (clearBtn) {
+                clearBtn.style.display = currentSearchQuery ? 'flex' : 'none';
+            }
+
+            // Show no search results banner if searching/filtering yielded zero
+            if (noSearchMatches) {
+                if (totalVisibleProducts === 0 && (query || currentFilterType !== 'all')) {
+                    noSearchMatches.style.display = 'block';
+                } else {
+                    noSearchMatches.style.display = 'none';
+                }
+            }
+        }
+
+        // Search Input Listener with input debouncing
+        let searchTimeout;
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentSearchQuery = e.target.value;
+                    applyFilters();
+                }, 150);
+            });
+        }
+
+        // Clear Search
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                if (searchInput) searchInput.value = '';
+                currentSearchQuery = '';
+                applyFilters();
+                if (searchInput) searchInput.focus();
+            });
+        }
+
+        // Reset All Filters
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if (searchInput) searchInput.value = '';
+                currentSearchQuery = '';
+                currentFilterType = 'all';
+                currentSelectedCollege = 'all';
+
+                filterChips.forEach(chip => {
+                    chip.classList.toggle('active', chip.getAttribute('data-filter-type') === 'all');
+                });
+
+                jumpPills.forEach(pill => {
+                    pill.classList.toggle('active', pill.getAttribute('data-target') === 'all');
+                });
+
+                applyFilters();
+            });
+        }
+
+        // Order Type Filter Chips
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filterChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentFilterType = chip.getAttribute('data-filter-type');
+                applyFilters();
+            });
+        });
+
+        // College Jump Navigation
+        jumpPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                jumpPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+
+                const target = pill.getAttribute('data-target');
+                currentSelectedCollege = target;
+
+                if (target === 'all') {
+                    envelopeSections.forEach(s => s.style.display = '');
+                    applyFilters();
+                    window.scrollTo({ top: 320, behavior: 'smooth' });
+                } else {
+                    applyFilters();
+                    const targetEl = document.getElementById(`college-section-${target}`);
+                    if (targetEl) {
+                        const yOffset = -90;
+                        const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    });
+    </script>
 {% endblock %}

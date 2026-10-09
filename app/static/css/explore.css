@@ -1,182 +1,754 @@
+/* ==========================================================================
+   UniGear Explore Catalog Stylesheet
+   Overlapping College Envelopes with Dynamic Live Filters & Micro-interactions
+   ========================================================================== */
+
+:root {
+    --bg-dark: #0b0f17;
+    --bg-surface: #111722;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.75);
+    --text-muted: rgba(255, 255, 255, 0.55);
+    --accent-green: #2ecc71;
+    --accent-amber: #f39c12;
+    --radius-lg: 28px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+    --transition-smooth: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
 .explorer-page {
     position: relative;
     width: 100%;
     min-height: 100vh;
-    overflow: hidden;
+    background-color: var(--bg-dark);
+    overflow-x: hidden;
 }
 
-.background-section {
+/* ==========================================================================
+   Explore Hero Section (No Shadow Overlay on Image/Text)
+   ========================================================================== */
+.explore-hero {
     position: relative;
     width: 100%;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #121212;
 }
 
-.background-image {
+.explore-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
     display: block;
+    z-index: 0;
 }
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.main-title {
-    font-size: 105px;
-    font-family: 'Emblema One', sans-serif;
-    color: #ffffff;
-    margin: 0;
+.explore-hero-content {
+    position: relative;
     z-index: 2;
-    opacity: 0.9;
-}
-
-.college-section {
+    width: 100%;
+    max-width: 900px;
+    padding: 50px 20px 60px 20px;
+    text-align: center;
     display: flex;
     flex-direction: column;
-    padding: 10px 20px;
+    align-items: center;
+}
+
+.explore-hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6.5vw, 4.8rem);
+    letter-spacing: 2px;
     color: #ffffff;
-    min-height: 320px;
+    margin: 0 0 10px 0;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.75);
+    line-height: 1.05;
+}
+
+.explore-hero-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.95);
+    max-width: 650px;
+    margin: 0 auto 26px auto;
+    line-height: 1.5;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+/* Search and Filter Box in Hero */
+.explore-search-filter-box {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.search-input-wrap {
+    position: relative;
     width: 100%;
 }
 
-.college-container {
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.explore-search-input {
+    width: 100%;
+    padding: 14px 46px 14px 48px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(18, 18, 18, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.25s ease;
+}
+
+.explore-search-input:focus {
+    border-color: var(--accent-green);
+    background: rgba(18, 18, 18, 0.88);
+    box-shadow: 0 8px 28px rgba(46, 204, 113, 0.3);
+}
+
+.explore-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-clear-search {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #ffffff;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s ease;
+}
+
+.btn-clear-search:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.filter-chips-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.filter-chip.active {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: #0b0f17;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(46, 204, 113, 0.4);
+}
+
+/* ==========================================================================
+   Sticky College Jump Navigation
+   ========================================================================== */
+.college-jump-nav {
+    position: sticky;
+    top: 70px;
+    z-index: 100;
+    background: rgba(14, 18, 25, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 24px;
+}
+
+.jump-nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.jump-nav-container::-webkit-scrollbar {
+    display: none;
+}
+
+.jump-nav-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.jump-pill-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jump-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.jump-pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.jump-pill.active {
+    background: var(--pill-color, var(--accent-green));
+    border-color: var(--pill-color, var(--accent-green));
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Overlapping College Envelopes Catalog
+   ========================================================================== */
+.college-envelopes-wrapper {
+    position: relative;
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* College Solid Color Classes */
+.CASS { background-color: #324831; }
+.CCS  { background-color: #598181; }
+.CBA  { background-color: #9A9A71; }
+.CHS  { background-color: #8B9EAF; }
+.CED  { background-color: #414459; }
+.COE  { background-color: #593838; }
+.CSM  { background-color: #934F50; }
+
+/* The Envelope Section Container */
+.college-envelope-section {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    margin-top: -38px;
+    padding: 35px 40px 55px 40px;
+    min-height: 380px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    box-sizing: border-box;
+}
+
+.college-envelope-section:first-of-type {
+    margin-top: 0;
+}
+
+/* Hover Height Expansion & Elevation Micro-interaction */
+.college-envelope-section:hover {
+    z-index: 30 !important;
+    padding-bottom: 80px;
+    transform: translateY(-8px);
+    box-shadow: 0 -16px 45px rgba(0, 0, 0, 0.55);
+}
+
+/* Watermark College Logo Overlay in Section Background */
+.college-watermark-overlay {
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 260px;
+    color: #ffffff;
+    opacity: 0.08;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.college-envelope-section:hover .college-watermark-overlay {
+    opacity: 0.15;
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* College Header Inside Envelope */
+.college-envelope-header {
+    position: relative;
+    z-index: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    padding: 0 20px;
-    margin-bottom: 5px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 24px;
+}
+
+.college-header-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
 }
 
 .college-title {
-    font-size: 36px;
     font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.3rem;
     color: #ffffff;
-    display: inline-block;
     margin: 0;
-    opacity: 0.77;
+    letter-spacing: 1px;
+    opacity: 0.95;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.college-abbr-pill {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.college-items-pill {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
 }
 
 .view-more-link {
-    font-size: 15px;
-    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffffff;
     text-decoration: none;
-    opacity: 0.77;
-}
-
-.view-more-link::after {
-    content: " →";
-    margin-left: 5px;
+    opacity: 0.9;
+    padding: 7px 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    transition: all 0.25s ease;
+    backdrop-filter: blur(6px);
 }
 
 .view-more-link:hover {
-    text-decoration: underline;
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateX(4px);
 }
 
-.CASS { background: #324831; }
-.CCS { background: #598181; }
-.CBA { background: #9A9A71; }
-.CHS { background: #8B9EAF; }
-.CED { background: #414459; }
-.COE { background: #593838; }
-.CSM { background: #934F50; }
-
-.merchandise-row {
-    display: flex;
-    gap: 40px;
-    justify-content: center;
-    margin-top: 5px;
-    flex-wrap: wrap;
-    padding-left: 20px;
-    margin-bottom: 20px;
-    
-}
-
-.merchandise-row a {
+/* ==========================================================================
+   Merchandise Cards & Envelope Row
+   ========================================================================== */
+.merchandise-envelope-row {
     position: relative;
-    width: 214px;
-    height: 290px; 
-    display: block;
-    text-align: center;
-    overflow: hidden;
-    border-radius: 15px;
-    
-    transition: transform 0.3s, box-shadow 0.3s ease, border-radius 0.3s ease;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: flex-start;
 }
 
-.merchandise-row a:hover {
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+.merchandise-card {
+    position: relative;
+    width: 220px;
+    height: 300px;
+    display: block;
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s ease, border-radius 0.35s ease;
+    flex-shrink: 0;
+}
+
+.merchandise-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
     border-radius: 20px;
 }
 
-.merchandise-row img {
+.merch-img-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.merch-img-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.8));
-    background-size: cover;
+    display: block;
+    transition: transform 0.4s ease;
 }
 
-.merchandise-row a::after {
+.merchandise-card:hover .merch-img-container img {
+    transform: scale(1.08);
+}
+
+/* Gradient overlay at bottom of card */
+.merchandise-card::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.25) 45%, rgba(0, 0, 0, 0.92) 100%);
     z-index: 1;
+    pointer-events: none;
 }
 
-.merchandise-row a img {
-    z-index: 0;
+/* Status Badges */
+.merch-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 3;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
 }
 
-.merchandise-row a p {
+.badge-preorder {
+    background: rgba(255, 184, 0, 0.95);
+    color: #121212;
+}
+
+.badge-batch {
+    background: rgba(46, 204, 113, 0.95);
+    color: #121212;
+}
+
+/* Card Details Overlay */
+.merch-info-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #ffffff;
+    right: 0;
+    padding: 14px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.merch-org-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.merch-product-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: opacity 0.3s, transform 0.3s, padding 0.3s;
-}
-
-.merchandise-row a:hover p {
-    opacity: 1;
-    transform: translateY(0);
-    padding: 15px 10px;
-}
-
-.no-merchandise {
-    text-align: center;
-    font-size: 20px;
+    font-size: 1.35rem;
     color: #ffffff;
+    margin: 0;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.merch-bottom-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.merch-price {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.merch-reserve-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffd166;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   Empty College State in Envelope
+   ========================================================================== */
+.no-merchandise {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    height: 210px;
-    background-size: cover;
+    min-height: 200px;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 30px 20px;
+}
+
+.empty-envelope-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    opacity: 0.77;
+    gap: 12px;
+}
+
+.empty-icon-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #ffffff;
+    backdrop-filter: blur(6px);
+}
+
+.empty-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+}
+
+.btn-explore-orgs {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    border-radius: 30px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(8px);
+}
+
+.btn-explore-orgs:hover {
+    background: #ffffff;
+    color: #121212;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* ==========================================================================
+   No Search Results Feedback Box
+   ========================================================================== */
+.no-search-results {
+    background: var(--bg-surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--text-primary);
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.no-search-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.no-search-results h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.no-search-results p {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.btn-reset-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: var(--accent-green);
+    color: #0b0f17;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-reset-search:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.35);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .college-envelope-section {
+        padding: 30px 24px 45px 24px;
+    }
+
+    .college-watermark-overlay {
+        font-size: 200px;
+        right: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .explore-hero {
+        min-height: 320px;
+    }
+
+    .explore-hero-content {
+        padding: 35px 16px 45px 16px;
+    }
+
+    .explore-hero-title {
+        font-size: 2.8rem;
+    }
+
+    .college-jump-nav {
+        top: 60px;
+        padding: 8px 16px;
+    }
+
+    .college-envelope-section {
+        border-radius: 20px 20px 0 0;
+        margin-top: -28px;
+        padding: 24px 16px 40px 16px;
+    }
+
+    .college-envelope-section:hover {
+        padding-bottom: 55px;
+        transform: translateY(-4px);
+    }
+
+    .merchandise-envelope-row {
+        gap: 16px;
+        justify-content: center;
+    }
+
+    .merchandise-card {
+        width: calc(50% - 10px);
+        min-width: 150px;
+        max-width: 200px;
+        height: 260px;
+    }
+
+    .college-watermark-overlay {
+        font-size: 150px;
+        opacity: 0.05;
+    }
+}
+
+@media (max-width: 480px) {
+    .explore-hero-title {
+        font-size: 2.3rem;
+    }
+
+    .college-title {
+        font-size: 1.8rem;
+    }
+
+    .merchandise-card {
+        width: 100%;
+        max-width: 260px;
+        height: 300px;
+    }
 }

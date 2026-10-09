@@ -113,68 +113,57 @@ def landing():
 
 @website_bp.route("/explore")
 def explore():
-    """Render the explore catalog organized by college."""
+    """Render the explore catalog organized by college with search and filters."""
     result = Product.get_explore_catalog()
 
-    # College Code mapping
-    college_code_mapping = {
-        "College of Arts and Social Sciences": "cass",
-        "College of Computer Studies": "ccs",
-        "College of Business Administration": "cba",
-        "College of Health Sciences": "chs",
-        "College of Education": "ced",
-        "College of Engineering": "coe",
-        "College of Science and Mathematics": "csm",
-    }
-
-    # Initialize merchandise data with all colleges
-    merchandise_data = {
-        college: {"college_code": code, "products": []}
-        for college, code in college_code_mapping.items()
-    }
+    # Initialize merchandise data for each college in COLLEGES_CATALOG order
+    merchandise_data = {}
+    for college_info in COLLEGES_CATALOG:
+        merchandise_data[college_info["name"]] = {
+            "college_code": college_info["code"],
+            "abbr": college_info["abbr"],
+            "name": college_info["name"],
+            "color": college_info["color"],
+            "accent": college_info["accent"],
+            "icon": college_info["icon"],
+            "tagline": college_info["tagline"],
+            "products": [],
+        }
 
     # Populate merchandise data with query results
     for row in result:
-        college = row[2]
-        if college in merchandise_data:
-            merchandise_data[college]["products"].append(
+        college_name = row[2]
+        if college_name in merchandise_data:
+            price = float(row[4]) if len(row) > 4 and row[4] is not None else 0.0
+            order_type = row[5] if len(row) > 5 and row[5] is not None else 0
+            prod_type = row[6] if len(row) > 6 and row[6] else "Merch"
+            org_name = row[7] if len(row) > 7 and row[7] else "Student Org"
+            goal = row[8] if len(row) > 8 and row[8] is not None and row[8] > 0 else 25
+            total_ordered = int(row[9]) if len(row) > 9 and row[9] is not None else 0
+            progress_pct = min(100, int((total_ordered / goal) * 100)) if goal > 0 else 0
+
+            merchandise_data[college_name]["products"].append(
                 {
                     "product_id": row[0],
                     "product_name": row[1],
                     "picture_url": row[3] if row[3] else "/static/images/placeholder.jpg",
+                    "price": price,
+                    "order_type": order_type,
+                    "type": prod_type,
+                    "org_name": org_name,
+                    "preorder_goal": goal,
+                    "total_ordered": total_ordered,
+                    "progress_pct": progress_pct,
                 }
             )
 
-    # Define the order of colleges
-    college_order = [
-        "College of Arts and Social Sciences",
-        "College of Computer Studies",
-        "College of Business Administration",
-        "College of Health Sciences",
-        "College of Education",
-        "College of Engineering",
-        "College of Science and Mathematics",
-    ]
-
-    # Sort merchandise_data according to the defined order
-    sorted_merchandise_data = {
-        college: merchandise_data.get(college, {}) for college in college_order
-    }
-
-    college_colors = {
-        "College of Arts and Social Sciences": "#324831",
-        "College of Computer Studies": "#598181",
-        "College of Business Administration": "#9A9A71",
-        "College of Health Sciences": "#8B9EAF",
-        "College of Education": "#414459",
-        "College of Engineering": "#593838",
-        "College of Science and Mathematics": "#934F50",
-    }
+    total_products = sum(len(d["products"]) for d in merchandise_data.values())
 
     return render_template(
         "explore.html",
-        merchandise_data=sorted_merchandise_data,
-        college_colors=college_colors,
+        merchandise_data=merchandise_data,
+        colleges=COLLEGES_CATALOG,
+        total_products=total_products,
     )
 
 

@@ -539,17 +539,31 @@ class Product:
                 p.product_id AS 'Product',
                 p.product_name AS 'Name',
                 col.college_name AS 'College',
-                ps.picture_url AS 'Picture'
+                ps.picture_url AS 'Picture',
+                p.price AS 'Price',
+                p.order_type AS 'OrderType',
+                p.type AS 'Type',
+                org.org_name AS 'OrgName',
+                p.preorder_goal AS 'Goal',
+                COALESCE((
+                    SELECT SUM(ob.quantity)
+                    FROM ordered_by ob
+                    WHERE ob.product_id = p.product_id
+                ), 0) AS total_ordered
             FROM products p
             LEFT JOIN user u ON p.seller_id = u.user_id
             LEFT JOIN organization org ON u.org_id = org.org_id
             LEFT JOIN college col ON org.college_id = col.college_id
             LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
-            GROUP BY p.product_id, p.product_name, col.college_name, ps.picture_url;
+            ORDER BY p.product_id DESC;
         """
-        with get_db_cursor() as cursor:
-            cursor.execute(query)
-            return cursor.fetchall()
+        try:
+            with get_db_cursor() as cursor:
+                cursor.execute(query)
+                return cursor.fetchall()
+        except Exception as e:
+            logger.error("Error fetching explore catalog: %s", e)
+            return []
 
     @staticmethod
     def get_featured_showcase(limit=4):
