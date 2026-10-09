@@ -1,10 +1,21 @@
-from app import mysql
 from datetime import datetime
-from flask import current_app
-from datetime import datetime
+from MySQLdb.cursors import DictCursor
+from app.utils.db import get_db_cursor
+
 
 class Product(object):
-    def __init__(self, product_name, description, hook=None, type=None, price=0.0, order_type=0, seller_id=None, product_id=None, release_date=None):
+    def __init__(
+        self,
+        product_name=None,
+        description=None,
+        hook=None,
+        type=None,
+        price=0.0,
+        order_type=0,
+        seller_id=None,
+        product_id=None,
+        release_date=None,
+    ):
         self.product_id = product_id
         self.product_name = product_name
         self.description = description
@@ -21,19 +32,28 @@ class Product(object):
         INSERT INTO products (product_name, description, hook, type, price, order_type, seller_id, release_date)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
-        
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_name, self.description, self.hook, self.type, self.price, self.order_type, self.seller_id, self.release_date))
-        mysql.connection.commit()
-        self.product_id = cursor.lastrowid
-        cursor.close()
-        
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(
+                query,
+                (
+                    self.product_name,
+                    self.description,
+                    self.hook,
+                    self.type,
+                    self.price,
+                    self.order_type,
+                    self.seller_id,
+                    self.release_date,
+                ),
+            )
+            self.product_id = cursor.lastrowid
+
     def update(self):
-        """Save a new product to the database."""
+        """Update an existing product in the database."""
         try:
             query = """
             UPDATE products
-            SET 
+            SET
                 product_name = %s,
                 description = %s,
                 hook = %s,
@@ -45,290 +65,208 @@ class Product(object):
                 updated_at = %s
             WHERE product_id = %s;
             """
-            
-            if self.release_date == '':
+            if self.release_date == "":
                 self.release_date = None
-            
-            cursor = mysql.connection.cursor()
-            cursor.execute(query, (self.product_name, 
-                                   self.description, 
-                                   self.hook, 
-                                   self.type, 
-                                   self.price, 
-                                   self.order_type, 
-                                   self.seller_id, 
-                                   self.release_date, 
-                                   datetime.now(),
-                                   self.product_id))
-            mysql.connection.commit()
-            cursor.close()
+
+            with get_db_cursor(commit=True) as cursor:
+                cursor.execute(
+                    query,
+                    (
+                        self.product_name,
+                        self.description,
+                        self.hook,
+                        self.type,
+                        self.price,
+                        self.order_type,
+                        self.seller_id,
+                        self.release_date,
+                        datetime.now(),
+                        self.product_id,
+                    ),
+                )
         except AttributeError as e:
             print(f"AttributeError: {str(e)}")
         except Exception as e:
             print(f"Something went wrong when updating product_id...\n{e}")
 
     def countPreorder(self):
-        cursor = mysql.connection.cursor()
-        print(f"Product ID: {self.product_id}")
-        
-        cursor.execute("SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s", (self.product_id,))
-        mysql.connection.commit()
-        count = cursor.fetchone()[0]
-        
-        cursor.execute("SELECT preorder_goal FROM products WHERE product_id = %s", (self.product_id,))
-        mysql.connection.commit()
-        goal = cursor.fetchone()[0]
-        
-        cursor.close()
-        return count, goal
+        """Count preorders and fetch preorder goal."""
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                "SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s",
+                (self.product_id,),
+            )
+            count_row = cursor.fetchone()
+            count = count_row[0] if count_row and count_row[0] is not None else 0
+
+            cursor.execute(
+                "SELECT preorder_goal FROM products WHERE product_id = %s",
+                (self.product_id,),
+            )
+            goal_row = cursor.fetchone()
+            goal = goal_row[0] if goal_row and goal_row[0] is not None else 0
+
+            return count, goal
 
     def getID(self):
         return self.product_id
 
     def clear_sizes(self, product_id):
-        """Deleting the sizes that the product had"""
-        query = """
-        DELETE FROM product_sizes
-        WHERE product_id = %s
-        """
-
-        cursor = mysql.connection.cursor()  # Ensure cursor is properly initialized
-        cursor.execute(query, (product_id,))  # Wrap product_id in a tuple
-        mysql.connection.commit()
-        cursor.close()
+        """Delete all sizes for a given product."""
+        query = "DELETE FROM product_sizes WHERE product_id = %s"
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (product_id,))
 
     def add_product_sizes(self, size_id):
-        """Add sizes to the product."""
+        """Add size association to the product."""
         query = """
         INSERT INTO product_sizes (product_id, product_quantity, size_id)
         VALUES (%s, 0, %s)
         """
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_id, size_id))
-        mysql.connection.commit()
-        cursor.close()
-        
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (self.product_id, size_id))
+
     def delete_product_sizes(self):
-        """Delete all product sizes that match the product_id and size_id."""
-        query = """
-        DELETE FROM product_sizes
-        WHERE product_id = %s
-        """
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_id))
-        mysql.connection.commit()
-        cursor.close()
+        """Delete all product sizes for this product."""
+        query = "DELETE FROM product_sizes WHERE product_id = %s"
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (self.product_id,))
 
     def init_product_pictures(self, picture_url):
-        """Add sizes to the product."""
+        """Add initial picture URL for the product."""
         query = """
         INSERT INTO pictures (picture_id, picture_url)
         VALUES (%s, %s)
         """
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (self.product_id, picture_url))
-        mysql.connection.commit()
-        cursor.close()
-        
-    def remove_product_picture(self, picture_id):
-        """remove pictures"""
-        query = """
-        DELETE FROM pictures
-        WHERE picture_id = %s
-        """
-        cursor = mysql.connection.cursor()  # Ensure cursor is properly initialized
-        cursor.execute(query, (picture_id,))  # Wrap product_id in a tuple
-        mysql.connection.commit()
-        cursor.close()
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (self.product_id, picture_url))
 
-    def update_details(self, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
-        """Update product details."""
-        Product.update(
-            product_id=self.product_id,
-            product_name=product_name,
-            description=description,
-            hook=hook,
-            type=type,
-            price=price,
-            order_type=order_type
-        )
-        
+    def remove_product_picture(self, picture_id):
+        """Remove pictures for the product."""
+        query = "DELETE FROM pictures WHERE picture_id = %s"
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (picture_id,))
+
     def goal_to_time(self, release_date):
+        """Transition product order type to time-based preorder."""
         try:
             query = """
                 UPDATE products
-                SET 
+                SET
                     order_type = 1,
                     release_date = %s
                 WHERE product_id = %s;
             """
-            
-            cursor = mysql.connection.cursor()
-            cursor.execute(query, (release_date, self.product_id))
-            mysql.connection.commit()
-            cursor.close()
+            with get_db_cursor(commit=True) as cursor:
+                cursor.execute(query, (release_date, self.product_id))
         except Exception as e:
             print(f"Something went wrong with transitioning from goal to time:\n{e}")
 
-
-
     @staticmethod
     def add_product_pictures(product_id, picture_url):
-        """Add sizes to the product."""
+        """Add picture to product."""
         query = """
         INSERT INTO pictures (picture_id, picture_url)
         VALUES (%s, %s)
         """
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (product_id, picture_url))
-        mysql.connection.commit()
-        cursor.close()
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (product_id, picture_url))
 
     @staticmethod
     def fetch_product_pictures(product_id):
         """Fetch pictures for the product."""
-        cursor = mysql.connection.cursor()
-        
         query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
-        cursor.execute(query_fetch, (product_id,))
-        fetched_pictures = {row[0] for row in cursor.fetchall()}
-        mysql.connection.commit()
-        cursor.close()
-        
-        return fetched_pictures
-    
+        with get_db_cursor() as cursor:
+            cursor.execute(query_fetch, (product_id,))
+            return {row[0] for row in cursor.fetchall()}
+
     @staticmethod
     def delete_product_pictures(product_url):
-        """Delete pictures of the product."""
-        cursor = mysql.connection.cursor()
-
+        """Delete pictures of the product by URL."""
         query_fetch = "DELETE FROM pictures WHERE picture_url = %s;"
-        cursor.execute(query_fetch, (product_url,))
-        mysql.connection.commit()
-        cursor.close()
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query_fetch, (product_url,))
 
-    @staticmethod
     def update_pictures(self, picture_urls):
         """Update pictures for the product."""
-        cursor = mysql.connection.cursor()
+        with get_db_cursor(commit=True) as cursor:
+            query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
+            cursor.execute(query_fetch, (self.product_id,))
+            existing_pictures = {row[0] for row in cursor.fetchall()}
 
-        # Fetch existing pictures for the product
-        query_fetch = "SELECT picture_url FROM pictures WHERE picture_id = %s"
-        cursor.execute(query_fetch, (self.product_id,))
-        existing_pictures = {row[0] for row in cursor.fetchall()}
-
-        # Add new pictures or ignore duplicates
-        for picture_url in picture_urls:
-            if picture_url not in existing_pictures:
-                query_insert = """
-                INSERT INTO pictures (picture_id, picture_url)
-                VALUES (%s, %s)
-                """
-                cursor.execute(query_insert, (self.product_id, picture_url))
-
-        mysql.connection.commit()
-        cursor.close()
+            for picture_url in picture_urls:
+                if picture_url not in existing_pictures:
+                    query_insert = """
+                    INSERT INTO pictures (picture_id, picture_url)
+                    VALUES (%s, %s)
+                    """
+                    cursor.execute(query_insert, (self.product_id, picture_url))
 
     @staticmethod
     def get_by_name(product_name):
         """Retrieve a product by its name."""
         query = "SELECT * FROM products WHERE product_name = %s"
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (product_name,))
-        product = cursor.fetchone()
-        cursor.close()
-        return product
-    
+        with get_db_cursor() as cursor:
+            cursor.execute(query, (product_name,))
+            return cursor.fetchone()
+
     @staticmethod
     def get_by_id(product_id):
-        """Retrieve a product by its name."""
-        cursor = mysql.connection.cursor()
-        cursor.execute("""
-            SELECT product_id, product_name, description, hook, type, price, order_type, seller_id
-            FROM products
-            WHERE product_id = %s
-        """, (product_id,))  # Note the comma to make it a tuple
-        result = cursor.fetchone()
-        cursor.close()
-        
-        if result:
-            # Unpack and return a User object
-            return Product(
-                product_id = result[0],
-                product_name = result[1],
-                description = result[2],
-                hook = result[3],
-                type = result[4],
-                price = result[5],
-                order_type = result[6],
-                seller_id = result[7]
+        """Retrieve a product by its ID."""
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT product_id, product_name, description, hook, type, price, order_type, seller_id
+                FROM products
+                WHERE product_id = %s
+                """,
+                (product_id,),
             )
-        return None  # If no match, return None
+            result = cursor.fetchone()
 
-    from datetime import datetime
-
-    # @staticmethod
-    # def update(product_id, product_name=None, description=None, hook=None, type=None, price=None, order_type=None):
-    #     """Update product details."""
-    #     try:
-    #         query = """
-    #         UPDATE products
-    #         SET 
-    #             product_name = COALESCE(%s, product_name),
-    #             description = COALESCE(%s, description),
-    #             hook = COALESCE(%s, hook),
-    #             type = COALESCE(%s, type),
-    #             price = COALESCE(%s, price),
-    #             order_type = COALESCE(%s, order_type),
-    #             updated_at = %s
-    #         WHERE product_id = %s
-    #         """
-    #         cursor = mysql.connection.cursor()
-    #         cursor.execute(query, (product_name, description, hook, type, price, order_type, datetime.now(), product_id))
-    #         mysql.connection.commit()
-    #         cursor.close()
-    #         print("Product updated successfully!")
-    #     except AttributeError as e:
-    #         print(f"AttributeError: {str(e)}")
-    #     except Exception as e:
-    #         print(f"Error updating product: {str(e)}")
-
+            if result:
+                return Product(
+                    product_id=result[0],
+                    product_name=result[1],
+                    description=result[2],
+                    hook=result[3],
+                    type=result[4],
+                    price=result[5],
+                    order_type=result[6],
+                    seller_id=result[7],
+                )
+            return None
 
     @staticmethod
     def delete(product_id):
         """Delete a product by its ID."""
         query = "DELETE FROM products WHERE product_id = %s"
-        cursor = mysql.connection.cursor()
-        cursor.execute(query, (product_id,))
-        mysql.connection.commit()
-        cursor.close()
-        
+        with get_db_cursor(commit=True) as cursor:
+            cursor.execute(query, (product_id,))
+
     @staticmethod
     def countProducts(org_id):
+        """Count products for a seller organization."""
         try:
-            cursor = mysql.connection.cursor()
             query = """
             SELECT COUNT(*) AS row_count
             FROM products p
             LEFT JOIN user u ON p.seller_id = u.user_id
             WHERE u.org_id = %s;
             """
-            cursor.execute(query, (org_id,))
-            
-            row_count = cursor.fetchone()[0]
-            return row_count
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (org_id,))
+                row = cursor.fetchone()
+                return row[0] if row else 0
         except Exception as e:
             return f"Order Count ERR: {e}"
-        
+
     @staticmethod
     def getOrders(org_id):
+        """Get recent orders for an organization."""
         try:
-            # Create a connection object
-            cursor = mysql.connection.cursor()
-
-            # Define the SQL query
             query = """
-            SELECT 
+            SELECT
                 ob.order_id,
                 u.user_name,
                 ob.total_cost,
@@ -348,51 +286,36 @@ class Product(object):
             ORDER BY ob.order_id DESC
             LIMIT 10;
             """
-
-            # Execute the query
-            cursor.execute(query, (org_id,))
-
-            # Fetch all results
-            result = cursor.fetchall()
-
-            # Process the results into a list of dictionaries
-            orders = []
-            for row in result:
-                order = {
-                    'Order': row[0],
-                    'Customer': row[1],
-                    'Total Cost': row[2],
-                    'Product': row[3],
-                    'Size': row[4],
-                    'Quantity': row[5],
-                    'Type': row[6],
-                    'Status': row[7],
-                    'Order Date': row[8],
-                    'Proof of Payment': row[9]
-                }
-                orders.append(order)
-
-            # Close the cursor and connection
-            cursor.close()
-
-            return orders  # Return the orders list
-
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (org_id,))
+                result = cursor.fetchall()
+                orders = []
+                for row in result:
+                    order = {
+                        "Order": row[0],
+                        "Customer": row[1],
+                        "Total Cost": row[2],
+                        "Product": row[3],
+                        "Size": row[4],
+                        "Quantity": row[5],
+                        "Type": row[6],
+                        "Status": row[7],
+                        "Order Date": row[8],
+                        "Proof of Payment": row[9],
+                    }
+                    orders.append(order)
+                return orders
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
-        
+
     @staticmethod
     def getOrdersInPage(org_id, page):
+        """Get paginated orders for an organization."""
         try:
-            # Create a connection object
-            cursor = mysql.connection.cursor()
-            
             offset = 10 * (page - 1)
-            print(f"Offset: {offset}")
-
-            # Define the SQL query
             query = """
-            SELECT 
+            SELECT
                 ob.order_id,
                 u.user_name,
                 ob.total_cost,
@@ -413,46 +336,33 @@ class Product(object):
             LIMIT 10
             OFFSET %s;
             """
-
-            # Execute the query
-            cursor.execute(query, (org_id, offset))
-
-            # Fetch all results
-            result = cursor.fetchall()
-
-            # Process the results into a list of dictionaries
-            orders = []
-            for row in result:
-                order = {
-                    'Order': row[0],
-                    'Customer': row[1],
-                    'Total Cost': row[2],
-                    'Product': row[3],
-                    'Size': row[4],
-                    'Quantity': row[5],
-                    'Type': row[6],
-                    'Status': row[7],
-                    'Order Date': row[8],
-                    'Proof of Payment': row[9]
-                }
-                orders.append(order)
-
-            # Close the cursor and connection
-            cursor.close()
-
-            return orders  # Return the orders list
-
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (org_id, offset))
+                result = cursor.fetchall()
+                orders = []
+                for row in result:
+                    order = {
+                        "Order": row[0],
+                        "Customer": row[1],
+                        "Total Cost": row[2],
+                        "Product": row[3],
+                        "Size": row[4],
+                        "Quantity": row[5],
+                        "Type": row[6],
+                        "Status": row[7],
+                        "Order Date": row[8],
+                        "Proof of Payment": row[9],
+                    }
+                    orders.append(order)
+                return orders
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
-        
+
     @staticmethod
     def countOrdersWithEmail(email):
+        """Count total orders associated with a user's email."""
         try:
-            # Create a connection object
-            cursor = mysql.connection.cursor()
-
-            # Define the SQL query
             query = """
             SELECT COUNT(*) as row_count
             FROM ordered_by ob
@@ -461,30 +371,20 @@ class Product(object):
             JOIN sizes s ON ob.size_id = s.size_id
             WHERE user_email = %s;
             """
-
-            # Execute the query
-            cursor.execute(query, (email,))
-
-            # Fetch all results
-            count = cursor.fetchone()[0]
-
-            # Close the cursor and connection
-            cursor.close()
-
-            return count  # Return the count of orders
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (email,))
+                row = cursor.fetchone()
+                return row[0] if row else 0
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
-        
+
     @staticmethod
     def getOrdersWithEmail(email):
+        """Retrieve all orders placed by a user."""
         try:
-            # Create a connection object
-            cursor = mysql.connection.cursor()
-
-            # Define the SQL query
             query = """
-            SELECT 
+            SELECT
                 ob.order_id,
                 p.product_name,
                 s.size_name,
@@ -495,7 +395,6 @@ class Product(object):
                 ob.order_date,
                 p.product_id,
                 ob.proof_of_payment
-
             FROM ordered_by ob
             JOIN user u ON ob.user_id = u.user_id
             JOIN products p ON ob.product_id = p.product_id
@@ -503,50 +402,37 @@ class Product(object):
             WHERE user_email = %s
             ORDER BY ob.order_id ASC;
             """
-
-            # Execute the query
-            cursor.execute(query, (email,))
-
-            # Fetch all results
-            result = cursor.fetchall()
-
-            # Process the results into a list of dictionaries
-            orders = []
-            for row in result:
-                order = {
-                    'Order': row[0],
-                    'Product': row[1],
-                    'Size': row[2],
-                    'Quantity': row[3],
-                    'Total Cost': row[4],
-                    'Type': row[5],
-                    'Status': row[6],
-                    'Order Date': row[7],
-                    'Product ID': row[8],
-                    'Proof of Payment': row[9],
-                }
-                orders.append(order)
-            print(orders)
-            # Close the cursor and connection
-            cursor.close()
-
-            return orders  # Return the orders list
-    
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (email,))
+                result = cursor.fetchall()
+                orders = []
+                for row in result:
+                    order = {
+                        "Order": row[0],
+                        "Product": row[1],
+                        "Size": row[2],
+                        "Quantity": row[3],
+                        "Total Cost": row[4],
+                        "Type": row[5],
+                        "Status": row[6],
+                        "Order Date": row[7],
+                        "Product ID": row[8],
+                        "Proof of Payment": row[9],
+                    }
+                    orders.append(order)
+                return orders
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
 
     @staticmethod
     def getProducts(org_id):
+        """Retrieve all products for an organization."""
         try:
-
-            print(f"org_id passed: {org_id}")
-            cursor = mysql.connection.cursor()
-
             query = """
-            SELECT  
+            SELECT
                 p.product_id,
-                p.product_name, 
+                p.product_name,
                 p.type,
                 p.price,
                 p.order_type,
@@ -557,36 +443,32 @@ class Product(object):
             WHERE u.org_id = %s
             ORDER BY p.product_id ASC;
             """
-            print(f"Executing query: {query} with org_id: {org_id}")
-            cursor.execute(query, (org_id,))
-            result = cursor.fetchall()
-            print(f"Query result: {result}")
-            if not result:
-                return []
-            products = []
-            for row in result:
-                product = {
-                    'Product_id': row[0],
-                    'Product_Name': row[1],
-                    'Type': row[2],
-                    'Price': row[3],
-                    'Order-Type': row[4],
-                    'Created At': row[5],
-                    'Updated At': row[6],
-                }
-                products.append(product)
-            cursor.close()
-            return products  
-
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (org_id,))
+                result = cursor.fetchall()
+                if not result:
+                    return []
+                products = []
+                for row in result:
+                    product = {
+                        "Product_id": row[0],
+                        "Product_Name": row[1],
+                        "Type": row[2],
+                        "Price": row[3],
+                        "Order-Type": row[4],
+                        "Created At": row[5],
+                        "Updated At": row[6],
+                    }
+                    products.append(product)
+                return products
         except Exception as e:
             print(f"Error occurred: {e}")
             return None
-        
+
     @staticmethod
     def countOrders(org_id):
+        """Count total orders for a seller organization."""
         try:
-            cursor = mysql.connection.cursor()
-
             query = """
             SELECT COUNT(*) AS row_count
             FROM ordered_by ob
@@ -596,57 +478,151 @@ class Product(object):
             JOIN user seller ON p.seller_id = seller.user_id
             WHERE seller.org_id = %s;
             """
-            print(f"Executing query: {query} with org_id: {org_id}")
-            cursor.execute(query, (org_id,))
-            count = cursor.fetchone()[0]
-            return count
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (org_id,))
+                row = cursor.fetchone()
+                return row[0] if row else 0
         except Exception as e:
             print(f"Products Count ERR: {e}")
-        
+            return 0
+
     @staticmethod
     def get_product_pictures(product_id):
         """Get all picture URLs for a given product ID."""
         query = "SELECT picture_url FROM pictures WHERE picture_id = %s"
-        cursor = mysql.connection.cursor()  # Get the database cursor
-        
         try:
-            # Execute the query with the product ID
-            cursor.execute(query, (product_id,))
-            
-            # Fetch all the results
-            results = cursor.fetchall()
-            
-            # Extract picture URLs from the results
-            picture_urls = [row[0] for row in results]  # Assuming fetchall() returns a list of tuples
-            
-            return picture_urls
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (product_id,))
+                results = cursor.fetchall()
+                return [row[0] for row in results]
         except Exception as e:
             print(f"Error fetching product pictures: {e}")
             return []
-        finally:
-            # Ensure the cursor is closed after the operation
-            cursor.close()
 
     @staticmethod
     def get_product_sizes(product_id):
         """Get all size IDs for a given product ID."""
         query = "SELECT size_id FROM product_sizes WHERE product_id = %s"
-        cursor = mysql.connection.cursor()  # Get the database cursor
-        
         try:
-            # Execute the query with the product ID
-            cursor.execute(query, (product_id,))
-            
-            # Fetch all the results
-            results = cursor.fetchall()
-            
-            # Extract size IDs from the results
-            sizes = [row[0] for row in results]  # Assuming fetchall() returns a list of tuples
-            
-            return sizes
+            with get_db_cursor() as cursor:
+                cursor.execute(query, (product_id,))
+                results = cursor.fetchall()
+                return [row[0] for row in results]
         except Exception as e:
             print(f"Error fetching sizes: {e}")
             return []
-        finally:
-            # Ensure the cursor is closed after the operation
-            cursor.close()
+
+    @staticmethod
+    def get_explore_catalog():
+        """Retrieve product catalog grouped by college for the explore page."""
+        query = """
+            WITH PictureSelection AS (
+                SELECT
+                    p.product_id,
+                    pic.picture_url,
+                    ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY pic.picture_url) AS row_num
+                FROM products p
+                LEFT JOIN pictures pic ON p.product_id = pic.picture_id
+            )
+            SELECT
+                p.product_id AS 'Product',
+                p.product_name AS 'Name',
+                col.college_name AS 'College',
+                ps.picture_url AS 'Picture'
+            FROM products p
+            LEFT JOIN user u ON p.seller_id = u.user_id
+            LEFT JOIN organization org ON u.org_id = org.org_id
+            LEFT JOIN college col ON org.college_id = col.college_id
+            LEFT JOIN PictureSelection ps ON p.product_id = ps.product_id AND ps.row_num = 1
+            GROUP BY p.product_id, p.product_name, col.college_name, ps.picture_url;
+        """
+        with get_db_cursor() as cursor:
+            cursor.execute(query)
+            return cursor.fetchall()
+
+    @staticmethod
+    def get_details_by_id(product_id):
+        """Retrieve complete details for a product including images, sizes, and total stock."""
+        with get_db_cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT product_id, product_name, description, hook, type, price, order_type, release_date
+                FROM products
+                WHERE product_id = %s
+                """,
+                (product_id,),
+            )
+            product_row = cursor.fetchone()
+            if not product_row:
+                return None
+
+            product = {
+                "product_id": product_row[0],
+                "name": product_row[1],
+                "description": product_row[2],
+                "hook": product_row[3],
+                "type": product_row[4],
+                "price": product_row[5],
+                "order_type": product_row[6],
+                "release_date": product_row[7],
+            }
+
+            cursor.execute(
+                "SELECT picture_url FROM pictures WHERE picture_id = %s", (product_id,)
+            )
+            images = [img[0] for img in cursor.fetchall()]
+
+            cursor.execute(
+                "SELECT size_id, product_quantity FROM product_sizes WHERE product_id = %s",
+                (product_id,),
+            )
+            sizes = cursor.fetchall()
+
+            cursor.execute(
+                "SELECT SUM(product_quantity) FROM product_sizes WHERE product_id = %s",
+                (product_id,),
+            )
+            sum_row = cursor.fetchone()
+            total_quantity = sum_row[0] if sum_row and sum_row[0] is not None else 0
+
+            return {
+                "product": product,
+                "images": images,
+                "sizes": sizes,
+                "total_quantity": total_quantity,
+            }
+
+    @staticmethod
+    def get_by_organization(org_id, product_type=None):
+        """Retrieve products belonging to an organization, with optional type filtering."""
+        query = """
+            SELECT
+                p.product_id AS 'Product',
+                p.product_name AS 'Product Name',
+                p.description AS 'Description',
+                MIN(pi.picture_url) AS 'Picture',
+                p.type AS 'Type'
+            FROM products p
+            LEFT JOIN pictures pi ON p.product_id = pi.picture_id
+            LEFT JOIN user u ON p.seller_id = u.user_id
+            WHERE u.org_id = %s
+        """
+        params = [org_id]
+        if product_type and product_type != "all":
+            query += " AND p.type = %s"
+            params.append(product_type)
+
+        query += " GROUP BY p.product_id, p.product_name, p.description, p.type;"
+
+        with get_db_cursor(cursorclass=DictCursor) as cursor:
+            cursor.execute(query, params)
+            products = cursor.fetchall()
+            return [
+                {
+                    "id": p["Product"],
+                    "name": p["Product Name"],
+                    "description": p["Description"],
+                    "picture": p["Picture"],
+                }
+                for p in products
+            ]

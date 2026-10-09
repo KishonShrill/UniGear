@@ -70,9 +70,9 @@ def delete_order():
                 return jsonify({"error": "Order ID is required"}), 400
 
             print(f"\nOrder ID: {order_id}")
-            Order.deleteOrder(order_id)
-            
-            return None
+            status = Order.deleteOrder(order_id)
+
+            return jsonify({"success": status})
         except Exception as e:
             print(f"Error: {e}")
             return jsonify({"error": "Something went wrong"}), 500
@@ -106,8 +106,8 @@ def delete_product():
 
             print(f"\nOrder ID: {product_id}")
             Product.delete(product_id)
-            
-            return None
+
+            return jsonify({"success": True})
         except Exception as e:
             print(f"Error: {e}")
             return jsonify({"error": "Something went wrong"}), 500
